@@ -1,3 +1,10 @@
-insert into tasks (id, title, status) values ('1', 'task1', 'InProgress');
-insert into tasks (id, title, status) values ('2', 'task2', 'Closed');
-insert into tasks (id, title, status) values ('3', 'task3', 'Open');
+insert into tasks (id, title, status) values ('1', 'Implement user authentication flow', 'InProgress');
+insert into tasks (id, title, status) values ('2', 'Fix login redirect bug on mobile devices', 'Closed');
+insert into tasks (id, title, status) values ('3', 'Design database schema for orders', 'Open');
+insert into tasks (id, title, status) values ('4', 'Add unit tests for payment service', 'InProgress');
+insert into tasks (id, title, status) values ('5', 'Optimize API response time', 'Open');
+insert into tasks (id, title, status) values ('6', 'Refactor legacy user controller', 'Closed');
+insert into tasks (id, title, status) values ('7', 'Integrate third-party email service', 'InProgress');
+insert into tasks (id, title, status) values ('8', 'Create dashboard UI layout', 'Open');
+insert into tasks (id, title, status) values ('9', 'Fix race condition in background job', 'InProgress');
+insert into tasks (id, title, status) values ('10', 'Write documentation for deployment process', 'Closed');
