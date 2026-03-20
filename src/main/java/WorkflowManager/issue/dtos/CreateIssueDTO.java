@@ -1,6 +1,6 @@
-package WorkflowManager.task.dtos;
+package WorkflowManager.issue.dtos;
 
-public class CreateTaskDTO {
+public class CreateIssueDTO {
     private String title;
 
     public String getTitle() {

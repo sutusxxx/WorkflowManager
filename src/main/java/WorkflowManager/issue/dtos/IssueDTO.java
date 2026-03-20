@@ -1,8 +1,8 @@
-package WorkflowManager.task.dtos;
+package WorkflowManager.issue.dtos;
 
 import java.time.LocalDateTime;
 
-public class TaskDTO {
+public class IssueDTO {
     private Long id;
     private String title;
     private String status;

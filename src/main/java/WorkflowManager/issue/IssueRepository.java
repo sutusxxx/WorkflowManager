@@ -1,4 +1,4 @@
-package WorkflowManager.task;
+package WorkflowManager.issue;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findByProject(Long projectId);
+public interface IssueRepository extends JpaRepository<Issue, Long> {
+    List<Issue> findByProject(Long projectId);
 }

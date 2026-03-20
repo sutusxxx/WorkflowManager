@@ -4,9 +4,9 @@ import WorkflowManager.exceptions.ProjectNotFoundException;
 import WorkflowManager.project.dtos.CreateProjectDTO;
 import WorkflowManager.project.dtos.ProjectDTO;
 import WorkflowManager.project.dtos.UpdateProjectDTO;
-import WorkflowManager.task.TaskConverter;
-import WorkflowManager.task.TaskRepository;
-import WorkflowManager.task.dtos.TaskDTO;
+import WorkflowManager.issue.IssueConverter;
+import WorkflowManager.issue.IssueRepository;
+import WorkflowManager.issue.dtos.IssueDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,20 +14,20 @@ import java.util.List;
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
+    private final IssueRepository issueRepository;
     private final ProjectConverter projectConverter;
-    private final TaskConverter taskConverter;
+    private final IssueConverter issueConverter;
 
     public ProjectService(
             ProjectRepository projectRepository,
-            TaskRepository taskRepository,
+            IssueRepository issueRepository,
             ProjectConverter projectConverter,
-            TaskConverter taskConverter
+            IssueConverter issueConverter
     ) {
         this.projectRepository = projectRepository;
-        this.taskRepository = taskRepository;
+        this.issueRepository = issueRepository;
         this.projectConverter = projectConverter;
-        this.taskConverter = taskConverter;
+        this.issueConverter = issueConverter;
     }
 
     public ProjectDTO getProjectById(Long id) {
@@ -52,7 +52,7 @@ public class ProjectService {
         return projectConverter.convertToDTO(savedProject);
     }
 
-    public List<TaskDTO> getTasksByProject(Long projectId) {
-        return taskRepository.findByProject(projectId).stream().map(taskConverter::convertToDTO).toList();
+    public List<IssueDTO> getIssuesByProject(Long projectId) {
+        return issueRepository.findByProject(projectId).stream().map(issueConverter::convertToDTO).toList();
     }
 }

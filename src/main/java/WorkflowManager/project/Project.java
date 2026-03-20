@@ -1,6 +1,6 @@
 package WorkflowManager.project;
 
-import WorkflowManager.task.Task;
+import WorkflowManager.issue.Issue;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,7 +22,7 @@ public class Project {
     private String description;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<Task> tasks;
+    private List<Issue> issues;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -56,12 +56,12 @@ public class Project {
         this.description = description;
     }
 
-    public List<Task> getTasks() {
-        return tasks;
+    public List<Issue> getTasks() {
+        return issues;
     }
 
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
+    public void setTasks(List<Issue> issues) {
+        this.issues = issues;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -1,4 +1,4 @@
-package WorkflowManager.task;
+package WorkflowManager.issue;
 
 import WorkflowManager.project.Project;
 import jakarta.persistence.*;
@@ -8,8 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tasks")
-public class Task {
+@Table(name = "issues")
+public class Issue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -55,6 +55,38 @@ public class Task {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Short getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(Short storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public String getStatus() {

@@ -1,6 +1,6 @@
-package WorkflowManager.task.dtos;
+package WorkflowManager.issue.dtos;
 
-public class UpdateTaskDTO {
+public class UpdateIssueDTO {
     private String title;
     private String status;
 
