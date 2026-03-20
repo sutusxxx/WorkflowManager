@@ -1,5 +1,6 @@
 package WorkflowManager.task;
 
+import WorkflowManager.exceptions.TaskNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +17,9 @@ public class TaskService {
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
+    }
+
+    public Task getTaskById(Long id) throws TaskNotFoundException {
+        return taskRepository.findById(id).orElseThrow(TaskNotFoundException::new);
     }
 }
