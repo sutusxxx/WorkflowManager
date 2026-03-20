@@ -19,12 +19,12 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public List<Task> getAllTasks() {
+    public List<TaskDTO> getAllTasks() {
         return taskService.getAllTasks();
     }
 
     @GetMapping("/{id}")
-    public Task getById(@PathVariable Long id) {
+    public TaskDTO getById(@PathVariable Long id) {
         try {
             return taskService.getTaskById(id);
         } catch (TaskNotFoundException e) {
@@ -33,12 +33,12 @@ public class TaskController {
     }
 
     @PutMapping("/create")
-    public Task createTask(@RequestBody Task task) {
+    public TaskDTO createTask(@RequestBody Task task) {
         return taskService.createTask(task);
     }
 
     @PostMapping("/{id}/update")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
+    public TaskDTO updateTask(@PathVariable Long id, @RequestBody Task task) {
         return taskService.updateTask(id, task);
     }
 
