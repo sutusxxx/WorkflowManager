@@ -1,10 +1,29 @@
-insert into tasks (title, status) values ('Implement user authentication flow', 'InProgress');
-insert into tasks (title, status) values ('Fix login redirect bug on mobile devices', 'Closed');
-insert into tasks (title, status) values ('Design database schema for orders', 'Open');
-insert into tasks (title, status) values ('Add unit tests for payment service', 'InProgress');
-insert into tasks (title, status) values ('Optimize API response time', 'Open');
-insert into tasks (title, status) values ('Refactor legacy user controller', 'Closed');
-insert into tasks (title, status) values ('Integrate third-party email service', 'InProgress');
-insert into tasks (title, status) values ('Create dashboard UI layout', 'Open');
-insert into tasks (title, status) values ('Fix race condition in background job', 'InProgress');
-insert into tasks (title, status) values ('Write documentation for deployment process', 'Closed');
+insert into tasks (title, status, created_at, updated_at)
+values ('Implement user authentication flow', 'InProgress', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Fix login redirect bug on mobile devices', 'Closed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Design database schema for orders', 'Open', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Add unit tests for payment service', 'InProgress', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Optimize API response time', 'Open', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Refactor legacy user controller', 'Closed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Integrate third-party email service', 'InProgress', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Create dashboard UI layout', 'Open', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Fix race condition in background job', 'InProgress', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into tasks (title, status, created_at, updated_at)
+values ('Write documentation for deployment process', 'Closed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

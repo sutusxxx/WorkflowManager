@@ -33,12 +33,12 @@ public class TaskController {
     }
 
     @PutMapping("/create")
-    public TaskDTO createTask(@RequestBody Task task) {
+    public TaskDTO createTask(@RequestBody CreateTaskDTO task) {
         return taskService.createTask(task);
     }
 
     @PostMapping("/{id}/update")
-    public TaskDTO updateTask(@PathVariable Long id, @RequestBody Task task) {
+    public TaskDTO updateTask(@PathVariable Long id, @RequestBody UpdateTaskDTO task) {
         return taskService.updateTask(id, task);
     }
 

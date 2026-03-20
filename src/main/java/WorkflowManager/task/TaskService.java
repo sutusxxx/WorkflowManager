@@ -30,12 +30,15 @@ public class TaskService {
         return convertToDTO(task);
     }
 
-    public TaskDTO createTask(Task task) {
-        Task savedTask = taskRepository.save(task);
+    public TaskDTO createTask(CreateTaskDTO task) {
+        Task taskToSave = convertFromDTO(task);
+        System.out.println(taskToSave);
+        taskToSave.setStatus("Open");
+        Task savedTask = taskRepository.save(taskToSave);
         return convertToDTO(savedTask);
     }
 
-    public TaskDTO updateTask(Long id, Task task) {
+    public TaskDTO updateTask(Long id, UpdateTaskDTO task) {
         Task taskDb = taskRepository.findById(id).orElseThrow(TaskNotFoundException::new);
 
         if (task.getTitle() != null) {
@@ -56,5 +59,9 @@ public class TaskService {
 
     private TaskDTO convertToDTO(Task task) {
         return modelMapper.map(task, TaskDTO.class);
+    }
+
+    private Task convertFromDTO(CreateTaskDTO taskDTO) {
+        return modelMapper.map(taskDTO, Task.class);
     }
 }
