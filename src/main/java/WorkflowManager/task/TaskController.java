@@ -1,6 +1,9 @@
 package WorkflowManager.task;
 
 import WorkflowManager.exceptions.TaskNotFoundException;
+import WorkflowManager.task.dtos.CreateTaskDTO;
+import WorkflowManager.task.dtos.TaskDTO;
+import WorkflowManager.task.dtos.UpdateTaskDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

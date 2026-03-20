@@ -1,4 +1,4 @@
-package WorkflowManager.task;
+package WorkflowManager.task.dtos;
 
 public class CreateTaskDTO {
     private String title;

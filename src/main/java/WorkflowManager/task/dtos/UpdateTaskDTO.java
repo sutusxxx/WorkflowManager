@@ -1,4 +1,4 @@
-package WorkflowManager.task;
+package WorkflowManager.task.dtos;
 
 public class UpdateTaskDTO {
     private String title;

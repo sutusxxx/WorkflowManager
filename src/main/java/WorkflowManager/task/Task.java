@@ -1,5 +1,6 @@
 package WorkflowManager.task;
 
+import WorkflowManager.project.Project;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,6 +19,10 @@ public class Task {
 
     @Column(nullable = false)
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

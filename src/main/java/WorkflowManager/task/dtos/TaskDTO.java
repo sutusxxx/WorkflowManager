@@ -1,10 +1,9 @@
-package WorkflowManager.task;
+package WorkflowManager.task.dtos;
 
 import java.time.LocalDateTime;
 
 public class TaskDTO {
     private Long id;
-
     private String title;
     private String status;
     private LocalDateTime createdAt;
