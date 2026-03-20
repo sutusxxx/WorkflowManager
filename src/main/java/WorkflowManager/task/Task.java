@@ -17,6 +17,15 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
+    @Column
+    private String description;
+
+    @Column
+    private Short storyPoints;
+
+    @Column
+    private LocalDateTime dueDate;
+
     @Column(nullable = false)
     private String status;
 

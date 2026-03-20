@@ -4,7 +4,6 @@ import WorkflowManager.exceptions.TaskNotFoundException;
 import WorkflowManager.task.dtos.CreateTaskDTO;
 import WorkflowManager.task.dtos.TaskDTO;
 import WorkflowManager.task.dtos.UpdateTaskDTO;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,32 +12,31 @@ import java.util.List;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final ModelMapper modelMapper;
+    private final TaskConverter taskConverter;
 
     @Autowired
     public TaskService(
             TaskRepository taskRepository,
-            ModelMapper modelMapper
+            TaskConverter taskConverter
     ) {
         this.taskRepository = taskRepository;
-        this.modelMapper = modelMapper;
+        this.taskConverter = taskConverter;
     }
 
     public List<TaskDTO> getAllTasks() {
-        return taskRepository.findAll().stream().map(this::convertToDTO).toList();
+        return taskRepository.findAll().stream().map(taskConverter::convertToDTO).toList();
     }
 
     public TaskDTO getTaskById(Long id) throws TaskNotFoundException {
         Task task = taskRepository.findById(id).orElseThrow(TaskNotFoundException::new);
-        return convertToDTO(task);
+        return taskConverter.convertToDTO(task);
     }
 
     public TaskDTO createTask(CreateTaskDTO task) {
-        Task taskToSave = convertFromDTO(task);
-        System.out.println(taskToSave);
-        taskToSave.setStatus("Open");
+        Task taskToSave = taskConverter.convertFromDTO(task);
+        taskToSave.setStatus("TODO");
         Task savedTask = taskRepository.save(taskToSave);
-        return convertToDTO(savedTask);
+        return taskConverter.convertToDTO(savedTask);
     }
 
     public TaskDTO updateTask(Long id, UpdateTaskDTO task) {
@@ -53,18 +51,10 @@ public class TaskService {
         }
 
         Task savedTask = taskRepository.save(taskDb);
-        return convertToDTO(savedTask);
+        return taskConverter.convertToDTO(savedTask);
     }
 
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
-    }
-
-    private TaskDTO convertToDTO(Task task) {
-        return modelMapper.map(task, TaskDTO.class);
-    }
-
-    private Task convertFromDTO(CreateTaskDTO taskDTO) {
-        return modelMapper.map(taskDTO, Task.class);
     }
 }
