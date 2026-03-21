@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/issue")
+@RequestMapping("/api/v1/issues")
 public class IssueController {
     private final IssueService issueService;
 
@@ -21,8 +21,8 @@ public class IssueController {
         this.issueService = issueService;
     }
 
-    @GetMapping("/all")
-    public List<IssueDTO> getAllIssues() {
+    @GetMapping("/")
+    public List<IssueDTO> getIssues(Long projectId, IssueType type, String status) {
         return issueService.getAllIssues();
     }
 

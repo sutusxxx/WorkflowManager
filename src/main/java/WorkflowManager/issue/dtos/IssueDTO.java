@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class IssueDTO {
     private Long id;
     private String title;
+    private String key;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -23,6 +24,14 @@ public class IssueDTO {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getStatus() {

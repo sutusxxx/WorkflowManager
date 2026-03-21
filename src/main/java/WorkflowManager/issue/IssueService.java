@@ -1,9 +1,12 @@
 package WorkflowManager.issue;
 
 import WorkflowManager.exceptions.IssueNotFoundException;
+import WorkflowManager.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.dtos.CreateIssueDTO;
 import WorkflowManager.issue.dtos.IssueDTO;
 import WorkflowManager.issue.dtos.UpdateIssueDTO;
+import WorkflowManager.project.Project;
+import WorkflowManager.project.ProjectRepository;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import java.util.Set;
 @Service
 public class IssueService {
     private final IssueRepository issueRepository;
+    private final ProjectRepository projectRepository;
+
     private final IssueConverter issueConverter;
 
     private static final Map<IssueType, Set<IssueType>> ALLOWED_PARENTS = Map.of(
@@ -28,9 +33,11 @@ public class IssueService {
     @Autowired
     public IssueService(
             IssueRepository issueRepository,
+            ProjectRepository projectRepository,
             IssueConverter issueConverter
     ) {
         this.issueRepository = issueRepository;
+        this.projectRepository = projectRepository;
         this.issueConverter = issueConverter;
     }
 
@@ -38,8 +45,8 @@ public class IssueService {
         return issueRepository.findAll().stream().map(issueConverter::convertToDTO).toList();
     }
 
-    public List<IssueDTO> getChildrenForIssue(Long issueId) throws NotImplementedException {
-        throw new NotImplementedException("Not Implemented");
+    public List<IssueDTO> getChildren(Long parentId) {
+        return issueRepository.findAllByParent(parentId).stream().map(issueConverter::convertToDTO).toList();
     }
 
     public IssueDTO getIssueById(Long id) throws IssueNotFoundException {
@@ -47,10 +54,22 @@ public class IssueService {
         return issueConverter.convertToDTO(issue);
     }
 
-    public IssueDTO createIssue(CreateIssueDTO issueDTO) {
-        Issue issue = issueConverter.convertFromDTO(issueDTO);
+    public IssueDTO getIssueByKey(String key) throws IssueNotFoundException {
+        Issue issue = issueRepository.findByKey(key).orElseThrow(IssueNotFoundException::new);
+        return issueConverter.convertToDTO(issue);
+    }
 
+    public IssueDTO createIssue(CreateIssueDTO issueDTO) {
+        // Lock project row to safely increment
+        Project project = projectRepository.findByIdForUpdate(issueDTO.getProjectId()).orElseThrow(ProjectNotFoundException::new);
+        int nextIssueNumber = project.getIssueCounter() + 1;
+        project.setIssueCounter(nextIssueNumber);
+        projectRepository.save(project);
+
+        Issue issue = issueConverter.convertFromDTO(issueDTO);
         issue.setStatus("TODO");
+        issue.setNumber(nextIssueNumber);
+        issue.setKey(project.getKey() + "-" + nextIssueNumber);
 
         if (issueDTO.getParentId() != null) {
             Issue parent = issueRepository.findById(issueDTO.getParentId()).orElseThrow();

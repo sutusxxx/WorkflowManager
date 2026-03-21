@@ -19,6 +19,12 @@ public class Issue {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private Integer number;
+
+    @Column(unique = true, nullable = false)
+    private String key;
+
     @Column
     private String description;
 
@@ -67,6 +73,30 @@ public class Issue {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public List<Issue> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Issue> children) {
+        this.children = children;
     }
 
     public String getDescription() {

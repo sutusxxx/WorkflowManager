@@ -15,8 +15,14 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String name;
+
+    @Column(unique = true, nullable = false)
+    private String key;
+
+    @Column(nullable = false)
+    private Integer issueCounter = 0;
 
     @Column
     private String description;
@@ -46,6 +52,30 @@ public class Project {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Integer getIssueCounter() {
+        return issueCounter;
+    }
+
+    public void setIssueCounter(Integer issueCounter) {
+        this.issueCounter = issueCounter;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public List<Issue> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
     }
 
     public String getDescription() {
