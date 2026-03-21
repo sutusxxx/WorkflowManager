@@ -32,10 +32,10 @@ public class IssueController {
         return issueService.getTree(key);
     }
 
-    @GetMapping("/{id}")
-    public IssueDTO getById(@PathVariable Long id) {
+    @GetMapping("/{key}")
+    public IssueDTO getByKey(@PathVariable String key) {
         try {
-            return issueService.getIssueById(id);
+            return issueService.getIssueByKey(key);
         } catch (IssueNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
