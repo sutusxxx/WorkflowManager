@@ -10,6 +10,7 @@ import WorkflowManager.project.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class IssueService {
         return issueConverter.convertToDTO(issue);
     }
 
+    @Transactional
     public IssueDTO createIssue(CreateIssueDTO issueDTO) {
         // Lock project row to safely increment
         Project project = projectRepository.findByIdForUpdate(issueDTO.getProjectId()).orElseThrow(ProjectNotFoundException::new);
@@ -76,6 +78,7 @@ public class IssueService {
 
         Issue issue = issueConverter.convertFromDTO(issueDTO);
         issue.setStatus(Issue.INITIAL_STATUS);
+        issue.setProject(project);
         issue.setNumber(nextIssueNumber);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
 

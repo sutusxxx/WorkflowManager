@@ -18,7 +18,7 @@ public class Project {
     @Column
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "project_key", unique = true, nullable = false)
     private String key;
 
     @Column(nullable = false)
@@ -108,5 +108,19 @@ public class Project {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", key='" + key + '\'' +
+                ", issueCounter=" + issueCounter +
+                ", description='" + description + '\'' +
+                ", issues=" + issues +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

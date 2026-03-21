@@ -2,6 +2,7 @@ package WorkflowManager.project.dtos;
 
 public class CreateProjectDTO {
     private String name;
+    private String key;
 
     public String getName() {
         return name;
@@ -9,5 +10,13 @@ public class CreateProjectDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

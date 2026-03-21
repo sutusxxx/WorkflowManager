@@ -22,7 +22,7 @@ public class Issue {
     @Column(nullable = false)
     private Integer number;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "issue_key", unique = true, nullable = false)
     private String key;
 
     @Column
