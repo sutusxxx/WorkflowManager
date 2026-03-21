@@ -5,11 +5,11 @@ import WorkflowManager.issue.IssueType;
 public class CreateIssueDTO {
     private String title;
     private String description;
-    private Long parentId;
+    private String parentKey;
 
-    private Long projectId;
+    private String projectKey;
 
-    private IssueType issueType;
+    private IssueType type;
 
     public String getTitle() {
         return title;
@@ -27,27 +27,27 @@ public class CreateIssueDTO {
         this.description = description;
     }
 
-    public Long getParentId() {
-        return parentId;
+    public String getParentKey() {
+        return parentKey;
     }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setParentKey(String parentKey) {
+        this.parentKey = parentKey;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public String getProjectKey() {
+        return projectKey;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
     }
 
-    public IssueType getIssueType() {
-        return issueType;
+    public IssueType getType() {
+        return type;
     }
 
-    public void setIssueType(IssueType issueType) {
-        this.issueType = issueType;
+    public void setType(IssueType type) {
+        this.type = type;
     }
 }

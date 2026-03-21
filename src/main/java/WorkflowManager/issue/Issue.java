@@ -19,9 +19,6 @@ public class Issue {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private Integer number;
-
     @Column(name = "issue_key", unique = true, nullable = false)
     private String key;
 
@@ -42,6 +39,7 @@ public class Issue {
     private Project project;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private IssueType type;
 
     @ManyToOne
@@ -75,14 +73,6 @@ public class Issue {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 
     public String getKey() {

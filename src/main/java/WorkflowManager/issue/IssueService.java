@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@Transactional
 public class IssueService {
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
@@ -68,10 +69,9 @@ public class IssueService {
         return issueConverter.convertToDTO(issue);
     }
 
-    @Transactional
     public IssueDTO createIssue(CreateIssueDTO issueDTO) {
         // Lock project row to safely increment
-        Project project = projectRepository.findByIdForUpdate(issueDTO.getProjectId()).orElseThrow(ProjectNotFoundException::new);
+        Project project = projectRepository.findByKeyForUpdate(issueDTO.getProjectKey()).orElseThrow(ProjectNotFoundException::new);
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
         projectRepository.save(project);
@@ -79,11 +79,10 @@ public class IssueService {
         Issue issue = issueConverter.convertFromDTO(issueDTO);
         issue.setStatus(Issue.INITIAL_STATUS);
         issue.setProject(project);
-        issue.setNumber(nextIssueNumber);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
 
-        if (issueDTO.getParentId() != null) {
-            Issue parent = issueRepository.findById(issueDTO.getParentId()).orElseThrow();
+        if (issueDTO.getParentKey() != null) {
+            Issue parent = issueRepository.findByKey(issueDTO.getParentKey()).orElseThrow();
             validateParent(issue, parent);
             issue.setParent(parent);
         }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class ProjectDTO {
     private Long id;
     private String name;
+    private String key;
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -23,6 +24,22 @@ public class ProjectDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getCreatedAt() {

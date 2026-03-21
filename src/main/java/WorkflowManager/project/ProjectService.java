@@ -8,10 +8,12 @@ import WorkflowManager.issue.IssueConverter;
 import WorkflowManager.issue.IssueRepository;
 import WorkflowManager.issue.dtos.IssueDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final IssueRepository issueRepository;
