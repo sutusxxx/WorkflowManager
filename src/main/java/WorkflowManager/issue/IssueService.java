@@ -4,6 +4,7 @@ import WorkflowManager.exceptions.IssueNotFoundException;
 import WorkflowManager.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.dtos.CreateIssueDTO;
 import WorkflowManager.issue.dtos.IssueDTO;
+import WorkflowManager.issue.dtos.IssueTreeDTO;
 import WorkflowManager.issue.dtos.UpdateIssueDTO;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectRepository;
@@ -53,6 +54,11 @@ public class IssueService {
         }
 
         return issueRepository.findAll(spec).stream().map(issueConverter::convertToDTO).toList();
+    }
+
+    public IssueTreeDTO getTree(String key) {
+        Issue issue = issueRepository.findByKey(key).orElseThrow(IssueNotFoundException::new);
+        return issueConverter.convertToTreeDTO(issue);
     }
 
     public List<IssueDTO> getChildren(Long parentId) {

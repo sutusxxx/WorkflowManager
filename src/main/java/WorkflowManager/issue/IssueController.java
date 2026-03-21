@@ -3,6 +3,7 @@ package WorkflowManager.issue;
 import WorkflowManager.exceptions.IssueNotFoundException;
 import WorkflowManager.issue.dtos.CreateIssueDTO;
 import WorkflowManager.issue.dtos.IssueDTO;
+import WorkflowManager.issue.dtos.IssueTreeDTO;
 import WorkflowManager.issue.dtos.UpdateIssueDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,11 @@ public class IssueController {
     @GetMapping("/")
     public List<IssueDTO> getIssues(Long parentId, Long projectId, IssueType type, String status) {
         return issueService.getAllIssues(parentId, projectId, type, status);
+    }
+
+    @GetMapping("/{key}/tree")
+    public IssueTreeDTO getTree(@PathVariable String key) {
+        return issueService.getTree(key);
     }
 
     @GetMapping("/{id}")
