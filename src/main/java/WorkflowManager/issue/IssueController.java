@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/issues")
+@RequestMapping("/api/v1/issue")
 public class IssueController {
     private final IssueService issueService;
 
