@@ -22,8 +22,8 @@ public class IssueController {
     }
 
     @GetMapping("/")
-    public List<IssueDTO> getIssues(Long projectId, IssueType type, String status) {
-        return issueService.getAllIssues();
+    public List<IssueDTO> getIssues(Long parentId, Long projectId, IssueType type, String status) {
+        return issueService.getAllIssues(parentId, projectId, type, status);
     }
 
     @GetMapping("/{id}")

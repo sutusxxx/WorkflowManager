@@ -7,8 +7,8 @@ import WorkflowManager.issue.dtos.IssueDTO;
 import WorkflowManager.issue.dtos.UpdateIssueDTO;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectRepository;
-import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,8 +41,16 @@ public class IssueService {
         this.issueConverter = issueConverter;
     }
 
-    public List<IssueDTO> getAllIssues() {
-        return issueRepository.findAll().stream().map(issueConverter::convertToDTO).toList();
+    public List<IssueDTO> getAllIssues(Long parentId, Long projectId, IssueType type, String status) {
+        Specification<Issue> spec = Specification
+                .where(IssueSpecification.hasProject(projectId))
+                .and(IssueSpecification.hasType(type));
+
+        if (parentId != null) {
+            spec = spec.and(IssueSpecification.hasParent(parentId));
+        }
+
+        return issueRepository.findAll(spec).stream().map(issueConverter::convertToDTO).toList();
     }
 
     public List<IssueDTO> getChildren(Long parentId) {
@@ -67,7 +75,7 @@ public class IssueService {
         projectRepository.save(project);
 
         Issue issue = issueConverter.convertFromDTO(issueDTO);
-        issue.setStatus("TODO");
+        issue.setStatus(Issue.INITIAL_STATUS);
         issue.setNumber(nextIssueNumber);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
 
@@ -90,12 +98,6 @@ public class IssueService {
 
         if (issueDTO.getStatus() != null) {
             issue.setStatus(issueDTO.getStatus());
-        }
-
-        if (issueDTO.getParentId() != null) {
-            Issue parent = issueRepository.findById(issueDTO.getParentId()).orElseThrow();
-            validateParent(issue, parent);
-            issue.setParent(parent);
         }
 
         Issue savedIssue = issueRepository.save(issue);

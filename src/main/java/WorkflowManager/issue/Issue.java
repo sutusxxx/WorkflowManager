@@ -59,6 +59,8 @@ public class Issue {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    public static final String INITIAL_STATUS = "Todo";
+
     public Long getId() {
         return id;
     }
