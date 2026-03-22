@@ -5,5 +5,5 @@ public enum IssueType {
     STORY,
     BUGFIX,
     TASK,
-    SUB_TASK
+    SUBTASK
 }

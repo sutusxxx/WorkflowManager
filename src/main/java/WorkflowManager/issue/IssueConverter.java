@@ -20,8 +20,8 @@ public class IssueConverter {
         return mapper.map(issue, IssueDTO.class);
     }
 
-    public Issue convertFromDTO(CreateIssueRequest taskDTO) {
-        return mapper.map(taskDTO, Issue.class);
+    public Issue convertFromRequest(CreateIssueRequest request) {
+        return mapper.map(request, Issue.class);
     }
 
     public IssueTreeDTO convertToTreeDTO(Issue issue) {

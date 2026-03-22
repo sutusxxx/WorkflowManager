@@ -29,7 +29,7 @@ public class IssueService {
             IssueType.STORY, Set.of(IssueType.EPIC),
             IssueType.BUGFIX, Set.of(IssueType.EPIC),
             IssueType.TASK, Set.of(IssueType.EPIC),
-            IssueType.SUB_TASK, Set.of(IssueType.STORY, IssueType.BUGFIX, IssueType.TASK),
+            IssueType.SUBTASK, Set.of(IssueType.STORY, IssueType.BUGFIX, IssueType.TASK),
             IssueType.EPIC, Set.of()
     );
 
@@ -77,7 +77,7 @@ public class IssueService {
         project.setIssueCounter(nextIssueNumber);
         projectRepository.save(project);
 
-        Issue issue = issueConverter.convertFromDTO(issueDTO);
+        Issue issue = issueConverter.convertFromRequest(issueDTO);
         issue.setStatus(Issue.INITIAL_STATUS);
         issue.setProject(project);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);

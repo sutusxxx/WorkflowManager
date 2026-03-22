@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+    Optional<Project> findByKey(String key);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Project p WHERE p.key = :key")
     Optional<Project> findByKeyForUpdate(@Param("key") String key);

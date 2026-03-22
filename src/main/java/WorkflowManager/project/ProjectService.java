@@ -32,13 +32,17 @@ public class ProjectService {
         this.issueConverter = issueConverter;
     }
 
-    public ProjectDTO getProjectById(Long id) {
-        Project project = projectRepository.findById(id).orElseThrow();
+    public List<ProjectDTO> getAllProjects() {
+        return projectRepository.findAll().stream().map(projectConverter::convertToDTO).toList();
+    }
+
+    public ProjectDTO getProjectByKey(String key) {
+        Project project = projectRepository.findByKey(key).orElseThrow(ProjectNotFoundException::new);
         return projectConverter.convertToDTO(project);
     }
 
     public ProjectDTO createProject(CreateProjectRequest project) {
-        Project projectToSave = projectConverter.convertFromDTO(project);
+        Project projectToSave = projectConverter.convertFromRequest(project);
         Project savedProject = projectRepository.save(projectToSave);
         return projectConverter.convertToDTO(savedProject);
     }

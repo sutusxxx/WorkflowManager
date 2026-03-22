@@ -17,7 +17,7 @@ public class ProjectConverter {
         return mapper.map(project, ProjectDTO.class);
     }
 
-    public Project convertFromDTO(CreateProjectRequest projectDTO) {
-        return mapper.map(projectDTO, Project.class);
+    public Project convertFromRequest(CreateProjectRequest request) {
+        return mapper.map(request, Project.class);
     }
 }

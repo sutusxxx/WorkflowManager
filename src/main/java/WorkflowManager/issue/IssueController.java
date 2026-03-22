@@ -22,7 +22,7 @@ public class IssueController {
         this.issueService = issueService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<IssueDTO> getIssues(Long parentId, Long projectId, IssueType type, String status) {
         return issueService.getAllIssues(parentId, projectId, type, status);
     }
