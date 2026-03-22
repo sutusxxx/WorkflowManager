@@ -23,7 +23,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{key}")
-    public ProjectDTO getProjectByKey(String key) {
+    public ProjectDTO getProjectByKey(@PathVariable String key) {
         return projectService.getProjectByKey(key);
     }
 

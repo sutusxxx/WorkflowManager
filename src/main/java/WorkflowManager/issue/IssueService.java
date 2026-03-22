@@ -61,10 +61,6 @@ public class IssueService {
         return issueConverter.convertToTreeDTO(issue);
     }
 
-    public List<IssueDTO> getChildren(Long parentId) {
-        return issueRepository.findAllByParent(parentId).stream().map(issueConverter::convertToDTO).toList();
-    }
-
     public IssueDTO getIssueByKey(String key) throws IssueNotFoundException {
         Issue issue = issueRepository.findByKey(key).orElseThrow(IssueNotFoundException::new);
         return issueConverter.convertToDTO(issue);

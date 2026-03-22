@@ -1,6 +1,7 @@
 package WorkflowManager.project;
 
 import WorkflowManager.exceptions.ProjectNotFoundException;
+import WorkflowManager.issue.Issue;
 import WorkflowManager.project.models.CreateProjectRequest;
 import WorkflowManager.project.models.ProjectDTO;
 import WorkflowManager.project.models.UpdateProjectRequest;
@@ -33,12 +34,12 @@ public class ProjectService {
     }
 
     public List<ProjectDTO> getAllProjects() {
-        return projectRepository.findAll().stream().map(projectConverter::convertToDTO).toList();
+        return projectRepository.findAll().stream().map(this::createProjectDataWithIssues).toList();
     }
 
     public ProjectDTO getProjectByKey(String key) {
         Project project = projectRepository.findByKey(key).orElseThrow(ProjectNotFoundException::new);
-        return projectConverter.convertToDTO(project);
+        return createProjectDataWithIssues(project);
     }
 
     public ProjectDTO createProject(CreateProjectRequest project) {
@@ -60,5 +61,12 @@ public class ProjectService {
 
     public List<IssueDTO> getIssuesByProject(Long projectId) {
         return issueRepository.findByProject(projectId).stream().map(issueConverter::convertToDTO).toList();
+    }
+
+    private ProjectDTO createProjectDataWithIssues(Project project) {
+        ProjectDTO dto = projectConverter.convertToDTO(project);
+        List<Issue> projectIssues = issueRepository.findFirstLevelIssuesOnProject(project.getId());
+        dto.setIssueSummaries(projectIssues.stream().map(issueConverter::convertToSummaryDTO).toList());
+        return dto;
     }
 }

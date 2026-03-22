@@ -1,22 +1,18 @@
 package WorkflowManager.project.models;
 
+import WorkflowManager.issue.models.IssueSummaryDTO;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProjectDTO {
-    private Long id;
     private String name;
     private String key;
     private String description;
+    private List<IssueSummaryDTO> issueSummaries = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -40,6 +36,14 @@ public class ProjectDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<IssueSummaryDTO> getIssueSummaries() {
+        return issueSummaries;
+    }
+
+    public void setIssueSummaries(List<IssueSummaryDTO> issueSummaries) {
+        this.issueSummaries = issueSummaries;
     }
 
     public LocalDateTime getCreatedAt() {

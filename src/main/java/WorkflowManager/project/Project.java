@@ -27,7 +27,7 @@ public class Project {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL)
     private List<Issue> issues;
 
     @CreationTimestamp
