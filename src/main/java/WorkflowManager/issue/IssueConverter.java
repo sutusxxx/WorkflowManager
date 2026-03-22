@@ -2,6 +2,7 @@ package WorkflowManager.issue;
 
 import WorkflowManager.issue.models.CreateIssueRequest;
 import WorkflowManager.issue.models.IssueDTO;
+import WorkflowManager.issue.models.IssueSummaryDTO;
 import WorkflowManager.issue.models.IssueTreeDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,23 @@ public class IssueConverter {
         this.mapper = mapper;
     }
 
+    public IssueSummaryDTO convertToSummaryDTO(Issue issue) {
+        return mapper.map(issue, IssueSummaryDTO.class);
+    }
+
     public IssueDTO convertToDTO(Issue issue) {
-        return mapper.map(issue, IssueDTO.class);
+        IssueDTO dto = mapper.map(issue, IssueDTO.class);
+        List<IssueSummaryDTO> subIssues = issue.getChildren().stream()
+                .map(this::convertToSummaryDTO)
+                .toList();
+        dto.setSubIssues(subIssues);
+
+        if (issue.getParent() != null) {
+            dto.setParentKey(issue.getParent().getKey());
+        }
+
+        dto.setProjectKey(issue.getProject().getKey());
+        return dto;
     }
 
     public Issue convertFromRequest(CreateIssueRequest request) {

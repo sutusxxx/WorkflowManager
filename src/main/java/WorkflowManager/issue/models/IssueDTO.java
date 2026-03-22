@@ -3,6 +3,8 @@ package WorkflowManager.issue.models;
 import WorkflowManager.issue.IssueType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IssueDTO {
     private String title;
@@ -11,9 +13,10 @@ public class IssueDTO {
     private Short storyPoints;
     private LocalDateTime dueDate;
     private String status;
-    private Short projectKey;
-    private Short parentKey;
+    private String projectKey;
+    private String parentKey;
     private IssueType type;
+    private List<IssueSummaryDTO> subIssues = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -65,19 +68,19 @@ public class IssueDTO {
         this.status = status;
     }
 
-    public Short getProjectKey() {
+    public String getProjectKey() {
         return projectKey;
     }
 
-    public void setProjectKey(Short projectKey) {
+    public void setProjectKey(String projectKey) {
         this.projectKey = projectKey;
     }
 
-    public Short getParentKey() {
+    public String getParentKey() {
         return parentKey;
     }
 
-    public void setParentKey(Short parentKey) {
+    public void setParentKey(String parentKey) {
         this.parentKey = parentKey;
     }
 
@@ -87,6 +90,14 @@ public class IssueDTO {
 
     public void setType(IssueType type) {
         this.type = type;
+    }
+
+    public List<IssueSummaryDTO> getSubIssues() {
+        return subIssues;
+    }
+
+    public void setSubIssues(List<IssueSummaryDTO> subIssues) {
+        this.subIssues = subIssues;
     }
 
     public LocalDateTime getCreatedAt() {
