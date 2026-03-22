@@ -1,10 +1,10 @@
 package WorkflowManager.issue;
 
 import WorkflowManager.exceptions.IssueNotFoundException;
-import WorkflowManager.issue.dtos.CreateIssueDTO;
-import WorkflowManager.issue.dtos.IssueDTO;
-import WorkflowManager.issue.dtos.IssueTreeDTO;
-import WorkflowManager.issue.dtos.UpdateIssueDTO;
+import WorkflowManager.issue.models.CreateIssueRequest;
+import WorkflowManager.issue.models.IssueDTO;
+import WorkflowManager.issue.models.IssueTreeDTO;
+import WorkflowManager.issue.models.UpdateIssueRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -42,12 +42,12 @@ public class IssueController {
     }
 
     @PutMapping("/create")
-    public IssueDTO createIssue(@RequestBody CreateIssueDTO issue) {
+    public IssueDTO createIssue(@RequestBody CreateIssueRequest issue) {
         return issueService.createIssue(issue);
     }
 
     @PostMapping("/{id}/update")
-    public IssueDTO updateIssue(@PathVariable Long id, @RequestBody UpdateIssueDTO issue) {
+    public IssueDTO updateIssue(@PathVariable Long id, @RequestBody UpdateIssueRequest issue) {
         return issueService.updateIssue(id, issue);
     }
 

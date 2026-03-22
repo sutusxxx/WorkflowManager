@@ -1,12 +1,12 @@
-package WorkflowManager.issue.dtos;
+package WorkflowManager.project.models;
 
 import java.time.LocalDateTime;
 
-public class IssueDTO {
+public class ProjectDTO {
     private Long id;
-    private String title;
+    private String name;
     private String key;
-    private String status;
+    private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -18,12 +18,12 @@ public class IssueDTO {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getKey() {
@@ -34,12 +34,12 @@ public class IssueDTO {
         this.key = key;
     }
 
-    public String getStatus() {
-        return status;
+    public String getDescription() {
+        return description;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getCreatedAt() {

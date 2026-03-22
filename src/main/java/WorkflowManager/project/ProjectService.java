@@ -1,12 +1,12 @@
 package WorkflowManager.project;
 
 import WorkflowManager.exceptions.ProjectNotFoundException;
-import WorkflowManager.project.dtos.CreateProjectDTO;
-import WorkflowManager.project.dtos.ProjectDTO;
-import WorkflowManager.project.dtos.UpdateProjectDTO;
+import WorkflowManager.project.models.CreateProjectRequest;
+import WorkflowManager.project.models.ProjectDTO;
+import WorkflowManager.project.models.UpdateProjectRequest;
 import WorkflowManager.issue.IssueConverter;
 import WorkflowManager.issue.IssueRepository;
-import WorkflowManager.issue.dtos.IssueDTO;
+import WorkflowManager.issue.models.IssueDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,13 +37,13 @@ public class ProjectService {
         return projectConverter.convertToDTO(project);
     }
 
-    public ProjectDTO createProject(CreateProjectDTO project) {
+    public ProjectDTO createProject(CreateProjectRequest project) {
         Project projectToSave = projectConverter.convertFromDTO(project);
         Project savedProject = projectRepository.save(projectToSave);
         return projectConverter.convertToDTO(savedProject);
     }
 
-    public ProjectDTO updateProject(Long id, UpdateProjectDTO project) {
+    public ProjectDTO updateProject(Long id, UpdateProjectRequest project) {
         Project projectDb = projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
 
         if (project.getDescription() != null && !project.getDescription().equals(projectDb.getDescription())) {

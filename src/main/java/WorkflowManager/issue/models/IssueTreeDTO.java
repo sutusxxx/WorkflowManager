@@ -1,4 +1,4 @@
-package WorkflowManager.issue.dtos;
+package WorkflowManager.issue.models;
 
 import WorkflowManager.issue.IssueType;
 

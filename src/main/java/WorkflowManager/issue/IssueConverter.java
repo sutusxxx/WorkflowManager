@@ -1,8 +1,8 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.issue.dtos.CreateIssueDTO;
-import WorkflowManager.issue.dtos.IssueDTO;
-import WorkflowManager.issue.dtos.IssueTreeDTO;
+import WorkflowManager.issue.models.CreateIssueRequest;
+import WorkflowManager.issue.models.IssueDTO;
+import WorkflowManager.issue.models.IssueTreeDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class IssueConverter {
         return mapper.map(issue, IssueDTO.class);
     }
 
-    public Issue convertFromDTO(CreateIssueDTO taskDTO) {
+    public Issue convertFromDTO(CreateIssueRequest taskDTO) {
         return mapper.map(taskDTO, Issue.class);
     }
 

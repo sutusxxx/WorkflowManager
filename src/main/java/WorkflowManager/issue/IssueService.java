@@ -2,10 +2,10 @@ package WorkflowManager.issue;
 
 import WorkflowManager.exceptions.IssueNotFoundException;
 import WorkflowManager.exceptions.ProjectNotFoundException;
-import WorkflowManager.issue.dtos.CreateIssueDTO;
-import WorkflowManager.issue.dtos.IssueDTO;
-import WorkflowManager.issue.dtos.IssueTreeDTO;
-import WorkflowManager.issue.dtos.UpdateIssueDTO;
+import WorkflowManager.issue.models.CreateIssueRequest;
+import WorkflowManager.issue.models.IssueDTO;
+import WorkflowManager.issue.models.IssueTreeDTO;
+import WorkflowManager.issue.models.UpdateIssueRequest;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class IssueService {
         return issueConverter.convertToDTO(issue);
     }
 
-    public IssueDTO createIssue(CreateIssueDTO issueDTO) {
+    public IssueDTO createIssue(CreateIssueRequest issueDTO) {
         // Lock project row to safely increment
         Project project = projectRepository.findByKeyForUpdate(issueDTO.getProjectKey()).orElseThrow(ProjectNotFoundException::new);
         int nextIssueNumber = project.getIssueCounter() + 1;
@@ -92,7 +92,7 @@ public class IssueService {
         return issueConverter.convertToDTO(savedIssue);
     }
 
-    public IssueDTO updateIssue(Long id, UpdateIssueDTO issueDTO) {
+    public IssueDTO updateIssue(Long id, UpdateIssueRequest issueDTO) {
         Issue issue = issueRepository.findById(id).orElseThrow(IssueNotFoundException::new);
 
         if (issueDTO.getTitle() != null) {

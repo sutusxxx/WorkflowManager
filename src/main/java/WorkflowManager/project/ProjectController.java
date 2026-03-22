@@ -1,7 +1,7 @@
 package WorkflowManager.project;
 
-import WorkflowManager.project.dtos.CreateProjectDTO;
-import WorkflowManager.project.dtos.ProjectDTO;
+import WorkflowManager.project.models.CreateProjectRequest;
+import WorkflowManager.project.models.ProjectDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +19,7 @@ public class ProjectController {
     }
 
     @PutMapping("/create")
-    public ProjectDTO createProject(@RequestBody CreateProjectDTO project) {
+    public ProjectDTO createProject(@RequestBody CreateProjectRequest project) {
         return projectService.createProject(project);
     }
 }

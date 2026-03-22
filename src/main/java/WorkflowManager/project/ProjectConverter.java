@@ -1,7 +1,7 @@
 package WorkflowManager.project;
 
-import WorkflowManager.project.dtos.CreateProjectDTO;
-import WorkflowManager.project.dtos.ProjectDTO;
+import WorkflowManager.project.models.CreateProjectRequest;
+import WorkflowManager.project.models.ProjectDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class ProjectConverter {
         return mapper.map(project, ProjectDTO.class);
     }
 
-    public Project convertFromDTO(CreateProjectDTO projectDTO) {
+    public Project convertFromDTO(CreateProjectRequest projectDTO) {
         return mapper.map(projectDTO, Project.class);
     }
 }
