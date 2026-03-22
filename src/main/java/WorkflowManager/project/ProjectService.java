@@ -7,7 +7,6 @@ import WorkflowManager.project.models.ProjectDTO;
 import WorkflowManager.project.models.UpdateProjectRequest;
 import WorkflowManager.issue.IssueConverter;
 import WorkflowManager.issue.IssueRepository;
-import WorkflowManager.issue.models.IssueDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,10 +56,6 @@ public class ProjectService {
 
         Project savedProject = projectRepository.save(projectDb);
         return projectConverter.convertToDTO(savedProject);
-    }
-
-    public List<IssueDTO> getIssuesByProject(Long projectId) {
-        return issueRepository.findByProject(projectId).stream().map(issueConverter::convertToDTO).toList();
     }
 
     private ProjectDTO createProjectDataWithIssues(Project project) {
