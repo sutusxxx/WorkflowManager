@@ -1,8 +1,11 @@
 package WorkflowManager.common.exceptions;
 
 import WorkflowManager.common.model.ErrorResponseDTO;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tools.jackson.databind.exc.InvalidFormatException;
@@ -44,6 +47,17 @@ public class GlobalExceptionHandler {
         error.setTimestamp(LocalDateTime.now());
 
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO();
+        error.setMessage(ex.getMessage());
+        error.setStatus(401);
+        error.setErrorCode("BAD_CREDENTIALS");
+        error.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(401).body(error);
     }
 
     @ExceptionHandler(Exception.class)
