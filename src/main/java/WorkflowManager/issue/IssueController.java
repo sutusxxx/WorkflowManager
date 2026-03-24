@@ -50,9 +50,9 @@ public class IssueController {
                 .body(createdIssue);
     }
 
-    @PostMapping("/{id}/update")
-    public IssueDTO updateIssue(@PathVariable Long id, @RequestBody UpdateIssueRequest issue) {
-        return issueService.updateIssue(id, issue);
+    @PostMapping("/{key}/update")
+    public IssueDTO updateIssue(@PathVariable String key, @RequestBody UpdateIssueRequest issue) {
+        return issueService.updateIssue(key, issue);
     }
 
     @DeleteMapping("/{id}")

@@ -37,7 +37,7 @@ public class ProjectService {
     }
 
     public ProjectDTO getProjectByKey(String key) {
-        Project project = projectRepository.findByKey(key).orElseThrow(ProjectNotFoundException::new);
+        Project project = projectRepository.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
         return createProjectDataWithIssues(project);
     }
 
@@ -47,8 +47,8 @@ public class ProjectService {
         return projectConverter.convertToDTO(savedProject);
     }
 
-    public ProjectDTO updateProject(Long id, UpdateProjectRequest project) {
-        Project projectDb = projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
+    public ProjectDTO updateProject(String key, UpdateProjectRequest project) {
+        Project projectDb = projectRepository.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
 
         if (project.getDescription() != null && !project.getDescription().equals(projectDb.getDescription())) {
             projectDb.setDescription(project.getDescription());

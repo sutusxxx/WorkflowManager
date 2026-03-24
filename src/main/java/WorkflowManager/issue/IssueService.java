@@ -1,5 +1,6 @@
 package WorkflowManager.issue;
 
+import WorkflowManager.common.exceptions.InvalidHierarchyException;
 import WorkflowManager.common.exceptions.IssueNotFoundException;
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.model.CreateIssueRequest;
@@ -57,18 +58,19 @@ public class IssueService {
     }
 
     public IssueTreeDTO getTree(String key) {
-        Issue issue = issueRepository.findByKey(key).orElseThrow(IssueNotFoundException::new);
+        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
         return issueConverter.convertToTreeDTO(issue);
     }
 
-    public IssueDTO getIssueByKey(String key) throws IssueNotFoundException {
-        Issue issue = issueRepository.findByKey(key).orElseThrow(IssueNotFoundException::new);
+    public IssueDTO getIssueByKey(String key) {
+        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
         return issueConverter.convertToDTO(issue);
     }
 
     public IssueDTO createIssue(CreateIssueRequest issueDTO) {
+        String projectKey = issueDTO.getProjectKey();
         // Lock project row to safely increment
-        Project project = projectRepository.findByKeyForUpdate(issueDTO.getProjectKey()).orElseThrow(ProjectNotFoundException::new);
+        Project project = projectRepository.findByKeyForUpdate(projectKey).orElseThrow(() -> new ProjectNotFoundException(projectKey));
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
         projectRepository.save(project);
@@ -88,8 +90,8 @@ public class IssueService {
         return issueConverter.convertToDTO(savedIssue);
     }
 
-    public IssueDTO updateIssue(Long id, UpdateIssueRequest issueDTO) {
-        Issue issue = issueRepository.findById(id).orElseThrow(IssueNotFoundException::new);
+    public IssueDTO updateIssue(String key, UpdateIssueRequest issueDTO) {
+        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
 
         if (issueDTO.getTitle() != null) {
             issue.setTitle(issueDTO.getTitle());
@@ -109,13 +111,13 @@ public class IssueService {
 
     private void validateParent(Issue issue, Issue parent) {
         if (issue.getType() == IssueType.EPIC) {
-            throw new IllegalArgumentException("Epic cannot have parent");
+            throw new InvalidHierarchyException("Epic cannot have parent");
         }
 
         Set<IssueType> allowed = ALLOWED_PARENTS.get(issue.getType());
 
         if (!allowed.contains(parent.getType())) {
-            throw new IllegalArgumentException(issue.getType() + " cannot be a child of " + parent.getType());
+            throw new InvalidHierarchyException(issue.getType() + " cannot be a child of " + parent.getType());
         }
     }
 }
