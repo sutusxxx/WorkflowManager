@@ -1,10 +1,10 @@
 package WorkflowManager.project;
 
-import WorkflowManager.exceptions.ProjectNotFoundException;
+import WorkflowManager.common.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.Issue;
-import WorkflowManager.project.models.CreateProjectRequest;
-import WorkflowManager.project.models.ProjectDTO;
-import WorkflowManager.project.models.UpdateProjectRequest;
+import WorkflowManager.project.model.CreateProjectRequest;
+import WorkflowManager.project.model.ProjectDTO;
+import WorkflowManager.project.model.UpdateProjectRequest;
 import WorkflowManager.issue.IssueConverter;
 import WorkflowManager.issue.IssueRepository;
 import org.springframework.stereotype.Service;

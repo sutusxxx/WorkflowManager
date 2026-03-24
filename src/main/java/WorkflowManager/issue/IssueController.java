@@ -1,12 +1,13 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.exceptions.IssueNotFoundException;
-import WorkflowManager.issue.models.CreateIssueRequest;
-import WorkflowManager.issue.models.IssueDTO;
-import WorkflowManager.issue.models.IssueTreeDTO;
-import WorkflowManager.issue.models.UpdateIssueRequest;
+import WorkflowManager.common.exceptions.IssueNotFoundException;
+import WorkflowManager.issue.model.CreateIssueRequest;
+import WorkflowManager.issue.model.IssueDTO;
+import WorkflowManager.issue.model.IssueTreeDTO;
+import WorkflowManager.issue.model.UpdateIssueRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,9 +42,12 @@ public class IssueController {
         }
     }
 
-    @PutMapping("/create")
-    public IssueDTO createIssue(@RequestBody CreateIssueRequest issue) {
-        return issueService.createIssue(issue);
+    @PostMapping("/create")
+    public ResponseEntity<IssueDTO> createIssue(@RequestBody CreateIssueRequest issue) {
+        IssueDTO createdIssue = issueService.createIssue(issue);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Location", "/api/v1/issues/" + createdIssue.getKey())
+                .body(createdIssue);
     }
 
     @PostMapping("/{id}/update")
@@ -52,7 +56,8 @@ public class IssueController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteIssue(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteIssue(@PathVariable Long id) {
         issueService.deleteIssue(id);
+        return ResponseEntity.noContent().build();
     }
 }

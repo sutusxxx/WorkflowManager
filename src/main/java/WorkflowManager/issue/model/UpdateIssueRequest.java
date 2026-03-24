@@ -1,4 +1,4 @@
-package WorkflowManager.issue.models;
+package WorkflowManager.issue.model;
 
 import java.time.LocalDateTime;
 

@@ -1,11 +1,11 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.exceptions.IssueNotFoundException;
-import WorkflowManager.exceptions.ProjectNotFoundException;
-import WorkflowManager.issue.models.CreateIssueRequest;
-import WorkflowManager.issue.models.IssueDTO;
-import WorkflowManager.issue.models.IssueTreeDTO;
-import WorkflowManager.issue.models.UpdateIssueRequest;
+import WorkflowManager.common.exceptions.IssueNotFoundException;
+import WorkflowManager.common.exceptions.ProjectNotFoundException;
+import WorkflowManager.issue.model.CreateIssueRequest;
+import WorkflowManager.issue.model.IssueDTO;
+import WorkflowManager.issue.model.IssueTreeDTO;
+import WorkflowManager.issue.model.UpdateIssueRequest;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;

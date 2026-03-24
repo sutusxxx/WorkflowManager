@@ -1,8 +1,10 @@
 package WorkflowManager.project;
 
-import WorkflowManager.project.models.CreateProjectRequest;
-import WorkflowManager.project.models.ProjectDTO;
+import WorkflowManager.project.model.CreateProjectRequest;
+import WorkflowManager.project.model.ProjectDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +29,11 @@ public class ProjectController {
         return projectService.getProjectByKey(key);
     }
 
-    @PutMapping("/create")
-    public ProjectDTO createProject(@RequestBody CreateProjectRequest project) {
-        return projectService.createProject(project);
+    @PostMapping("/create")
+    public ResponseEntity<ProjectDTO> createProject(@RequestBody CreateProjectRequest project) {
+        ProjectDTO createdProject = projectService.createProject(project);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Location", "/api/v1/projects/create/" + createdProject.getKey())
+                .body(createdProject);
     }
 }

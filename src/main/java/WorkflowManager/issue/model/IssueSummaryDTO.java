@@ -1,17 +1,13 @@
-package WorkflowManager.issue.models;
+package WorkflowManager.issue.model;
 
 import WorkflowManager.issue.IssueType;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class IssueTreeDTO {
+public class IssueSummaryDTO {
     private String key;
     private String title;
+    private Short storyPoints;
     private IssueType type;
     private String status;
-    private Integer storyPoints;
-    private List<IssueTreeDTO> children = new ArrayList<>();
 
     public String getKey() {
         return key;
@@ -29,6 +25,14 @@ public class IssueTreeDTO {
         this.title = title;
     }
 
+    public Short getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(Short storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
     public IssueType getType() {
         return type;
     }
@@ -43,21 +47,5 @@ public class IssueTreeDTO {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public Integer getStoryPoints() {
-        return storyPoints;
-    }
-
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
-    }
-
-    public List<IssueTreeDTO> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<IssueTreeDTO> children) {
-        this.children = children;
     }
 }

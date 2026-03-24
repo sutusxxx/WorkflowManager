@@ -1,6 +1,6 @@
-package WorkflowManager.project.models;
+package WorkflowManager.project.model;
 
-import WorkflowManager.issue.models.IssueSummaryDTO;
+import WorkflowManager.issue.model.IssueSummaryDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

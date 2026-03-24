@@ -1,9 +1,9 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.issue.models.CreateIssueRequest;
-import WorkflowManager.issue.models.IssueDTO;
-import WorkflowManager.issue.models.IssueSummaryDTO;
-import WorkflowManager.issue.models.IssueTreeDTO;
+import WorkflowManager.issue.model.CreateIssueRequest;
+import WorkflowManager.issue.model.IssueDTO;
+import WorkflowManager.issue.model.IssueSummaryDTO;
+import WorkflowManager.issue.model.IssueTreeDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

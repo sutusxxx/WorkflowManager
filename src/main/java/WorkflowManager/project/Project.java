@@ -1,6 +1,7 @@
 package WorkflowManager.project;
 
 import WorkflowManager.issue.Issue;
+import WorkflowManager.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -37,6 +38,15 @@ public class Project {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+//    @Column(nullable = false)
+//    @ManyToOne
+//    @JoinColumn(name = "created_by")
+//    private User createdBy;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "modified_by")
+//    private User modifiedBy;
 
     public Long getId() {
         return id;
@@ -109,6 +119,22 @@ public class Project {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+//    public User getCreatedBy() {
+//        return createdBy;
+//    }
+//
+//    public void setCreatedBy(User createdBy) {
+//        this.createdBy = createdBy;
+//    }
+//
+//    public User getModifiedBy() {
+//        return modifiedBy;
+//    }
+//
+//    public void setModifiedBy(User modifiedBy) {
+//        this.modifiedBy = modifiedBy;
+//    }
 
     @Override
     public String toString() {

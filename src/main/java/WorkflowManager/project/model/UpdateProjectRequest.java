@@ -1,4 +1,4 @@
-package WorkflowManager.project.models;
+package WorkflowManager.project.model;
 
 public class UpdateProjectRequest {
     private String description;

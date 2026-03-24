@@ -1,7 +1,7 @@
 package WorkflowManager.project;
 
-import WorkflowManager.project.models.CreateProjectRequest;
-import WorkflowManager.project.models.ProjectDTO;
+import WorkflowManager.project.model.CreateProjectRequest;
+import WorkflowManager.project.model.ProjectDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
