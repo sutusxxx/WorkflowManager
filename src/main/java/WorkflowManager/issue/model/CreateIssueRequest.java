@@ -3,12 +3,13 @@ package WorkflowManager.issue.model;
 import WorkflowManager.issue.IssueType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 public class CreateIssueRequest {
-    @NotNull(message = "Title must be provided")
+    @NotBlank(message = "Title must be provided")
     private String title;
     private String description;
 
@@ -18,7 +19,7 @@ public class CreateIssueRequest {
     private LocalDateTime dueDate;
     private String parentKey;
 
-    @NotNull(message = "Project key is required")
+    @NotBlank(message = "Project key is required")
     private String projectKey;
 
     @NotNull

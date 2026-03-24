@@ -1,7 +1,6 @@
 package WorkflowManager.project;
 
 import WorkflowManager.issue.Issue;
-import WorkflowManager.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,7 +18,7 @@ public class Project {
     @Column
     private String name;
 
-    @Column(name = "project_key", unique = true, nullable = false)
+    @Column(name = "project_key", unique = true, nullable = false, updatable = false)
     private String key;
 
     @Column(nullable = false)
