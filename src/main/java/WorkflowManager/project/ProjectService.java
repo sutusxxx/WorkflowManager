@@ -3,6 +3,7 @@ package WorkflowManager.project;
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.dao.IssueDAO;
+import WorkflowManager.project.dao.ProjectDAO;
 import WorkflowManager.project.model.CreateProjectRequest;
 import WorkflowManager.project.model.ProjectDTO;
 import WorkflowManager.project.model.UpdateProjectRequest;
@@ -15,46 +16,46 @@ import java.util.List;
 @Service
 @Transactional
 public class ProjectService {
-    private final ProjectRepository projectRepository;
+    private final ProjectDAO projectDAO;
     private final IssueDAO issueDAO;
     private final ProjectConverter projectConverter;
     private final IssueConverter issueConverter;
 
     public ProjectService(
-            ProjectRepository projectRepository,
+            ProjectDAO projectDAO,
             IssueDAO issueDAO,
             ProjectConverter projectConverter,
             IssueConverter issueConverter
     ) {
-        this.projectRepository = projectRepository;
+        this.projectDAO = projectDAO;
         this.issueDAO = issueDAO;
         this.projectConverter = projectConverter;
         this.issueConverter = issueConverter;
     }
 
     public List<ProjectDTO> getAllProjects() {
-        return projectRepository.findAll().stream().map(this::convertToProjectDTO).toList();
+        return projectDAO.findAll().stream().map(this::convertToProjectDTO).toList();
     }
 
     public ProjectDTO getProjectByKey(String key) {
-        Project project = projectRepository.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
+        Project project = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
         return convertToProjectDTO(project);
     }
 
     public ProjectDTO createProject(CreateProjectRequest project) {
         Project projectToSave = projectConverter.convertFromRequest(project);
-        Project savedProject = projectRepository.save(projectToSave);
+        Project savedProject = projectDAO.save(projectToSave);
         return projectConverter.convertToDTO(savedProject);
     }
 
     public ProjectDTO updateProject(String key, UpdateProjectRequest project) {
-        Project projectDb = projectRepository.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
+        Project projectDb = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
 
         if (project.getDescription() != null && !project.getDescription().equals(projectDb.getDescription())) {
             projectDb.setDescription(project.getDescription());
         }
 
-        Project savedProject = projectRepository.save(projectDb);
+        Project savedProject = projectDAO.save(projectDb);
         return projectConverter.convertToDTO(savedProject);
     }
 

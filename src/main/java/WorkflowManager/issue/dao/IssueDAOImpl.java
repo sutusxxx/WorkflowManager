@@ -40,7 +40,7 @@ public class IssueDAOImpl implements IssueDAO {
 
     @Override
     public List<Issue> findAll() {
-        return entityManager.createQuery("SELECT * FROM Issue i", Issue.class).getResultList();
+        return entityManager.createQuery("SELECT i FROM Issue i", Issue.class).getResultList();
     }
 
     @Override

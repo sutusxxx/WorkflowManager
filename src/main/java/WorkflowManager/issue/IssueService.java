@@ -9,7 +9,7 @@ import WorkflowManager.issue.model.IssueDTO;
 import WorkflowManager.issue.model.IssueTreeDTO;
 import WorkflowManager.issue.model.UpdateIssueRequest;
 import WorkflowManager.project.Project;
-import WorkflowManager.project.ProjectRepository;
+import WorkflowManager.project.dao.ProjectDAO;
 import WorkflowManager.user.User;
 import WorkflowManager.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -23,7 +23,7 @@ import java.util.Set;
 @Service
 public class IssueService {
     private final IssueDAO issueDAO;
-    private final ProjectRepository projectRepository;
+    private final ProjectDAO projectDAO;
     private final UserRepository userRepository;
 
     private final IssueConverter issueConverter;
@@ -40,12 +40,12 @@ public class IssueService {
 
     public IssueService(
             IssueDAO issueDAO,
-            ProjectRepository projectRepository,
+            ProjectDAO projectDAO,
             UserRepository userRepository,
             IssueConverter issueConverter
     ) {
         this.issueDAO = issueDAO;
-        this.projectRepository = projectRepository;
+        this.projectDAO = projectDAO;
         this.issueConverter = issueConverter;
         this.userRepository = userRepository;
     }
@@ -76,10 +76,9 @@ public class IssueService {
     public IssueDTO createIssue(CreateIssueRequest issueDTO) {
         String projectKey = issueDTO.getProjectKey();
         // Lock project row to safely increment
-        Project project = projectRepository.findByKeyForUpdate(projectKey).orElseThrow(() -> new ProjectNotFoundException(projectKey));
+        Project project = projectDAO.findByKeyForUpdate(projectKey).orElseThrow(() -> new ProjectNotFoundException(projectKey));
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
-        projectRepository.save(project);
 
         Issue issue = issueConverter.convertFromRequest(issueDTO);
         issue.setStatus(INITIAL_STATUS);
