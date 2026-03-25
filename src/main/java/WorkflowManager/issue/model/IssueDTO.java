@@ -20,6 +20,8 @@ public class IssueDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private List<CommentDTO> comments;
+
     public String getTitle() {
         return title;
     }
@@ -114,5 +116,13 @@ public class IssueDTO {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDTO> comments) {
+        this.comments = comments;
     }
 }

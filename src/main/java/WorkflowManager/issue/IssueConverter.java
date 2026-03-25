@@ -1,9 +1,7 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.issue.model.CreateIssueRequest;
-import WorkflowManager.issue.model.IssueDTO;
-import WorkflowManager.issue.model.IssueSummaryDTO;
-import WorkflowManager.issue.model.IssueTreeDTO;
+import WorkflowManager.issue.model.*;
+import WorkflowManager.user.model.UserSummaryDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +31,18 @@ public class IssueConverter {
         }
 
         dto.setProjectKey(issue.getProject().getKey());
+        List<CommentDTO> commentDTOs = issue.getComments().stream().map(comment -> {
+            CommentDTO commentDTO = new CommentDTO();
+            commentDTO.setId(comment.getId());
+            commentDTO.setText(comment.getText());
+            commentDTO.setCreatedAt(comment.getCreatedAt());
+            UserSummaryDTO userSummaryDTO = new UserSummaryDTO();
+            userSummaryDTO.setId(comment.getCreatedBy().getId());
+            userSummaryDTO.setUsername(comment.getCreatedBy().getUsername());
+            commentDTO.setCreatedBy(userSummaryDTO);
+            return commentDTO;
+        }).toList();
+        dto.setComments(commentDTOs);
         return dto;
     }
 
