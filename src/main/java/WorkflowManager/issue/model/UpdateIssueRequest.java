@@ -8,6 +8,8 @@ public class UpdateIssueRequest {
     private Short storyPoints;
     private LocalDateTime dueDate;
     private String status;
+    private Long assignedUserId;
+    private Long reporterUserId;
 
     public String getTitle() {
         return title;
@@ -27,5 +29,13 @@ public class UpdateIssueRequest {
 
     public String getStatus() {
         return status;
+    }
+
+    public Long getAssignedUserId() {
+        return assignedUserId;
+    }
+
+    public Long getReporterUserId() {
+        return reporterUserId;
     }
 }

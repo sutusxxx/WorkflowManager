@@ -9,6 +9,8 @@ import WorkflowManager.issue.model.IssueTreeDTO;
 import WorkflowManager.issue.model.UpdateIssueRequest;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectRepository;
+import WorkflowManager.user.User;
+import WorkflowManager.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import java.util.Set;
 public class IssueService {
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     private final IssueConverter issueConverter;
 
@@ -38,11 +41,13 @@ public class IssueService {
     public IssueService(
             IssueRepository issueRepository,
             ProjectRepository projectRepository,
+            UserRepository userRepository,
             IssueConverter issueConverter
     ) {
         this.issueRepository = issueRepository;
         this.projectRepository = projectRepository;
         this.issueConverter = issueConverter;
+        this.userRepository = userRepository;
     }
 
     public List<IssueDTO> getAllIssues(Long parentId, Long projectId, IssueType type, String status) {
@@ -99,6 +104,16 @@ public class IssueService {
 
         if (issueDTO.getStatus() != null) {
             issue.setStatus(issueDTO.getStatus());
+        }
+
+        if (issueDTO.getAssignedUserId() != null) {
+            User user = userRepository.findById(issueDTO.getAssignedUserId()).orElseThrow();
+            issue.setAssigned(user);
+        }
+
+        if (issueDTO.getReporterUserId() != null) {
+            User user = userRepository.findById(issueDTO.getReporterUserId()).orElseThrow();
+            issue.setReporter(user);
         }
 
         Issue savedIssue = issueRepository.save(issue);
