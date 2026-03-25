@@ -58,14 +58,24 @@ public class Issue {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-//    @Column(nullable = false)
-//    @ManyToOne
-//    @JoinColumn(name = "created_by")
-//    private User createdBy;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "modified_by")
-//    private User modifiedBy;
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "modified_by")
+    private User modifiedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "assigned")
+    private User assigned;
+
+    @ManyToOne
+    @JoinColumn(name = "reporter")
+    private User reporter;
+
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public static final String INITIAL_STATUS = "Todo";
 
@@ -173,21 +183,45 @@ public class Issue {
         this.updatedAt = updatedAt;
     }
 
-//    public User getCreatedBy() {
-//        return createdBy;
-//    }
-//
-//    public void setCreatedBy(User createdBy) {
-//        this.createdBy = createdBy;
-//    }
-//
-//    public User getModifiedBy() {
-//        return modifiedBy;
-//    }
-//
-//    public void setModifiedBy(User modifiedBy) {
-//        this.modifiedBy = modifiedBy;
-//    }
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public User getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(User modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public User getAssigned() {
+        return assigned;
+    }
+
+    public void setAssigned(User assigned) {
+        this.assigned = assigned;
+    }
+
+    public User getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(User reporter) {
+        this.reporter = reporter;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     @Override
     public String toString() {
