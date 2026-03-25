@@ -1,6 +1,7 @@
 package WorkflowManager.issue.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UpdateIssueRequest {
     private String title;
@@ -10,6 +11,7 @@ public class UpdateIssueRequest {
     private String status;
     private Long assignedUserId;
     private Long reporterUserId;
+    private List<LinkedIssueDTO> linkedIssues;
 
     public String getTitle() {
         return title;
@@ -37,5 +39,9 @@ public class UpdateIssueRequest {
 
     public Long getReporterUserId() {
         return reporterUserId;
+    }
+
+    public List<LinkedIssueDTO> getLinkedIssues() {
+        return linkedIssues;
     }
 }

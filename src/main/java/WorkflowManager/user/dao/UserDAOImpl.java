@@ -1,0 +1,59 @@
+package WorkflowManager.user.dao;
+
+import WorkflowManager.user.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class UserDAOImpl implements UserDAO {
+    private final EntityManager entityManager;
+
+    public UserDAOImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        try {
+            User user = entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+            return Optional.of(user);
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<User> findById(Long aLong) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<User> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public User save(User entity) {
+        if (entity.getId() == null) {
+            entityManager.persist(entity);
+            return entity;
+        }
+        return entityManager.merge(entity);
+    }
+
+    @Override
+    public void delete(User entity) {
+
+    }
+
+    @Override
+    public void deleteById(Long aLong) {
+
+    }
+}

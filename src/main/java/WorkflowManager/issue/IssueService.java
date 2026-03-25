@@ -1,5 +1,6 @@
 package WorkflowManager.issue;
 
+import WorkflowManager.auth.AuthContext;
 import WorkflowManager.common.exceptions.InvalidHierarchyException;
 import WorkflowManager.common.exceptions.IssueNotFoundException;
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
@@ -11,7 +12,7 @@ import WorkflowManager.issue.model.UpdateIssueRequest;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.dao.ProjectDAO;
 import WorkflowManager.user.User;
-import WorkflowManager.user.UserRepository;
+import WorkflowManager.user.dao.UserDAO;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,11 @@ import java.util.Set;
 public class IssueService {
     private final IssueDAO issueDAO;
     private final ProjectDAO projectDAO;
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
 
     private final IssueConverter issueConverter;
+
+    private final AuthContext authContext;
 
     private static final Map<IssueType, Set<IssueType>> ALLOWED_PARENTS = Map.of(
             IssueType.STORY, Set.of(IssueType.EPIC),
@@ -41,13 +44,15 @@ public class IssueService {
     public IssueService(
             IssueDAO issueDAO,
             ProjectDAO projectDAO,
-            UserRepository userRepository,
-            IssueConverter issueConverter
+            UserDAO userDAO,
+            IssueConverter issueConverter,
+            AuthContext authContext
     ) {
         this.issueDAO = issueDAO;
         this.projectDAO = projectDAO;
+        this.userDAO = userDAO;
         this.issueConverter = issueConverter;
-        this.userRepository = userRepository;
+        this.authContext = authContext;
     }
 
     public List<IssueDTO> getAllIssues(Long parentId, Long projectId, IssueType type, String status) {
@@ -74,6 +79,8 @@ public class IssueService {
 
     @Transactional
     public IssueDTO createIssue(CreateIssueRequest issueDTO) {
+        User currentUser = authContext.getCurrentUser();
+
         String projectKey = issueDTO.getProjectKey();
         // Lock project row to safely increment
         Project project = projectDAO.findByKeyForUpdate(projectKey).orElseThrow(() -> new ProjectNotFoundException(projectKey));
@@ -91,12 +98,17 @@ public class IssueService {
             issue.setParent(parent);
         }
 
+        issue.setCreatedBy(currentUser);
+
         Issue savedIssue = issueDAO.save(issue);
+
         return issueConverter.convertToDTO(savedIssue);
     }
 
     @Transactional
     public IssueDTO updateIssue(String key, UpdateIssueRequest issueDTO) {
+        User currentUser = authContext.getCurrentUser();
+
         Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
 
         if (issueDTO.getTitle() != null) {
@@ -108,14 +120,16 @@ public class IssueService {
         }
 
         if (issueDTO.getAssignedUserId() != null) {
-            User user = userRepository.findById(issueDTO.getAssignedUserId()).orElseThrow();
+            User user = userDAO.findById(issueDTO.getAssignedUserId()).orElseThrow();
             issue.setAssigned(user);
         }
 
         if (issueDTO.getReporterUserId() != null) {
-            User user = userRepository.findById(issueDTO.getReporterUserId()).orElseThrow();
+            User user = userDAO.findById(issueDTO.getReporterUserId()).orElseThrow();
             issue.setReporter(user);
         }
+
+        issue.setModifiedBy(currentUser);
 
         return issueConverter.convertToDTO(issue);
     }

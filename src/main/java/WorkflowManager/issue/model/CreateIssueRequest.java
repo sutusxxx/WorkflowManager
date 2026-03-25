@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CreateIssueRequest {
     @NotBlank(message = "Title must be provided")
@@ -16,6 +17,7 @@ public class CreateIssueRequest {
     @Min(value = 1, message = "Story points must be at least 1")
     @Max(value = 13, message = "Story points cannot exceed 13")
     private Short storyPoints;
+
     private LocalDateTime dueDate;
     private String parentKey;
 
@@ -24,6 +26,11 @@ public class CreateIssueRequest {
 
     @NotNull
     private IssueType type;
+
+    private String status;
+    private Long assignedUserId;
+    private Long reporterUserId;
+    private List<LinkedIssueDTO> linkedIssues;
 
     public String getTitle() {
         return title;
@@ -51,5 +58,21 @@ public class CreateIssueRequest {
 
     public IssueType getType() {
         return type;
+    }
+
+    public List<LinkedIssueDTO> getLinkedIssues() {
+        return linkedIssues;
+    }
+
+    public Long getReporterUserId() {
+        return reporterUserId;
+    }
+
+    public Long getAssignedUserId() {
+        return assignedUserId;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }
