@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class ProjectService {
     private final ProjectDAO projectDAO;
     private final IssueDAO issueDAO;
@@ -42,12 +41,14 @@ public class ProjectService {
         return convertToProjectDTO(project);
     }
 
+    @Transactional
     public ProjectDTO createProject(CreateProjectRequest project) {
         Project projectToSave = projectConverter.convertFromRequest(project);
         Project savedProject = projectDAO.save(projectToSave);
         return projectConverter.convertToDTO(savedProject);
     }
 
+    @Transactional
     public ProjectDTO updateProject(String key, UpdateProjectRequest project) {
         Project projectDb = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
 
