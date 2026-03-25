@@ -1,6 +1,7 @@
 package WorkflowManager.issue.model;
 
 import WorkflowManager.issue.IssueType;
+import WorkflowManager.issue.Priority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ public class IssueTreeDTO {
     private IssueType type;
     private String status;
     private Integer storyPoints;
+    private Priority priority;
     private List<IssueTreeDTO> children = new ArrayList<>();
 
     public String getKey() {
@@ -59,5 +61,13 @@ public class IssueTreeDTO {
 
     public void setChildren(List<IssueTreeDTO> children) {
         this.children = children;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 }

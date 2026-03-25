@@ -2,11 +2,11 @@ package WorkflowManager.project;
 
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.Issue;
+import WorkflowManager.issue.dao.IssueDAO;
 import WorkflowManager.project.model.CreateProjectRequest;
 import WorkflowManager.project.model.ProjectDTO;
 import WorkflowManager.project.model.UpdateProjectRequest;
 import WorkflowManager.issue.IssueConverter;
-import WorkflowManager.issue.IssueRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,29 +16,29 @@ import java.util.List;
 @Transactional
 public class ProjectService {
     private final ProjectRepository projectRepository;
-    private final IssueRepository issueRepository;
+    private final IssueDAO issueDAO;
     private final ProjectConverter projectConverter;
     private final IssueConverter issueConverter;
 
     public ProjectService(
             ProjectRepository projectRepository,
-            IssueRepository issueRepository,
+            IssueDAO issueDAO,
             ProjectConverter projectConverter,
             IssueConverter issueConverter
     ) {
         this.projectRepository = projectRepository;
-        this.issueRepository = issueRepository;
+        this.issueDAO = issueDAO;
         this.projectConverter = projectConverter;
         this.issueConverter = issueConverter;
     }
 
     public List<ProjectDTO> getAllProjects() {
-        return projectRepository.findAll().stream().map(this::createProjectDataWithIssues).toList();
+        return projectRepository.findAll().stream().map(this::convertToProjectDTO).toList();
     }
 
     public ProjectDTO getProjectByKey(String key) {
         Project project = projectRepository.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
-        return createProjectDataWithIssues(project);
+        return convertToProjectDTO(project);
     }
 
     public ProjectDTO createProject(CreateProjectRequest project) {
@@ -58,9 +58,9 @@ public class ProjectService {
         return projectConverter.convertToDTO(savedProject);
     }
 
-    private ProjectDTO createProjectDataWithIssues(Project project) {
+    private ProjectDTO convertToProjectDTO(Project project) {
         ProjectDTO dto = projectConverter.convertToDTO(project);
-        List<Issue> projectIssues = issueRepository.findFirstLevelIssuesOnProject(project.getId());
+        List<Issue> projectIssues = issueDAO.findFirstLevelByProjectId(project.getId());
         dto.setIssueSummaries(projectIssues.stream().map(issueConverter::convertToSummaryDTO).toList());
         return dto;
     }

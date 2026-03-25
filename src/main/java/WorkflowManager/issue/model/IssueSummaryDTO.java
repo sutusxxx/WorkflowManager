@@ -1,6 +1,7 @@
 package WorkflowManager.issue.model;
 
 import WorkflowManager.issue.IssueType;
+import WorkflowManager.issue.Priority;
 
 public class IssueSummaryDTO {
     private String key;
@@ -8,6 +9,7 @@ public class IssueSummaryDTO {
     private Short storyPoints;
     private IssueType type;
     private String status;
+    private Priority priority;
 
     public String getKey() {
         return key;
@@ -47,5 +49,13 @@ public class IssueSummaryDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 }

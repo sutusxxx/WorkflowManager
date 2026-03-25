@@ -3,6 +3,7 @@ package WorkflowManager.issue;
 import WorkflowManager.common.exceptions.InvalidHierarchyException;
 import WorkflowManager.common.exceptions.IssueNotFoundException;
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
+import WorkflowManager.issue.dao.IssueDAO;
 import WorkflowManager.issue.model.CreateIssueRequest;
 import WorkflowManager.issue.model.IssueDTO;
 import WorkflowManager.issue.model.IssueTreeDTO;
@@ -11,19 +12,17 @@ import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectRepository;
 import WorkflowManager.user.User;
 import WorkflowManager.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Service
-@Transactional
 public class IssueService {
-    private final IssueRepository issueRepository;
+    private final IssueDAO issueDAO;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
@@ -37,14 +36,15 @@ public class IssueService {
             IssueType.EPIC, Set.of()
     );
 
-    @Autowired
+    private static final String INITIAL_STATUS = "Todo";
+
     public IssueService(
-            IssueRepository issueRepository,
+            IssueDAO issueDAO,
             ProjectRepository projectRepository,
             UserRepository userRepository,
             IssueConverter issueConverter
     ) {
-        this.issueRepository = issueRepository;
+        this.issueDAO = issueDAO;
         this.projectRepository = projectRepository;
         this.issueConverter = issueConverter;
         this.userRepository = userRepository;
@@ -59,19 +59,20 @@ public class IssueService {
             spec = spec.and(IssueSpecification.hasParent(parentId));
         }
 
-        return issueRepository.findAll(spec).stream().map(issueConverter::convertToDTO).toList();
+        return issueDAO.findAll().stream().map(issueConverter::convertToDTO).toList();
     }
 
     public IssueTreeDTO getTree(String key) {
-        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
+        Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
         return issueConverter.convertToTreeDTO(issue);
     }
 
     public IssueDTO getIssueByKey(String key) {
-        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
+        Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
         return issueConverter.convertToDTO(issue);
     }
 
+    @Transactional
     public IssueDTO createIssue(CreateIssueRequest issueDTO) {
         String projectKey = issueDTO.getProjectKey();
         // Lock project row to safely increment
@@ -81,22 +82,23 @@ public class IssueService {
         projectRepository.save(project);
 
         Issue issue = issueConverter.convertFromRequest(issueDTO);
-        issue.setStatus(Issue.INITIAL_STATUS);
+        issue.setStatus(INITIAL_STATUS);
         issue.setProject(project);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
 
         if (issueDTO.getParentKey() != null) {
-            Issue parent = issueRepository.findByKey(issueDTO.getParentKey()).orElseThrow();
+            Issue parent = issueDAO.findByKey(issueDTO.getParentKey()).orElseThrow();
             validateParent(issue, parent);
             issue.setParent(parent);
         }
 
-        Issue savedIssue = issueRepository.save(issue);
+        Issue savedIssue = issueDAO.save(issue);
         return issueConverter.convertToDTO(savedIssue);
     }
 
+    @Transactional
     public IssueDTO updateIssue(String key, UpdateIssueRequest issueDTO) {
-        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
+        Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
 
         if (issueDTO.getTitle() != null) {
             issue.setTitle(issueDTO.getTitle());
@@ -116,12 +118,12 @@ public class IssueService {
             issue.setReporter(user);
         }
 
-        Issue savedIssue = issueRepository.save(issue);
-        return issueConverter.convertToDTO(savedIssue);
+        return issueConverter.convertToDTO(issue);
     }
 
+    @Transactional
     public void deleteIssue(Long id) {
-        issueRepository.deleteById(id);
+        issueDAO.deleteById(id);
     }
 
     private void validateParent(Issue issue, Issue parent) {

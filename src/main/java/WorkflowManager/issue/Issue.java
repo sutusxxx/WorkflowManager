@@ -23,19 +23,16 @@ public class Issue {
     @Column(name = "issue_key", unique = true, nullable = false)
     private String key;
 
-    @Column
     private String description;
 
-    @Column
     private Short storyPoints;
 
-    @Column
     private LocalDateTime dueDate;
 
     @Column(nullable = false)
     private String status;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
@@ -77,7 +74,14 @@ public class Issue {
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    public static final String INITIAL_STATUS = "Todo";
+    @OneToMany(mappedBy = "sourceIssue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueLink> outwardLinks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "targetIssue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueLink> inwardLinks = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
 
     public Long getId() {
         return id;
@@ -221,6 +225,30 @@ public class Issue {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public List<IssueLink> getOutwardLinks() {
+        return outwardLinks;
+    }
+
+    public void setOutwardLinks(List<IssueLink> outwardLinks) {
+        this.outwardLinks = outwardLinks;
+    }
+
+    public List<IssueLink> getInwardLinks() {
+        return inwardLinks;
+    }
+
+    public void setInwardLinks(List<IssueLink> inwardLinks) {
+        this.inwardLinks = inwardLinks;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 
     @Override

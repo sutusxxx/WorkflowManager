@@ -1,10 +1,14 @@
 package WorkflowManager.issue.model;
 
+import WorkflowManager.issue.IssueLinkType;
 import WorkflowManager.issue.IssueType;
+import WorkflowManager.issue.Priority;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IssueDTO {
     private String title;
@@ -19,8 +23,9 @@ public class IssueDTO {
     private List<IssueSummaryDTO> subIssues = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private List<CommentDTO> comments;
+    private Map<IssueLinkType, IssueSummaryDTO> linkedIssue = new HashMap<>();
+    private Priority priority;
 
     public String getTitle() {
         return title;
@@ -124,5 +129,21 @@ public class IssueDTO {
 
     public void setComments(List<CommentDTO> comments) {
         this.comments = comments;
+    }
+
+    public Map<IssueLinkType, IssueSummaryDTO> getLinkedIssue() {
+        return linkedIssue;
+    }
+
+    public void setLinkedIssue(Map<IssueLinkType, IssueSummaryDTO> linkedIssue) {
+        this.linkedIssue = linkedIssue;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 }
