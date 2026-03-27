@@ -34,7 +34,7 @@ public class PermissionService {
     }
 
     @Transactional
-    public void create(CreatePermissionRequest request) {
+    public PermissionDTO create(CreatePermissionRequest request) {
         Permission permission = new Permission();
         permission.setName(request.getName());
         Permission savedPermission = permissionDAO.save(permission);

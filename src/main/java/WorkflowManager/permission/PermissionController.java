@@ -2,6 +2,7 @@ package WorkflowManager.permission;
 
 import WorkflowManager.permission.model.AssignPermissionRequest;
 import WorkflowManager.permission.model.CreatePermissionRequest;
+import WorkflowManager.permission.model.PermissionDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class PermissionController {
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody CreatePermissionRequest request) {
-        permissionService.create(request);
+    public PermissionDTO create(@RequestBody CreatePermissionRequest request) {
+        return permissionService.create(request);
     }
 }
