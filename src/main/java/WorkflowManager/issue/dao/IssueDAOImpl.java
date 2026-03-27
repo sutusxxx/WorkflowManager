@@ -13,13 +13,8 @@ import java.util.Optional;
 
 @Repository
 public class IssueDAOImpl implements IssueDAO {
-    @PersistenceContext // annotation is not required anymore...
-    private final EntityManager entityManager;
-
-    @Autowired
-    public IssueDAOImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Optional<Issue> findById(Long id) {

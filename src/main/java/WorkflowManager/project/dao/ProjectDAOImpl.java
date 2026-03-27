@@ -4,6 +4,7 @@ import WorkflowManager.project.Project;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,11 +12,8 @@ import java.util.Optional;
 
 @Repository
 public class ProjectDAOImpl implements ProjectDAO {
+    @PersistenceContext
     private EntityManager entityManager;
-
-    public ProjectDAOImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     @Override
     public Optional<Project> findByKey(String key) {

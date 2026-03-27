@@ -3,6 +3,7 @@ package WorkflowManager.user.dao;
 import WorkflowManager.user.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,11 +11,8 @@ import java.util.Optional;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
-    private final EntityManager entityManager;
-
-    public UserDAOImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Optional<User> findByUsername(String username) {
