@@ -10,9 +10,9 @@ INSERT INTO users (email, username, password, registration_date) VALUES
 -- =====================
 -- PROJECTS
 -- =====================
-INSERT INTO projects (name, project_key, issue_counter, description, created_by, modified_by, created_at, updated_at) VALUES
-('Development', 'DEV', 14, 'Core product development project', 1, 1, NOW(), NOW()),
-('Mobile App',  'MOB', 6,  'iOS and Android mobile application', 2, 2, NOW(), NOW());
+INSERT INTO projects (name, project_key, issue_counter, description, visibility, created_by, modified_by, created_at, updated_at) VALUES
+('Development', 'DEV', 14, 'Core product development project', "PUBLIC", 1, 1, NOW(), NOW()),
+('Mobile App',  'MOB', 6,  'iOS and Android mobile application', "PUBLIC", 2, 2, NOW(), NOW());
 
 
 -- =====================

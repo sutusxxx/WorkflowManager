@@ -14,6 +14,7 @@ public class CreateProjectRequest {
     @Pattern(regexp = "^[A-Z]{2,10}$", message = "Project key must be 2-10 uppercase letters")
     private String key;
     private String description;
+    private Boolean isPrivate;
 
     public String getName() {
         return name;
@@ -25,5 +26,9 @@ public class CreateProjectRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public Boolean getPrivate() {
+        return isPrivate;
     }
 }

@@ -47,6 +47,10 @@ public class Project {
     @JoinColumn(name = "modified_by")
     private User modifiedBy;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Visibility visibility;
+
     public Long getId() {
         return id;
     }
@@ -133,6 +137,14 @@ public class Project {
 
     public void setModifiedBy(User modifiedBy) {
         this.modifiedBy = modifiedBy;
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     @Override

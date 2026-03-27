@@ -52,7 +52,11 @@ public class ProjectService {
         User currentUser = authContext.getCurrentUser();
 
         Project project = projectConverter.convertFromRequest(request);
+        project.setVisibility(request.getPrivate() ? Visibility.PRIVATE : Visibility.PUBLIC);
+
         project.setCreatedBy(currentUser);
+
+
         Project savedProject = projectDAO.save(project);
 
         return projectConverter.convertToDTO(savedProject);
@@ -67,6 +71,8 @@ public class ProjectService {
         if (request.getDescription() != null && !request.getDescription().equals(project.getDescription())) {
             project.setDescription(request.getDescription());
         }
+
+        project.setVisibility(request.getPrivate() ? Visibility.PRIVATE : Visibility.PUBLIC);
 
         project.setModifiedBy(currentUser);
 
