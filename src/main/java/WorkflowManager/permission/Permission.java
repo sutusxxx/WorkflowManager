@@ -1,7 +1,9 @@
-package WorkflowManager.user;
+package WorkflowManager.permission;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "permissions")
@@ -15,7 +17,7 @@ public class Permission {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -33,11 +35,11 @@ public class Permission {
         this.name = name;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -1,5 +1,6 @@
 package WorkflowManager.user;
 
+import WorkflowManager.permission.Permission;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,7 +28,7 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime registrationDate;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
             name = "user_permissions",
             joinColumns = @JoinColumn(name = "user_id"),
