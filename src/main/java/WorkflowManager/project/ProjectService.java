@@ -1,5 +1,6 @@
 package WorkflowManager.project;
 
+import WorkflowManager.auth.AuthContext;
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.dao.IssueDAO;
@@ -8,6 +9,7 @@ import WorkflowManager.project.model.CreateProjectRequest;
 import WorkflowManager.project.model.ProjectDTO;
 import WorkflowManager.project.model.UpdateProjectRequest;
 import WorkflowManager.issue.IssueConverter;
+import WorkflowManager.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,19 +19,23 @@ import java.util.List;
 public class ProjectService {
     private final ProjectDAO projectDAO;
     private final IssueDAO issueDAO;
+
     private final ProjectConverter projectConverter;
     private final IssueConverter issueConverter;
+
+    private final AuthContext authContext;
 
     public ProjectService(
             ProjectDAO projectDAO,
             IssueDAO issueDAO,
             ProjectConverter projectConverter,
-            IssueConverter issueConverter
+            IssueConverter issueConverter, AuthContext authContext
     ) {
         this.projectDAO = projectDAO;
         this.issueDAO = issueDAO;
         this.projectConverter = projectConverter;
         this.issueConverter = issueConverter;
+        this.authContext = authContext;
     }
 
     public List<ProjectDTO> getAllProjects() {
@@ -42,22 +48,29 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDTO createProject(CreateProjectRequest project) {
-        Project projectToSave = projectConverter.convertFromRequest(project);
-        Project savedProject = projectDAO.save(projectToSave);
+    public ProjectDTO createProject(CreateProjectRequest request) {
+        User currentUser = authContext.getCurrentUser();
+
+        Project project = projectConverter.convertFromRequest(request);
+        project.setCreatedBy(currentUser);
+        Project savedProject = projectDAO.save(project);
+
         return projectConverter.convertToDTO(savedProject);
     }
 
     @Transactional
-    public ProjectDTO updateProject(String key, UpdateProjectRequest project) {
-        Project projectDb = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
+    public ProjectDTO updateProject(String key, UpdateProjectRequest request) {
+        User currentUser = authContext.getCurrentUser();
 
-        if (project.getDescription() != null && !project.getDescription().equals(projectDb.getDescription())) {
-            projectDb.setDescription(project.getDescription());
+        Project project = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
+
+        if (request.getDescription() != null && !request.getDescription().equals(project.getDescription())) {
+            project.setDescription(request.getDescription());
         }
 
-        Project savedProject = projectDAO.save(projectDb);
-        return projectConverter.convertToDTO(savedProject);
+        project.setModifiedBy(currentUser);
+
+        return projectConverter.convertToDTO(project);
     }
 
     private ProjectDTO convertToProjectDTO(Project project) {

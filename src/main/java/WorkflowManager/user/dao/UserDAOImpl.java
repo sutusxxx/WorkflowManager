@@ -27,13 +27,18 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public Optional<User> findById(Long aLong) {
-        return Optional.empty();
+    public Optional<User> findById(Long id) {
+        try {
+            User user = entityManager.find(User.class, id);
+            return Optional.of(user);
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 
     @Override
@@ -47,11 +52,12 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void delete(User entity) {
-
+        entityManager.remove(entity);
     }
 
     @Override
-    public void deleteById(Long aLong) {
-
+    public void deleteById(Long id) {
+        User user = entityManager.find(User.class, id);
+        entityManager.remove(user);
     }
 }

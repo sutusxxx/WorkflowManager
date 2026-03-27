@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtUtility jwtUtility;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public JwtAuthFilter(UserDetailsService userDetailsService, JwtUtility jwtUtility, ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;

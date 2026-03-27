@@ -44,7 +44,12 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public Optional<Project> findById(Long id) {
-        return Optional.empty();
+        try {
+            Project project = entityManager.find(Project.class, id);
+            return Optional.of(project);
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
