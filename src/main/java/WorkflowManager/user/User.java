@@ -27,7 +27,12 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime registrationDate;
 
-    private Set<String> permissions = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "user_permissions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> permissions = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -69,11 +74,11 @@ public class User {
         this.registrationDate = registrationDate;
     }
 
-    public Set<String> getPermissions() {
+    public Set<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(Set<String> permissions) {
+    public void setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
     }
 }

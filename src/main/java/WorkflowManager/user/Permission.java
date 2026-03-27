@@ -40,4 +40,10 @@ public class Permission {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+    public static Permission valueOf(String name) {
+        Permission permission = new Permission();
+        permission.setName(name);
+        return permission;
+    }
 }
