@@ -1,5 +1,6 @@
 package WorkflowManager.permission;
 
+import WorkflowManager.common.exceptions.UserNotFoundException;
 import WorkflowManager.permission.dao.PermissionDAO;
 import WorkflowManager.permission.model.AssignPermissionRequest;
 import WorkflowManager.permission.model.CreatePermissionRequest;
@@ -24,12 +25,11 @@ public class PermissionService {
 
     @Transactional
     public void assign(AssignPermissionRequest request) {
-        User user = userDAO.findById(request.getUserId()).orElseThrow();
+        User user = userDAO.findById(request.getUserId()).orElseThrow(UserNotFoundException::new);
         Set<Permission> permissions = request.getPermissions().stream()
                 .map(String::toUpperCase)
                 .map(Permission::valueOf)
                 .collect(Collectors.toSet());
-        permissions.addAll(user.getPermissions());
         user.setPermissions(permissions);
     }
 

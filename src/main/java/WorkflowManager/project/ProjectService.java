@@ -56,7 +56,6 @@ public class ProjectService {
 
         project.setCreatedBy(currentUser);
 
-
         Project savedProject = projectDAO.save(project);
 
         return projectConverter.convertToDTO(savedProject);
