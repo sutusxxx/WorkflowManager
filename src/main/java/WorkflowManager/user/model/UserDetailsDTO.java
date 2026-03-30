@@ -19,10 +19,9 @@ public class UserDetailsDTO implements UserDetails {
     public UserDetailsDTO(User user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
-//        this.authorities = user.getPermissions().stream()
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
-        this.authorities = new ArrayList<>();
+        this.authorities = user.getPermissions().stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
