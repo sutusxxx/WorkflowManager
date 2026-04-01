@@ -28,7 +28,7 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime registrationDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_permissions",
             joinColumns = @JoinColumn(name = "user_id"),
