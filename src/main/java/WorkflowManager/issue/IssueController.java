@@ -1,10 +1,7 @@
 package WorkflowManager.issue;
 
 import WorkflowManager.common.exceptions.IssueNotFoundException;
-import WorkflowManager.issue.model.CreateIssueRequest;
-import WorkflowManager.issue.model.IssueDTO;
-import WorkflowManager.issue.model.IssueTreeDTO;
-import WorkflowManager.issue.model.UpdateIssueRequest;
+import WorkflowManager.issue.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

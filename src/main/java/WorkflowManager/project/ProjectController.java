@@ -1,5 +1,7 @@
 package WorkflowManager.project;
 
+import WorkflowManager.issue.IssueService;
+import WorkflowManager.issue.model.IssueSummaryDTO;
 import WorkflowManager.project.model.CreateProjectRequest;
 import WorkflowManager.project.model.ProjectDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,12 @@ import java.util.List;
 @RequestMapping("/api/v1/projects")
 public class ProjectController {
     private final ProjectService projectService;
+    private final IssueService issueService;
 
     @Autowired
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, IssueService issueService) {
         this.projectService = projectService;
+        this.issueService = issueService;
     }
 
     @GetMapping
@@ -35,5 +39,10 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", "/api/v1/projects/create/" + createdProject.getKey())
                 .body(createdProject);
+    }
+
+    @GetMapping("/{key}/issues")
+    public List<IssueSummaryDTO> getIssuesByProjectKey(@PathVariable String key) {
+        return issueService.getIssuesByProjectKey(key);
     }
 }

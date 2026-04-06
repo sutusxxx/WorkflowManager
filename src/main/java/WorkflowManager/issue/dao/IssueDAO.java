@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface IssueDAO extends BaseDAO<Issue, Long> {
     Optional<Issue> findByKey(String key);
-    List<Issue> findFirstLevelByProjectId(Long projectId);
+    List<Issue> findByProjectKey(String projectKey);
     List<Issue> findAllByParentId(Long parentId);
     List<Issue> findByProjectId(Long projectId);
     void deleteByKey(String key);

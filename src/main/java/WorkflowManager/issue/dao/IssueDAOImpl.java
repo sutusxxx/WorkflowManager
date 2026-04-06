@@ -66,10 +66,10 @@ public class IssueDAOImpl implements IssueDAO {
     }
 
     @Override
-    public List<Issue> findFirstLevelByProjectId(Long projectId) {
+    public List<Issue> findByProjectKey(String projectKey) {
         return entityManager
-                .createQuery("SELECT i FROM Issue i WHERE i.project.id = :projectId AND i.parent IS NULL", Issue.class)
-                .setParameter("projectId", projectId)
+                .createQuery("SELECT i FROM Issue i WHERE i.project.key = :projectKey AND i.type <> 'SUBTASK'", Issue.class)
+                .setParameter("projectKey", projectKey)
                 .getResultList();
     }
 

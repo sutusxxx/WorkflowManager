@@ -39,12 +39,12 @@ public class ProjectService {
     }
 
     public List<ProjectDTO> getAllProjects() {
-        return projectDAO.findAll().stream().map(this::convertToProjectDTO).toList();
+        return projectDAO.findAll().stream().map(projectConverter::convertToDTO).toList();
     }
 
     public ProjectDTO getProjectByKey(String key) {
         Project project = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
-        return convertToProjectDTO(project);
+        return projectConverter.convertToDTO(project);
     }
 
     @Transactional
@@ -76,12 +76,5 @@ public class ProjectService {
         project.setModifiedBy(currentUser);
 
         return projectConverter.convertToDTO(project);
-    }
-
-    private ProjectDTO convertToProjectDTO(Project project) {
-        ProjectDTO dto = projectConverter.convertToDTO(project);
-        List<Issue> projectIssues = issueDAO.findFirstLevelByProjectId(project.getId());
-        dto.setIssueSummaries(projectIssues.stream().map(issueConverter::convertToSummaryDTO).toList());
-        return dto;
     }
 }

@@ -5,10 +5,7 @@ import WorkflowManager.common.exceptions.InvalidHierarchyException;
 import WorkflowManager.common.exceptions.IssueNotFoundException;
 import WorkflowManager.common.exceptions.ProjectNotFoundException;
 import WorkflowManager.issue.dao.IssueDAO;
-import WorkflowManager.issue.model.CreateIssueRequest;
-import WorkflowManager.issue.model.IssueDTO;
-import WorkflowManager.issue.model.IssueTreeDTO;
-import WorkflowManager.issue.model.UpdateIssueRequest;
+import WorkflowManager.issue.model.*;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.dao.ProjectDAO;
 import WorkflowManager.user.User;
@@ -65,6 +62,11 @@ public class IssueService {
         }
 
         return issueDAO.findAll().stream().map(issueConverter::convertToDTO).toList();
+    }
+
+    public List<IssueSummaryDTO> getIssuesByProjectKey(String projectKey) {
+        List<Issue> issues = issueDAO.findByProjectKey(projectKey);
+        return issues.stream().map(issueConverter::convertToSummaryDTO).toList();
     }
 
     public IssueTreeDTO getTree(String key) {

@@ -6,6 +6,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.LocalDateTime;
@@ -56,6 +57,17 @@ public class GlobalExceptionHandler {
         error.setTimestamp(LocalDateTime.now());
 
         return ResponseEntity.status(401).body(error);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO();
+        error.setMessage(ex.getMessage());
+        error.setStatus(404);
+        error.setErrorCode("NOT_FOUND");
+        error.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(404).body(error);
     }
 
     @ExceptionHandler(Exception.class)
