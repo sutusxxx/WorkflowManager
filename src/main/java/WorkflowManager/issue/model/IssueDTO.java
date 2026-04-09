@@ -24,7 +24,7 @@ public class IssueDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentDTO> comments;
-    private Map<IssueLinkType, IssueSummaryDTO> linkedIssue = new HashMap<>();
+    private Map<IssueLinkType, IssueSummaryDTO> linkedIssues = new HashMap<>();
     private Priority priority;
 
     public String getTitle() {
@@ -131,12 +131,12 @@ public class IssueDTO {
         this.comments = comments;
     }
 
-    public Map<IssueLinkType, IssueSummaryDTO> getLinkedIssue() {
-        return linkedIssue;
+    public Map<IssueLinkType, IssueSummaryDTO> getLinkedIssues() {
+        return linkedIssues;
     }
 
-    public void setLinkedIssue(Map<IssueLinkType, IssueSummaryDTO> linkedIssue) {
-        this.linkedIssue = linkedIssue;
+    public void setLinkedIssues(Map<IssueLinkType, IssueSummaryDTO> linkedIssues) {
+        this.linkedIssues = linkedIssues;
     }
 
     public Priority getPriority() {

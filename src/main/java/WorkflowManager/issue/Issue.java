@@ -1,5 +1,6 @@
 package WorkflowManager.issue;
 
+import WorkflowManager.board.Board;
 import WorkflowManager.project.Project;
 import WorkflowManager.user.User;
 import jakarta.persistence.*;
@@ -60,7 +61,7 @@ public class Issue {
     private User createdBy;
 
     @ManyToOne
-    @JoinColumn(name = "modified_by")
+    @JoinColumn(name = "modified_by", nullable = false)
     private User modifiedBy;
 
     @ManyToOne
@@ -82,6 +83,12 @@ public class Issue {
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
+
+    @ManyToOne
+    @JoinColumn(name = "board")
+    private Board board;
+
+    private Integer position;
 
     public Long getId() {
         return id;
@@ -249,6 +256,22 @@ public class Issue {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
     }
 
     @Override

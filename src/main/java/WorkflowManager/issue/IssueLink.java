@@ -30,7 +30,7 @@ public class IssueLink {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
     public Long getId() {

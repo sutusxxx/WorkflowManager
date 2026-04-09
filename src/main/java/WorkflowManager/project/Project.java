@@ -1,5 +1,6 @@
 package WorkflowManager.project;
 
+import WorkflowManager.board.Board;
 import WorkflowManager.issue.Issue;
 import WorkflowManager.user.User;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,12 +46,15 @@ public class Project {
     private User createdBy;
 
     @ManyToOne
-    @JoinColumn(name = "modified_by")
+    @JoinColumn(name = "modified_by", nullable = false)
     private User modifiedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Visibility visibility;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<Board> boards = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -145,6 +150,14 @@ public class Project {
 
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
+    }
+
+    public List<Board> getBoards() {
+        return boards;
+    }
+
+    public void setBoards(List<Board> boards) {
+        this.boards = boards;
     }
 
     @Override
