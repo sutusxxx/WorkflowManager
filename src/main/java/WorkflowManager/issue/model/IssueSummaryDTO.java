@@ -4,12 +4,21 @@ import WorkflowManager.issue.IssueType;
 import WorkflowManager.issue.Priority;
 
 public class IssueSummaryDTO {
+    private Long id;
     private String key;
     private String title;
     private Short storyPoints;
     private IssueType type;
     private String status;
     private Priority priority;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getKey() {
         return key;

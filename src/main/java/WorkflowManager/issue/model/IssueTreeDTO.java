@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IssueTreeDTO {
+    private Long id;
     private String key;
     private String title;
     private IssueType type;
@@ -14,6 +15,14 @@ public class IssueTreeDTO {
     private Integer storyPoints;
     private Priority priority;
     private List<IssueTreeDTO> children = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getKey() {
         return key;

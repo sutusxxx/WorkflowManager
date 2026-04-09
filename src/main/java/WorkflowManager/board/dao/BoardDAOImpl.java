@@ -2,19 +2,21 @@ package WorkflowManager.board.dao;
 
 import WorkflowManager.board.Board;
 import WorkflowManager.board.Sprint;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class BoardDAOImpl implements BoardDAO {
 
     @Override
-    public Optional<Sprint> findActiveSprintByProjectKey(String projectKey) {
+    public Optional<Sprint> findActiveSprintByProjectId(Long projectId) {
         return Optional.empty();
     }
 
     @Override
-    public List<Board> findByProjectKey(String projectKey) {
+    public List<Board> findByProjectId(Long projectId) {
         return List.of();
     }
 

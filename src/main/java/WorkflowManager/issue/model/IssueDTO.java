@@ -11,14 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 public class IssueDTO {
+    private Long id;
     private String title;
     private String key;
     private String description;
     private Short storyPoints;
     private LocalDateTime dueDate;
     private String status;
-    private String projectKey;
-    private String parentKey;
+    private Long projectId;
+    private Long parentId;
     private IssueType type;
     private List<IssueSummaryDTO> subIssues = new ArrayList<>();
     private LocalDateTime createdAt;
@@ -26,6 +27,14 @@ public class IssueDTO {
     private List<CommentDTO> comments;
     private Map<IssueLinkType, IssueSummaryDTO> linkedIssues = new HashMap<>();
     private Priority priority;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -75,20 +84,20 @@ public class IssueDTO {
         this.status = status;
     }
 
-    public String getProjectKey() {
-        return projectKey;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setProjectKey(String projectKey) {
-        this.projectKey = projectKey;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
-    public String getParentKey() {
-        return parentKey;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setParentKey(String parentKey) {
-        this.parentKey = parentKey;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public IssueType getType() {

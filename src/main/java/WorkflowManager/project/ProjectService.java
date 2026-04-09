@@ -42,8 +42,8 @@ public class ProjectService {
         return projectDAO.findAll().stream().map(projectConverter::convertToDTO).toList();
     }
 
-    public ProjectDTO getProjectByKey(String key) {
-        Project project = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
+    public ProjectDTO getProjectById(Long id) {
+        Project project = projectDAO.findById(id).orElseThrow(() -> new ProjectNotFoundException(id));
         return projectConverter.convertToDTO(project);
     }
 
@@ -62,10 +62,10 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDTO updateProject(String key, UpdateProjectRequest request) {
+    public ProjectDTO updateProject(Long id, UpdateProjectRequest request) {
         User currentUser = authContext.getCurrentUser();
 
-        Project project = projectDAO.findByKey(key).orElseThrow(() -> new ProjectNotFoundException(key));
+        Project project = projectDAO.findById(id).orElseThrow(() -> new ProjectNotFoundException(id));
 
         if (request.getDescription() != null && !request.getDescription().equals(project.getDescription())) {
             project.setDescription(request.getDescription());

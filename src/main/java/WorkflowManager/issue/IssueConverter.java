@@ -27,10 +27,10 @@ public class IssueConverter {
         dto.setSubIssues(subIssues);
 
         if (issue.getParent() != null) {
-            dto.setParentKey(issue.getParent().getKey());
+            dto.setParentId(issue.getParent().getId());
         }
 
-        dto.setProjectKey(issue.getProject().getKey());
+        dto.setProjectId(issue.getProject().getId());
         List<CommentDTO> commentDTOs = issue.getComments().stream().map(comment -> {
             CommentDTO commentDTO = new CommentDTO();
             commentDTO.setId(comment.getId());

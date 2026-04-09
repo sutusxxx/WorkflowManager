@@ -16,23 +16,10 @@ public class ProjectDAOImpl implements ProjectDAO {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Project> findByKey(String key) {
+    public Optional<Project> findByIdForUpdate(Long id) {
         try {
-            Project project = entityManager.createQuery("SELECT p FROM Project p WHERE p.key = :key", Project.class)
-                    .setParameter("key", key)
-                    .getSingleResult();
-            return Optional.of(project);
-
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public Optional<Project> findByKeyForUpdate(String key) {
-        try {
-            Project project = entityManager.createQuery("SELECT p FROM Project p WHERE p.key = :key", Project.class)
-                    .setParameter("key", key)
+            Project project = entityManager.createQuery("SELECT p FROM Project p WHERE p.id = :id", Project.class)
+                    .setParameter("id", id)
                     .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                     .getSingleResult();
             return Optional.of(project);

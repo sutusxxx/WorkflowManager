@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "boards")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "board_type")
 public abstract class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +25,7 @@ public abstract class Board {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "project", nullable = false)
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @OneToMany(mappedBy = "board")

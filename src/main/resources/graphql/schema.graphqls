@@ -1,0 +1,9 @@
+type Query {
+    issueByKey(key: String): Issue
+}
+
+type Issue {
+    id: ID
+    title: String
+    key: String
+}

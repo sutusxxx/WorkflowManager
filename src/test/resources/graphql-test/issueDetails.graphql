@@ -1,0 +1,7 @@
+query IssueDetail($key: String) {
+  issueByKey(key: $key) {
+    id
+    key
+    title
+  }
+}

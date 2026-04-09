@@ -28,21 +28,21 @@ public class ProjectController {
         return projectService.getAllProjects();
     }
 
-    @GetMapping("/{key}")
-    public ProjectDTO getProjectByKey(@PathVariable String key) {
-        return projectService.getProjectByKey(key);
+    @GetMapping("/{id}")
+    public ProjectDTO getProjectById(@PathVariable Long id) {
+        return projectService.getProjectById(id);
     }
 
     @PostMapping("/create")
     public ResponseEntity<ProjectDTO> createProject(@RequestBody CreateProjectRequest project) {
         ProjectDTO createdProject = projectService.createProject(project);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "/api/v1/projects/create/" + createdProject.getKey())
+                .header("Location", "/api/v1/projects/create/" + createdProject.getId())
                 .body(createdProject);
     }
 
-    @GetMapping("/{key}/issues")
-    public List<IssueSummaryDTO> getIssuesByProjectKey(@PathVariable String key) {
-        return issueService.getIssuesByProjectKey(key);
+    @GetMapping("/{id}/issues")
+    public List<IssueSummaryDTO> getIssuesByProject(@PathVariable Long id) {
+        return issueService.getIssuesByProjectId(id);
     }
 }

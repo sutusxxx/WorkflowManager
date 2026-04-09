@@ -15,8 +15,8 @@ public class BoardService {
         this.boardDAO = boardDAO;
     }
 
-    public SprintDTO getActiveSprintByProjectKey(String projectKey) {
-        Optional<Sprint> activeSprint = boardDAO.findActiveSprintByProjectKey(projectKey);
+    public SprintDTO getActiveSprintByProjectId(Long projectId) {
+        Optional<Sprint> activeSprint = boardDAO.findActiveSprintByProjectId(projectId);
 
         if (activeSprint.isEmpty()) return null;
 

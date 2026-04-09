@@ -64,14 +64,19 @@ public class IssueService {
         return issueDAO.findAll().stream().map(issueConverter::convertToDTO).toList();
     }
 
-    public List<IssueSummaryDTO> getIssuesByProjectKey(String projectKey) {
-        List<Issue> issues = issueDAO.findByProjectKey(projectKey);
+    public List<IssueSummaryDTO> getIssuesByProjectId(Long projectId) {
+        List<Issue> issues = issueDAO.findByProjectId(projectId);
         return issues.stream().map(issueConverter::convertToSummaryDTO).toList();
     }
 
-    public IssueTreeDTO getTree(String key) {
-        Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
+    public IssueTreeDTO getTree(Long id) {
+        Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
         return issueConverter.convertToTreeDTO(issue);
+    }
+
+    public IssueDTO getIssueById(Long id) {
+        Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
+        return issueConverter.convertToDTO(issue);
     }
 
     public IssueDTO getIssueByKey(String key) {
@@ -80,22 +85,22 @@ public class IssueService {
     }
 
     @Transactional
-    public IssueDTO createIssue(CreateIssueRequest issueDTO) {
+    public IssueDTO createIssue(CreateIssueRequest request) {
         User currentUser = authContext.getCurrentUser();
 
-        String projectKey = issueDTO.getProjectKey();
+        Long projectId = request.getProjectId();
         // Lock project row to safely increment
-        Project project = projectDAO.findByKeyForUpdate(projectKey).orElseThrow(() -> new ProjectNotFoundException(projectKey));
+        Project project = projectDAO.findByIdForUpdate(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
 
-        Issue issue = issueConverter.convertFromRequest(issueDTO);
+        Issue issue = issueConverter.convertFromRequest(request);
         issue.setStatus(INITIAL_STATUS);
         issue.setProject(project);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
 
-        if (issueDTO.getParentKey() != null) {
-            Issue parent = issueDAO.findByKey(issueDTO.getParentKey()).orElseThrow();
+        if (request.getParentId() != null) {
+            Issue parent = issueDAO.findById(request.getParentId()).orElseThrow();
             validateParent(issue, parent);
             issue.setParent(parent);
         }
@@ -108,10 +113,10 @@ public class IssueService {
     }
 
     @Transactional
-    public IssueDTO updateIssue(String key, UpdateIssueRequest issueDTO) {
+    public IssueDTO updateIssue(Long id, UpdateIssueRequest issueDTO) {
         User currentUser = authContext.getCurrentUser();
 
-        Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
+        Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
 
         if (issueDTO.getTitle() != null) {
             issue.setTitle(issueDTO.getTitle());

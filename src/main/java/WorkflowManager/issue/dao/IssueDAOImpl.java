@@ -60,20 +60,6 @@ public class IssueDAOImpl implements IssueDAO {
     }
 
     @Override
-    public void deleteByKey(String key) {
-        Issue issue = findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
-        entityManager.remove(issue);
-    }
-
-    @Override
-    public List<Issue> findByProjectKey(String projectKey) {
-        return entityManager
-                .createQuery("SELECT i FROM Issue i WHERE i.project.key = :projectKey AND i.type <> 'SUBTASK'", Issue.class)
-                .setParameter("projectKey", projectKey)
-                .getResultList();
-    }
-
-    @Override
     public List<Issue> findAllByParentId(Long parentId) {
         return null;
     }

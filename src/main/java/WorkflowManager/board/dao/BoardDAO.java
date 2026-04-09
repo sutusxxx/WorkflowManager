@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardDAO extends BaseDAO<Board, Long> {
-    Optional<Sprint> findActiveSprintByProjectKey(String projectKey);
-    List<Board> findByProjectKey(String projectKey);
+    Optional<Sprint> findActiveSprintByProjectId(Long projectId);
+    List<Board> findByProjectId(Long projectId);
 }

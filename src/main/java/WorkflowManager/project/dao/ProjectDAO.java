@@ -6,6 +6,5 @@ import WorkflowManager.project.Project;
 import java.util.Optional;
 
 public interface ProjectDAO extends BaseDAO<Project, Long> {
-    Optional<Project> findByKey(String key);
-    Optional<Project> findByKeyForUpdate(String key);
+    Optional<Project> findByIdForUpdate(Long id);
 }

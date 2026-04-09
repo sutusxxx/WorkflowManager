@@ -19,10 +19,10 @@ public class CreateIssueRequest {
     private Short storyPoints;
 
     private LocalDateTime dueDate;
-    private String parentKey;
+    private Long parentId;
 
-    @NotBlank(message = "Project key is required")
-    private String projectKey;
+    @NotBlank(message = "Project id is required")
+    private Long projectId;
 
     @NotNull
     private IssueType type;
@@ -48,12 +48,12 @@ public class CreateIssueRequest {
         return dueDate;
     }
 
-    public String getParentKey() {
-        return parentKey;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public String getProjectKey() {
-        return projectKey;
+    public Long getProjectId() {
+        return projectId;
     }
 
     public IssueType getType() {
