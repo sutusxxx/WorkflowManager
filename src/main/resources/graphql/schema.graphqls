@@ -1,9 +1,8 @@
-type Query {
-    issueByKey(key: String): Issue
+schema {
+  query: Query
+  mutation: Mutation
 }
 
-type Issue {
-    id: ID
-    title: String
-    key: String
-}
+type Query
+
+type Mutation

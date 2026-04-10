@@ -79,66 +79,64 @@ public class IssueService {
         return issueConverter.convertToDTO(issue);
     }
 
-    public IssueDTO getIssueByKey(String key) {
-        Issue issue = issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
-        return issueConverter.convertToDTO(issue);
+    public Issue getIssueByKey(String key) {
+        return issueDAO.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
     }
 
     @Transactional
-    public IssueDTO createIssue(CreateIssueRequest request) {
+    public Issue createIssue(CreateIssueInput input) {
         User currentUser = authContext.getCurrentUser();
 
-        Long projectId = request.getProjectId();
+        Long projectId = input.getProjectId();
         // Lock project row to safely increment
         Project project = projectDAO.findByIdForUpdate(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
 
-        Issue issue = issueConverter.convertFromRequest(request);
+        Issue issue = issueConverter.convertFromRequest(input);
         issue.setStatus(INITIAL_STATUS);
         issue.setProject(project);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
 
-        if (request.getParentId() != null) {
-            Issue parent = issueDAO.findById(request.getParentId()).orElseThrow();
+        if (input.getParentId() != null) {
+            Issue parent = issueDAO.findById(input.getParentId()).orElseThrow();
             validateParent(issue, parent);
             issue.setParent(parent);
         }
 
         issue.setCreatedBy(currentUser);
+        issue.setModifiedBy(currentUser);
 
-        Issue savedIssue = issueDAO.save(issue);
-
-        return issueConverter.convertToDTO(savedIssue);
+        return issueDAO.save(issue);
     }
 
     @Transactional
-    public IssueDTO updateIssue(Long id, UpdateIssueRequest issueDTO) {
+    public Issue updateIssue(Long id, UpdateIssueRequest request) {
         User currentUser = authContext.getCurrentUser();
 
         Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
 
-        if (issueDTO.getTitle() != null) {
-            issue.setTitle(issueDTO.getTitle());
+        if (request.getTitle() != null) {
+            issue.setTitle(request.getTitle());
         }
 
-        if (issueDTO.getStatus() != null) {
-            issue.setStatus(issueDTO.getStatus());
+        if (request.getStatus() != null) {
+            issue.setStatus(request.getStatus());
         }
 
-        if (issueDTO.getAssignedUserId() != null) {
-            User user = userDAO.findById(issueDTO.getAssignedUserId()).orElseThrow();
+        if (request.getAssignedUserId() != null) {
+            User user = userDAO.findById(request.getAssignedUserId()).orElseThrow();
             issue.setAssigned(user);
         }
 
-        if (issueDTO.getReporterUserId() != null) {
-            User user = userDAO.findById(issueDTO.getReporterUserId()).orElseThrow();
+        if (request.getReporterUserId() != null) {
+            User user = userDAO.findById(request.getReporterUserId()).orElseThrow();
             issue.setReporter(user);
         }
 
         issue.setModifiedBy(currentUser);
 
-        return issueConverter.convertToDTO(issue);
+        return issue;
     }
 
     @Transactional

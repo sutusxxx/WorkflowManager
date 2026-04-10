@@ -4,13 +4,13 @@ import WorkflowManager.issue.IssueLinkType;
 
 public class LinkedIssueDTO {
     private IssueLinkType linkType;
-    private String targetIssueKey;
+    private String targetIssueId;
 
     public IssueLinkType getLinkType() {
         return linkType;
     }
 
-    public String getTargetIssueKey() {
-        return targetIssueKey;
+    public String getTargetIssueId() {
+        return targetIssueId;
     }
 }

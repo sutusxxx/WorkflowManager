@@ -46,7 +46,7 @@ public class IssueConverter {
         return dto;
     }
 
-    public Issue convertFromRequest(CreateIssueRequest request) {
+    public Issue convertFromRequest(CreateIssueInput request) {
         return mapper.map(request, Issue.class);
     }
 

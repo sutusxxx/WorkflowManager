@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class CreateIssueRequest {
+public class CreateIssueInput {
     @NotBlank(message = "Title must be provided")
     private String title;
     private String description;
@@ -36,43 +36,87 @@ public class CreateIssueRequest {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Short getStoryPoints() {
         return storyPoints;
     }
 
+    public void setStoryPoints(Short storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
     public LocalDateTime getDueDate() {
         return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 
     public Long getParentId() {
         return parentId;
     }
 
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
     public Long getProjectId() {
         return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     public IssueType getType() {
         return type;
     }
 
-    public List<LinkedIssueDTO> getLinkedIssues() {
-        return linkedIssues;
+    public void setType(IssueType type) {
+        this.type = type;
     }
 
-    public Long getReporterUserId() {
-        return reporterUserId;
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Long getAssignedUserId() {
         return assignedUserId;
     }
 
-    public String getStatus() {
-        return status;
+    public void setAssignedUserId(Long assignedUserId) {
+        this.assignedUserId = assignedUserId;
+    }
+
+    public Long getReporterUserId() {
+        return reporterUserId;
+    }
+
+    public void setReporterUserId(Long reporterUserId) {
+        this.reporterUserId = reporterUserId;
+    }
+
+    public List<LinkedIssueDTO> getLinkedIssues() {
+        return linkedIssues;
+    }
+
+    public void setLinkedIssues(List<LinkedIssueDTO> linkedIssues) {
+        this.linkedIssues = linkedIssues;
     }
 }

@@ -1,0 +1,94 @@
+extend type Query {
+    issueByKey(key: String): Issue
+}
+
+extend type Mutation {
+    createIssue(input: CreateIssueInput!): Issue!
+    updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
+    deleteIssue(id: ID!): Boolean!
+}
+
+input CreateIssueInput {
+    title: String!
+    description: String
+    storyPoints: Short
+    priority: Priority
+    dueDate: DateTime
+    parentId: ID
+    projectId: ID!
+    type: IssueType!
+    status: String
+    assignedUserId: ID
+    reporterUserId: ID
+}
+
+input UpdateIssueInput {
+    title: String
+    description: String
+    storyPoints: Short
+    priority: Priority
+    dueDate: DateTime
+    status: String
+    assignedUserId: ID
+    reporterUserId: ID
+}
+
+type Issue {
+    id: ID!
+    title: String!
+    key: String!
+    description: String
+    priority: Priority
+    storyPoints: Short
+    dueDate: DateTime
+    status: String
+    project: Project
+    type: IssueType
+    parent: Issue
+    children: [Issue!]!
+    createdAt: String!
+    updatedAt: String!
+    createdBy: User!
+    modifiedBy: User!
+    assigned: User
+    reporter: User
+    comments: [Comment!]!
+}
+
+type LinkedIssue {
+    linkType: IssueLinkType
+    targetIssueId: ID
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    createdAt: DateTime!
+    createdBy: User!
+}
+
+enum IssueType {
+    EPIC,
+    STORY,
+    BUGFIX,
+    TASK,
+    SUBTASK,
+}
+
+enum Priority {
+    HIGHEST,
+    HIGH,
+    MEDIUM,
+    LOW,
+    LOWEST,
+    BLOCKER,
+    MINOR,
+}
+
+enum IssueLinkType {
+    BLOCKS,
+    BLOCKED_BY,
+    DUPLICATES,
+    DUPLICATED_BY,
+    RELATES_TO,
+}
