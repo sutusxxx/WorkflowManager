@@ -48,8 +48,4 @@ public class AuthService {
 
         userDAO.save(user);
     }
-
-    public UserInfoDTO getCurrent(User user) {
-        return userConverter.convertToInfoDTO(user);
-    }
 }

@@ -3,7 +3,6 @@ package WorkflowManager.auth;
 import WorkflowManager.auth.model.LoginRequest;
 import WorkflowManager.auth.model.RegisterRequest;
 import WorkflowManager.user.User;
-import WorkflowManager.user.model.UserInfoDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.tomcat.util.http.SameSiteCookies;
@@ -11,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,9 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/authenticate")
-    public UserInfoDTO authenticate(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> authenticate(@RequestBody LoginRequest request, HttpServletResponse response) {
         User user = authService.authenticate(request);
-
         String accessToken = jwtUtility.generateToken(user.getUsername());
         ResponseCookie cookie = ResponseCookie.from("session_token", accessToken)
                 .httpOnly(true)
@@ -37,12 +37,32 @@ public class AuthController {
                 .sameSite(SameSiteCookies.LAX.toString())
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return authService.getCurrent(user);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("session_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me")
+    public String me(@AuthenticationPrincipal UserDetails currentUser) {
+        return currentUser.getUsername();
     }
 }

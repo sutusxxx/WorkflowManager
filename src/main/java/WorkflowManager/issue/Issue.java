@@ -3,6 +3,7 @@ package WorkflowManager.issue;
 import WorkflowManager.board.Board;
 import WorkflowManager.project.Project;
 import WorkflowManager.user.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -28,6 +29,7 @@ public class Issue {
 
     private Short storyPoints;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dueDate;
 
     @Column(nullable = false)
@@ -50,10 +52,12 @@ public class Issue {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
     @ManyToOne

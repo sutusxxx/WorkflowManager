@@ -1,7 +1,7 @@
 extend type Query {
     projects: [Project!]!
     projectById(id: ID!): Project
-    issuesByProject(id: ID!): [Issue!]!
+    issues(projectId: ID!): [Issue!]!
 }
 
 extend type Mutation {

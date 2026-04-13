@@ -38,7 +38,7 @@ public class ProjectController {
     }
 
     @QueryMapping
-    public List<Issue> issuesByProject(@Argument Long id) {
-        return issueService.getIssuesByProjectId(id);
+    public List<Issue> issues(@Argument Long projectId) {
+        return issueService.getIssuesByProjectId(projectId);
     }
 }
