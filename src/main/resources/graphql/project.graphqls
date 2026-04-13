@@ -1,3 +1,19 @@
+extend type Query {
+    projects: [Project!]!
+    projectById(id: ID!): Project
+    issuesByProject(id: ID!): [Issue!]!
+}
+
+extend type Mutation {
+    createProject(input: CreateProjectInput): Project
+}
+
+input CreateProjectInput {
+    name: String!
+    key: String!
+    description: String
+    isPrivate: Boolean
+}
 
 type Project {
     id: ID!

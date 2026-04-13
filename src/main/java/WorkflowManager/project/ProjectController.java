@@ -1,18 +1,17 @@
 package WorkflowManager.project;
 
+import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.IssueService;
-import WorkflowManager.issue.model.IssueSummaryDTO;
-import WorkflowManager.project.model.CreateProjectRequest;
-import WorkflowManager.project.model.ProjectDTO;
+import WorkflowManager.project.model.CreateProjectInput;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/v1/projects")
+@Controller
 public class ProjectController {
     private final ProjectService projectService;
     private final IssueService issueService;
@@ -23,26 +22,23 @@ public class ProjectController {
         this.issueService = issueService;
     }
 
-    @GetMapping
-    public List<ProjectDTO> getProjects() {
+    @QueryMapping
+    public List<Project> projects() {
         return projectService.getAllProjects();
     }
 
-    @GetMapping("/{id}")
-    public ProjectDTO getProjectById(@PathVariable Long id) {
+    @QueryMapping
+    public Project projectById(@Argument Long id) {
         return projectService.getProjectById(id);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ProjectDTO> createProject(@RequestBody CreateProjectRequest project) {
-        ProjectDTO createdProject = projectService.createProject(project);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "/api/v1/projects/create/" + createdProject.getId())
-                .body(createdProject);
+    @MutationMapping
+    public Project createProject(@Argument CreateProjectInput project) {
+        return projectService.createProject(project);
     }
 
-    @GetMapping("/{id}/issues")
-    public List<IssueSummaryDTO> getIssuesByProject(@PathVariable Long id) {
+    @QueryMapping
+    public List<Issue> issuesByProject(@Argument Long id) {
         return issueService.getIssuesByProjectId(id);
     }
 }

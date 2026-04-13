@@ -66,6 +66,8 @@ public class IssueDAOImpl implements IssueDAO {
 
     @Override
     public List<Issue> findByProjectId(Long projectId) {
-        return null;
+        return entityManager.createQuery("SELECT i FROM Issue i WHERE i.project.id = :projectId", Issue.class)
+                .setParameter("projectId", projectId)
+                .getResultList();
     }
 }

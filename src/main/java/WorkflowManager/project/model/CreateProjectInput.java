@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
 
-public class CreateProjectRequest {
+public class CreateProjectInput {
 
     @NotBlank(message = "Project name is required")
     @Length(max = 50, min = 1)

@@ -6,9 +6,10 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -35,13 +37,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            String authHeader = request.getHeader("Authorization");
-            String token = null;
+            String token = getTokenFromCookies(request);
             String username = null;
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                token = authHeader.substring(7);
+            if (!Objects.isNull(token)) {
                 username = jwtUtility.extractUsername(token);
             }
 
@@ -76,5 +79,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         response.setStatus(status.value());
         response.setContentType("application/json");
         response.getWriter().write(objectMapper.writeValueAsString(error));
+    }
+
+    private String getTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (!Objects.isNull(cookies)) {
+            for (Cookie cookie : cookies) {
+                System.out.println(cookie.getName());
+                if (cookie.getName().equals("session_token")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

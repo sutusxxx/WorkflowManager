@@ -1,6 +1,6 @@
 package WorkflowManager.project.model;
 
-public class UpdateProjectRequest {
+public class UpdateProjectInput {
     private String name;
     private String description;
     private Boolean isPrivate;

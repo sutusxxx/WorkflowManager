@@ -11,7 +11,6 @@ import WorkflowManager.project.dao.ProjectDAO;
 import WorkflowManager.user.User;
 import WorkflowManager.user.dao.UserDAO;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,31 +51,12 @@ public class IssueService {
         this.authContext = authContext;
     }
 
-    public List<IssueDTO> getAllIssues(Long parentId, Long projectId, IssueType type, String status) {
-        Specification<Issue> spec = Specification
-                .where(IssueSpecification.hasProject(projectId))
-                .and(IssueSpecification.hasType(type));
-
-        if (parentId != null) {
-            spec = spec.and(IssueSpecification.hasParent(parentId));
-        }
-
-        return issueDAO.findAll().stream().map(issueConverter::convertToDTO).toList();
+    public List<Issue> getIssuesByProjectId(Long projectId) {
+        return issueDAO.findByProjectId(projectId);
     }
 
-    public List<IssueSummaryDTO> getIssuesByProjectId(Long projectId) {
-        List<Issue> issues = issueDAO.findByProjectId(projectId);
-        return issues.stream().map(issueConverter::convertToSummaryDTO).toList();
-    }
-
-    public IssueTreeDTO getTree(Long id) {
-        Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
-        return issueConverter.convertToTreeDTO(issue);
-    }
-
-    public IssueDTO getIssueById(Long id) {
-        Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
-        return issueConverter.convertToDTO(issue);
+    public Issue getIssueById(Long id) {
+        return issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
     }
 
     public Issue getIssueByKey(String key) {
@@ -93,7 +73,7 @@ public class IssueService {
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
 
-        Issue issue = issueConverter.convertFromRequest(input);
+        Issue issue = issueConverter.convertFromInput(input);
         issue.setStatus(INITIAL_STATUS);
         issue.setProject(project);
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
@@ -111,26 +91,26 @@ public class IssueService {
     }
 
     @Transactional
-    public Issue updateIssue(Long id, UpdateIssueRequest request) {
+    public Issue updateIssue(Long id, UpdateIssueInput input) {
         User currentUser = authContext.getCurrentUser();
 
         Issue issue = issueDAO.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
 
-        if (request.getTitle() != null) {
-            issue.setTitle(request.getTitle());
+        if (input.getTitle() != null) {
+            issue.setTitle(input.getTitle());
         }
 
-        if (request.getStatus() != null) {
-            issue.setStatus(request.getStatus());
+        if (input.getStatus() != null) {
+            issue.setStatus(input.getStatus());
         }
 
-        if (request.getAssignedUserId() != null) {
-            User user = userDAO.findById(request.getAssignedUserId()).orElseThrow();
+        if (input.getAssignedUserId() != null) {
+            User user = userDAO.findById(input.getAssignedUserId()).orElseThrow();
             issue.setAssigned(user);
         }
 
-        if (request.getReporterUserId() != null) {
-            User user = userDAO.findById(request.getReporterUserId()).orElseThrow();
+        if (input.getReporterUserId() != null) {
+            User user = userDAO.findById(input.getReporterUserId()).orElseThrow();
             issue.setReporter(user);
         }
 

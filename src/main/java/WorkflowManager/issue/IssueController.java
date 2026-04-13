@@ -1,7 +1,7 @@
 package WorkflowManager.issue;
 
 import WorkflowManager.issue.model.CreateIssueInput;
-import WorkflowManager.issue.model.UpdateIssueRequest;
+import WorkflowManager.issue.model.UpdateIssueInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -29,8 +29,8 @@ public class IssueController {
     }
 
     @MutationMapping
-    public Issue updateIssue(@Argument Long id, @Argument UpdateIssueRequest issue) {
-        return issueService.updateIssue(id, issue);
+    public Issue updateIssue(@Argument Long id, @Argument UpdateIssueInput input) {
+        return issueService.updateIssue(id, input);
     }
 
     @MutationMapping

@@ -3,7 +3,7 @@ package WorkflowManager.issue.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class UpdateIssueRequest {
+public class UpdateIssueInput {
     private String title;
     private String description;
     private Short storyPoints;

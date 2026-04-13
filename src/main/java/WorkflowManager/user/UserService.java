@@ -1,6 +1,5 @@
 package WorkflowManager.user;
 
-import WorkflowManager.auth.AuthContext;
 import WorkflowManager.user.dao.UserDAO;
 import WorkflowManager.user.model.UserDetailsDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,12 +12,9 @@ public class UserService implements UserDetailsService {
 
     private final UserConverter userConverter;
 
-    private final AuthContext authContext;
-
-    public UserService(UserDAO userDAO, UserConverter userConverter, AuthContext authContext) {
+    public UserService(UserDAO userDAO, UserConverter userConverter) {
         this.userDAO = userDAO;
         this.userConverter = userConverter;
-        this.authContext = authContext;
     }
 
     @Override

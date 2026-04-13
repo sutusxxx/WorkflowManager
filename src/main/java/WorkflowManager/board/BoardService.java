@@ -1,8 +1,6 @@
 package WorkflowManager.board;
 
 import WorkflowManager.board.dao.BoardDAO;
-import WorkflowManager.board.model.SprintDTO;
-import WorkflowManager.common.exceptions.BoardNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,11 +13,7 @@ public class BoardService {
         this.boardDAO = boardDAO;
     }
 
-    public SprintDTO getActiveSprintByProjectId(Long projectId) {
-        Optional<Sprint> activeSprint = boardDAO.findActiveSprintByProjectId(projectId);
-
-        if (activeSprint.isEmpty()) return null;
-
-        return null;
+    public Sprint getActiveSprintByProjectId(Long projectId) {
+        return boardDAO.findActiveSprintByProjectId(projectId).orElse(null);
     }
 }

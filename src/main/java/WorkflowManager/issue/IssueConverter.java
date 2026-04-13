@@ -19,35 +19,8 @@ public class IssueConverter {
         return mapper.map(issue, IssueSummaryDTO.class);
     }
 
-    public IssueDTO convertToDTO(Issue issue) {
-        IssueDTO dto = mapper.map(issue, IssueDTO.class);
-        List<IssueSummaryDTO> subIssues = issue.getChildren().stream()
-                .map(this::convertToSummaryDTO)
-                .toList();
-        dto.setSubIssues(subIssues);
-
-        if (issue.getParent() != null) {
-            dto.setParentId(issue.getParent().getId());
-        }
-
-        dto.setProjectId(issue.getProject().getId());
-        List<CommentDTO> commentDTOs = issue.getComments().stream().map(comment -> {
-            CommentDTO commentDTO = new CommentDTO();
-            commentDTO.setId(comment.getId());
-            commentDTO.setText(comment.getText());
-            commentDTO.setCreatedAt(comment.getCreatedAt());
-            UserSummaryDTO userSummaryDTO = new UserSummaryDTO();
-            userSummaryDTO.setId(comment.getCreatedBy().getId());
-            userSummaryDTO.setUsername(comment.getCreatedBy().getUsername());
-            commentDTO.setCreatedBy(userSummaryDTO);
-            return commentDTO;
-        }).toList();
-        dto.setComments(commentDTOs);
-        return dto;
-    }
-
-    public Issue convertFromRequest(CreateIssueInput request) {
-        return mapper.map(request, Issue.class);
+    public Issue convertFromInput(CreateIssueInput input) {
+        return mapper.map(input, Issue.class);
     }
 
     public IssueTreeDTO convertToTreeDTO(Issue issue) {

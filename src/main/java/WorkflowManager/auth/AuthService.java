@@ -1,6 +1,5 @@
 package WorkflowManager.auth;
 
-import WorkflowManager.auth.model.AuthenticationResponseDTO;
 import WorkflowManager.auth.model.LoginRequest;
 import WorkflowManager.auth.model.RegisterRequest;
 import WorkflowManager.user.User;
@@ -19,20 +18,18 @@ public class AuthService {
     private final UserConverter userConverter;
 
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtility jwtUtility;
     private final AuthenticationManager authenticationManager;
     private final AuthContext authContext;
 
-    public AuthService(UserDAO userDAO, UserConverter userConverter, PasswordEncoder passwordEncoder, JwtUtility jwtUtility, AuthenticationManager authenticationManager, AuthContext authContext) {
+    public AuthService(UserDAO userDAO, UserConverter userConverter, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, AuthContext authContext) {
         this.userDAO = userDAO;
         this.userConverter = userConverter;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtility = jwtUtility;
         this.authenticationManager = authenticationManager;
         this.authContext = authContext;
     }
 
-    public AuthenticationResponseDTO authenticate(LoginRequest request) {
+    public User authenticate(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -40,28 +37,19 @@ public class AuthService {
                 )
         );
 
-        User user = userDAO.findByUsername(request.getUsername()).orElseThrow();
-
-        String accessToken = jwtUtility.generateToken(user.getUsername());
-
-        return new AuthenticationResponseDTO(accessToken, user.getUsername(), user.getEmail());
+        return userDAO.findByUsername(request.getUsername()).orElseThrow();
     }
 
-    public AuthenticationResponseDTO register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userDAO.save(user);
-
-        String accessToken = jwtUtility.generateToken(user.getUsername());
-
-        return new AuthenticationResponseDTO(accessToken, user.getUsername(), user.getEmail());
     }
 
-    public UserInfoDTO getCurrent() {
-        User currentUser = authContext.getCurrentUser();
-        return userConverter.convertToInfoDTO(currentUser);
+    public UserInfoDTO getCurrent(User user) {
+        return userConverter.convertToInfoDTO(user);
     }
 }
