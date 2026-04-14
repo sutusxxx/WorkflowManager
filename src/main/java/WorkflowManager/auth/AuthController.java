@@ -6,6 +6,8 @@ import WorkflowManager.user.User;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.tomcat.util.http.SameSiteCookies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     private final JwtUtility jwtUtility;
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     public AuthController(AuthService authService, JwtUtility jwtUtility) {
@@ -37,6 +41,7 @@ public class AuthController {
                 .sameSite(SameSiteCookies.LAX.toString())
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        log.info("session '{}' created", cookie);
         return ResponseEntity.ok().build();
     }
 
@@ -57,7 +62,7 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
+        log.info("session '{}' removed", cookie);
         return ResponseEntity.ok().build();
     }
 
