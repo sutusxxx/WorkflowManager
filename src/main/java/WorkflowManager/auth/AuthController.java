@@ -2,7 +2,6 @@ package WorkflowManager.auth;
 
 import WorkflowManager.auth.model.LoginRequest;
 import WorkflowManager.auth.model.RegisterRequest;
-import WorkflowManager.user.User;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.tomcat.util.http.SameSiteCookies;

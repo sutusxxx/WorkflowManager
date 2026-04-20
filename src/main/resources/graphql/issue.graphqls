@@ -1,11 +1,17 @@
 extend type Query {
-    issueByKey(key: String!): Issue
+    issueByKey(key: String!): Issue!
+    issueById(id: ID!): Issue!
 }
 
 extend type Mutation {
     createIssue(input: CreateIssueInput!): Issue!
     updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
     deleteIssue(id: ID!): Boolean!
+    changeStatus(issueId: ID!, input: TransitionIssueInput!): Issue!
+}
+
+input TransitionIssueInput {
+    newStatusId: ID!
 }
 
 input CreateIssueInput {
@@ -17,9 +23,6 @@ input CreateIssueInput {
     parentId: ID
     projectId: ID!
     type: IssueType!
-    status: String
-    assignedUserId: ID
-    reporterUserId: ID
 }
 
 input UpdateIssueInput {
@@ -28,9 +31,6 @@ input UpdateIssueInput {
     storyPoints: Short
     priority: Priority
     dueDate: DateTime
-    status: String
-    assignedUserId: ID
-    reporterUserId: ID
 }
 
 type Issue {
@@ -41,11 +41,13 @@ type Issue {
     priority: Priority
     storyPoints: Short
     dueDate: DateTime
-    status: String
-    project: Project
+    status: Status!
+    project: Project!
     type: IssueType
     parent: Issue
     children: [Issue!]!
+    outgoingLinks: [IssueLink!]!
+    incomingLinks: [IssueLink!]!
     createdAt: String!
     updatedAt: String!
     createdBy: User!
@@ -55,9 +57,16 @@ type Issue {
     comments: [Comment!]!
 }
 
-type LinkedIssue {
-    linkType: IssueLinkType
-    targetIssueId: ID
+type Status {
+    id: ID!
+    name: String!
+}
+
+type IssueLink {
+    id: ID!
+    linkType: IssueLinkType!
+    source: Issue!
+    target: Issue!
 }
 
 type Comment {

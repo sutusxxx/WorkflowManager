@@ -2,10 +2,7 @@ package WorkflowManager.auth;
 
 import WorkflowManager.auth.model.LoginRequest;
 import WorkflowManager.auth.model.RegisterRequest;
-import WorkflowManager.user.User;
-import WorkflowManager.user.UserConverter;
-import WorkflowManager.user.dao.UserDAO;
-import WorkflowManager.user.model.UserInfoDTO;
+import WorkflowManager.auth.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,20 +10,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    private final UserDAO userDAO;
-
-    private final UserConverter userConverter;
+    private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final AuthContext authContext;
 
-    public AuthService(UserDAO userDAO, UserConverter userConverter, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, AuthContext authContext) {
-        this.userDAO = userDAO;
-        this.userConverter = userConverter;
+    public AuthService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.authContext = authContext;
     }
 
     public User authenticate(LoginRequest request) {
@@ -37,7 +32,7 @@ public class AuthService {
                 )
         );
 
-        return userDAO.findByUsername(request.getUsername()).orElseThrow();
+        return userRepository.findByUsername(request.getUsername()).orElseThrow();
     }
 
     public void register(RegisterRequest request) {
@@ -46,6 +41,6 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        userDAO.save(user);
+        userRepository.save(user);
     }
 }

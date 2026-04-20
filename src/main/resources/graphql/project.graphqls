@@ -1,7 +1,6 @@
 extend type Query {
     projects: [Project!]!
     projectById(id: ID!): Project
-    issues(projectId: ID!): [Issue!]!
 }
 
 extend type Mutation {
@@ -19,4 +18,16 @@ type Project {
     id: ID!
     name: String!
     key: String!
+    description: String
+    issues: [Issue!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    createdBy: User!
+    modifiedBy: User!
+    visibility: Visibility!
+}
+
+enum Visibility {
+    PRIVATE
+    PUBLIC
 }
