@@ -41,6 +41,8 @@ const issueCreate   = { id: "p-issue-c",        name: "ISSUE_CREATE" };
 const issueDelete   = { id: "p-issue-d",        name: "ISSUE_DELETE" };
 const userManage    = { id: "p-user-manage",    name: "USER_MANAGE" };
 
+// ---- Users ---------------------------------------------------
+
 db.users.insertMany([
     {
         _id:              "user-alice",

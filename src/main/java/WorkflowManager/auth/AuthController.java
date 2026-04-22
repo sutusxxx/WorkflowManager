@@ -51,7 +51,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("session_token", "")
                 .httpOnly(true)
@@ -62,7 +62,6 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        log.info("session '{}' removed", cookie);
         return ResponseEntity.ok().build();
     }
 
