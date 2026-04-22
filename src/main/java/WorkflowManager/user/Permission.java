@@ -16,8 +16,6 @@ public class Permission {
     @Indexed(unique = true)
     private String name;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-
     public static Permission valueOf(String name) {
         Permission permission = new Permission();
         permission.setName(name);

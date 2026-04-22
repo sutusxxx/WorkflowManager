@@ -33,6 +33,14 @@ db.issues.drop();
 
 const BCRYPT_PASSWORD = "$2a$10$hX06PoLxl6CW7R5x/83J4OH9GPKX/sU2lbymR05ZLQcjgi8zF4ICO";
 
+// ---- Permissions ---------------------------------------------
+
+const projectCreate = { id: "p-project-c",      name: "PROJECT_CREATE" };
+const projectDelete = { id: "p-project-d",      name: "PROJECT_DELETE" };
+const issueCreate   = { id: "p-issue-c",        name: "ISSUE_CREATE" };
+const issueDelete   = { id: "p-issue-d",        name: "ISSUE_DELETE" };
+const userManage    = { id: "p-user-manage",    name: "USER_MANAGE" };
+
 db.users.insertMany([
     {
         _id:              "user-alice",
@@ -40,7 +48,7 @@ db.users.insertMany([
         username:         "alice",
         password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-120),
-        permissions:      ["PROJECT_CREATE", "PROJECT_DELETE", "ISSUE_CREATE", "ISSUE_DELETE", "USER_MANAGE"]
+        permissions:      [projectCreate, projectDelete, issueCreate, issueDelete, userManage]
     },
     {
         _id:              "user-bob",
@@ -48,7 +56,7 @@ db.users.insertMany([
         username:         "bob",
         password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-90),
-        permissions:      ["ISSUE_CREATE", "ISSUE_DELETE", "PROJECT_CREATE"]
+        permissions:      [issueCreate, issueDelete, projectCreate]
     },
     {
         _id:              "user-carol",
@@ -56,7 +64,7 @@ db.users.insertMany([
         username:         "carol",
         password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-60),
-        permissions:      ["PROJECT_CREATE", "PROJECT_DELETE", "ISSUE_CREATE", "ISSUE_DELETE", "USER_MANAGE"]
+        permissions:      [projectCreate, projectDelete, issueCreate, issueDelete, userManage]
     },
     {
         _id:              "user-dave",
@@ -64,7 +72,7 @@ db.users.insertMany([
         username:         "dave",
         password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-45),
-        permissions:      ["ISSUE_CREATE"]
+        permissions:      [issueCreate]
     },
     {
         _id:              "user-eve",
@@ -72,7 +80,7 @@ db.users.insertMany([
         username:         "eve",
         password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-30),
-        permissions:      ["ISSUE_CREATE"]
+        permissions:      [issueCreate]
     },
     {
         _id:              "user-frank",
@@ -80,7 +88,7 @@ db.users.insertMany([
         username:         "frank",
         password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-20),
-        permissions:      ["ISSUE_CREATE", "ISSUE_DELETE", "PROJECT_CREATE"]
+        permissions:      [issueCreate, issueDelete, projectCreate]
     }
 ]);
 
