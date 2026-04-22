@@ -285,7 +285,7 @@ const taskSetupJWT = {
     statusId:    "s-done",
     projectId:   "proj-alpha-001",
     type:        "TASK",
-    parentId:    "issue-alpha-003",
+    parentId:    null,
     links:       [],
     createdAt:   isoDate(-45),
     updatedAt:   isoDate(-20),

@@ -1,7 +1,7 @@
 package WorkflowManager.project.resolver;
 
+import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.IssueService;
-import WorkflowManager.issue.model.IssueDTO;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectService;
 import WorkflowManager.user.UserService;
@@ -40,12 +40,17 @@ public class ProjectQueryResolver {
     }
 
     @SchemaMapping(typeName = "Project", field = "issues")
-    public List<IssueDTO> issues(Project project) {
+    public List<Issue> issues(Project project) {
         return issueService.getIssuesByProjectId(project.getId());
     }
 
     @BatchMapping(typeName = "Project", field = "createdBy")
     public Map<Project, UserSummaryDTO> createdBy(List<Project> projects) {
         return userService.batchLoadUsers(projects, Project::getCreatedBy);
+    }
+
+    @BatchMapping(typeName = "Project", field = "modifiedBy")
+    public Map<Project, UserSummaryDTO> modifiedBy(List<Project> projects) {
+        return userService.batchLoadUsers(projects, Project::getModifiedBy);
     }
 }

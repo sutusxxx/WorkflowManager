@@ -1,8 +1,8 @@
 package WorkflowManager.issue.resolver;
 
+import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.IssueService;
 import WorkflowManager.issue.model.CreateIssueInput;
-import WorkflowManager.issue.model.IssueDTO;
 import WorkflowManager.issue.model.TransitionIssueInput;
 import WorkflowManager.issue.model.UpdateIssueInput;
 import org.slf4j.Logger;
@@ -25,17 +25,17 @@ public class IssueMutationResolver {
     }
 
     @MutationMapping
-    public IssueDTO createIssue(@Argument CreateIssueInput input, @AuthenticationPrincipal UserDetails user) {
+    public Issue createIssue(@Argument CreateIssueInput input, @AuthenticationPrincipal UserDetails user) {
         return issueService.createIssue(input, user);
     }
 
     @MutationMapping
-    public IssueDTO updateIssue(@Argument String id, @Argument UpdateIssueInput input, @AuthenticationPrincipal UserDetails user) {
+    public Issue updateIssue(@Argument String id, @Argument UpdateIssueInput input, @AuthenticationPrincipal UserDetails user) {
         return issueService.updateIssue(id, input, user);
     }
 
     @MutationMapping
-    public IssueDTO changeStatus(@Argument String issueId, @Argument TransitionIssueInput input) {
+    public Issue changeStatus(@Argument String issueId, @Argument TransitionIssueInput input) {
         return issueService.changeStatus(issueId, input.newStatusId());
     }
 

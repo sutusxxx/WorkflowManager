@@ -41,25 +41,23 @@ public class IssueService {
         this.issueConverter = issueConverter;
     }
 
-    public List<IssueDTO> getIssuesByProjectId(String projectId) {
-        return issueRepository.findByProjectId(projectId).stream().map(issueConverter::convertToDTO).toList();
+    public List<Issue> getIssuesByProjectId(String projectId) {
+        return issueRepository.findByProjectId(projectId);
     }
 
-    public IssueDTO getIssueById(String id) {
-        Issue issue = issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
-        return issueConverter.convertToDTO(issue);
+    public Issue getIssueById(String id) {
+        return issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
     }
 
-    public IssueDTO getIssueByKey(String key) {
-        Issue issue = issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
-        return issueConverter.convertToDTO(issue);
+    public Issue getIssueByKey(String key) {
+        return issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
     }
 
-    public List<IssueDTO> getIssuesByParentId(String parentId) {
-        return issueRepository.findByParentId(parentId).stream().map(issueConverter::convertToDTO).toList();
+    public List<Issue> getIssuesByParentId(String parentId) {
+        return issueRepository.findByParentId(parentId);
     }
 
-    public IssueDTO createIssue(CreateIssueInput input, UserDetails user) {
+    public Issue createIssue(CreateIssueInput input, UserDetails user) {
         String projectId = input.projectId();
 
         Project project = projectRepository.findById(projectId)
@@ -79,11 +77,10 @@ public class IssueService {
             issue.setParentId(parent.getId());
         }
 
-        Issue savedIssue = issueRepository.save(issue);
-        return issueConverter.convertToDTO(savedIssue);
+        return issueRepository.save(issue);
     }
 
-    public IssueDTO updateIssue(String id, UpdateIssueInput input, UserDetails user) {
+    public Issue updateIssue(String id, UpdateIssueInput input, UserDetails user) {
         Issue issue = issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
 
         if (input.title() != null) issue.setTitle(input.title());
@@ -91,10 +88,10 @@ public class IssueService {
         if (input.storyPoints() != null) issue.setStoryPoints(input.storyPoints());
         if (input.dueDate() != null) issue.setDueDate(input.dueDate());
 
-        return issueConverter.convertToDTO(issue);
+        return issueRepository.save(issue);
     }
 
-    public IssueDTO changeStatus(String issueId, String newStatusId) {
+    public Issue changeStatus(String issueId, String newStatusId) {
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IssueNotFoundException(issueId));
 
@@ -110,8 +107,7 @@ public class IssueService {
 
         issue.setStatusId(newStatusId);
         issue.setUpdatedAt(LocalDateTime.now());
-        Issue savedIssue = issueRepository.save(issue);
-        return issueConverter.convertToDTO(savedIssue);
+        return issueRepository.save(issue);
     }
 
     public void deleteIssue(String id) {
@@ -200,16 +196,15 @@ public class IssueService {
         return source;
     }
 
-    public Map<IssueDTO, List<IssueDTO>> loadChildren(List<IssueDTO> issues) {
+    public Map<Issue, List<Issue>> loadChildren(List<Issue> issues) {
         Set<String> parentIds = issues.stream()
-                .map(IssueDTO::getId)
+                .map(Issue::getId)
                 .collect(Collectors.toSet());
 
-        Map<String, List<IssueDTO>> grouped = issueRepository
+        Map<String, List<Issue>> grouped = issueRepository
                 .findByParentIdIn(parentIds)       // single DB call
                 .stream()
-                .map(issueConverter::convertToDTO)
-                .collect(Collectors.groupingBy(IssueDTO::getParentId));
+                .collect(Collectors.groupingBy(Issue::getParentId));
 
         return issues.stream().collect(Collectors.toMap(
                 i -> i,
