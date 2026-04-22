@@ -1,7 +1,8 @@
-package WorkflowManager.auth;
+package WorkflowManager.user;
 
-import WorkflowManager.auth.model.UserDetailsDTO;
-import WorkflowManager.auth.repository.UserRepository;
+import WorkflowManager.user.model.UserDetailsDTO;
+import WorkflowManager.user.model.UserSummaryDTO;
+import WorkflowManager.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,10 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username " + username));
         return userConverter.convertToDTO(user);
+    }
+
+    public UserSummaryDTO getUserSummaryById(String id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return userConverter.convertToSummaryDTO(user);
     }
 }

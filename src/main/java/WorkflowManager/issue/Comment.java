@@ -1,6 +1,6 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.auth.User;
+import WorkflowManager.user.User;
 import lombok.Data;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package WorkflowManager.auth;
+package WorkflowManager.user;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

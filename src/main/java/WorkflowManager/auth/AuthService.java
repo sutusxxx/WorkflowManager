@@ -2,7 +2,8 @@ package WorkflowManager.auth;
 
 import WorkflowManager.auth.model.LoginRequest;
 import WorkflowManager.auth.model.RegisterRequest;
-import WorkflowManager.auth.repository.UserRepository;
+import WorkflowManager.user.repository.UserRepository;
+import WorkflowManager.user.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,19 +28,19 @@ public class AuthService {
     public User authenticate(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
+                        request.username(),
+                        request.password()
                 )
         );
 
-        return userRepository.findByUsername(request.getUsername()).orElseThrow();
+        return userRepository.findByUsername(request.username()).orElseThrow();
     }
 
     public void register(RegisterRequest request) {
         User user = new User();
-        user.setEmail(request.getEmail());
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.email());
+        user.setUsername(request.username());
+        user.setPassword(passwordEncoder.encode(request.password()));
 
         userRepository.save(user);
     }

@@ -2,8 +2,6 @@ package WorkflowManager.issue.resolver;
 
 import WorkflowManager.issue.IssueService;
 import WorkflowManager.issue.model.IssueDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
@@ -16,7 +14,6 @@ import java.util.Map;
 @Controller
 public class IssueQueryResolver {
     private final IssueService issueService;
-    private static final Logger log = LoggerFactory.getLogger(IssueQueryResolver.class);
 
     @Autowired
     public IssueQueryResolver(IssueService issueService) {

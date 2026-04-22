@@ -1,6 +1,6 @@
-package WorkflowManager.auth.model;
+package WorkflowManager.user.model;
 
-import WorkflowManager.auth.User;
+import WorkflowManager.user.User;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

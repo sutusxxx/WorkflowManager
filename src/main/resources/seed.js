@@ -19,8 +19,72 @@ function isoDate(offsetDays = 0) {
 
 // --- Clean slate ---------------------------------------------
 
+db.users.drop();
 db.projects.drop();
 db.issues.drop();
+
+// =============================================================
+//  USERS
+// =============================================================
+//  Passwords below are BCrypt hashes of "password" — replace
+//  with your own hashed values before using in production.
+//  BCrypt of "password":
+//  $2a$10$hX06PoLxl6CW7R5x/83J4OH9GPKX/sU2lbymR05ZLQcjgi8zF4ICO
+
+const BCRYPT_PASSWORD = "$2a$10$hX06PoLxl6CW7R5x/83J4OH9GPKX/sU2lbymR05ZLQcjgi8zF4ICO";
+
+db.users.insertMany([
+    {
+        _id:              "user-alice",
+        email:            "alice@example.com",
+        username:         "alice",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-120),
+        permissions:      ["PROJECT_CREATE", "PROJECT_DELETE", "ISSUE_CREATE", "ISSUE_DELETE", "USER_MANAGE"]
+    },
+    {
+        _id:              "user-bob",
+        email:            "bob@example.com",
+        username:         "bob",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-90),
+        permissions:      ["ISSUE_CREATE", "ISSUE_DELETE", "PROJECT_CREATE"]
+    },
+    {
+        _id:              "user-carol",
+        email:            "carol@example.com",
+        username:         "carol",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-60),
+        permissions:      ["PROJECT_CREATE", "PROJECT_DELETE", "ISSUE_CREATE", "ISSUE_DELETE", "USER_MANAGE"]
+    },
+    {
+        _id:              "user-dave",
+        email:            "dave@example.com",
+        username:         "dave",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-45),
+        permissions:      ["ISSUE_CREATE"]
+    },
+    {
+        _id:              "user-eve",
+        email:            "eve@example.com",
+        username:         "eve",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-30),
+        permissions:      ["ISSUE_CREATE"]
+    },
+    {
+        _id:              "user-frank",
+        email:            "frank@example.com",
+        username:         "frank",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-20),
+        permissions:      ["ISSUE_CREATE", "ISSUE_DELETE", "PROJECT_CREATE"]
+    }
+]);
+
+print("✔  Inserted " + db.users.countDocuments() + " users");
 
 // =============================================================
 //  PROJECTS

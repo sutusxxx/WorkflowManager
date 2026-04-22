@@ -1,7 +1,8 @@
 package WorkflowManager.auth;
 
-import WorkflowManager.auth.repository.UserRepository;
+import WorkflowManager.user.repository.UserRepository;
 import WorkflowManager.common.exceptions.UnauthorizedException;
+import WorkflowManager.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

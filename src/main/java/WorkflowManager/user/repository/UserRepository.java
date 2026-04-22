@@ -1,6 +1,6 @@
-package WorkflowManager.auth.repository;
+package WorkflowManager.user.repository;
 
-import WorkflowManager.auth.User;
+import WorkflowManager.user.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

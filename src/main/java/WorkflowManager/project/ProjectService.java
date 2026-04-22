@@ -6,7 +6,6 @@ import WorkflowManager.issue.model.CreateStatusInput;
 import WorkflowManager.project.model.CreateProjectInput;
 import WorkflowManager.project.model.UpdateProjectInput;
 import WorkflowManager.project.repository.ProjectRepository;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,19 +16,15 @@ public class ProjectService {
 
     private final ProjectConverter projectConverter;
 
-    private final MongoTemplate mongoTemplate;
-
     public ProjectService(
             ProjectRepository projectRepository,
-            ProjectConverter projectConverter, MongoTemplate mongoTemplate) {
+            ProjectConverter projectConverter) {
         this.projectRepository = projectRepository;
         this.projectConverter = projectConverter;
-        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Project> getAllProjects() {
         List<Project> projects = projectRepository.findAll();
-        System.out.println("Project count: " + projects.size());
         return projects;
     }
 

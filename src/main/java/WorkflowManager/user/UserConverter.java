@@ -1,6 +1,7 @@
-package WorkflowManager.auth;
+package WorkflowManager.user;
 
-import WorkflowManager.auth.model.UserDetailsDTO;
+import WorkflowManager.user.model.UserDetailsDTO;
+import WorkflowManager.user.model.UserSummaryDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -14,5 +15,9 @@ public class UserConverter {
 
     public UserDetailsDTO convertToDTO(User user) {
         return new UserDetailsDTO(user);
+    }
+
+    public UserSummaryDTO convertToSummaryDTO(User user) {
+        return mapper.map(user, UserSummaryDTO.class);
     }
 }
