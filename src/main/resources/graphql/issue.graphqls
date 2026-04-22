@@ -46,8 +46,7 @@ type Issue {
     type: IssueType
     parent: Issue
     children: [Issue!]!
-    outgoingLinks: [IssueLink!]!
-    incomingLinks: [IssueLink!]!
+    links: [IssueLink!]!
     createdAt: String!
     updatedAt: String!
     createdBy: User!

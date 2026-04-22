@@ -1,6 +1,6 @@
 package WorkflowManager.graphqlserver;
 
-import WorkflowManager.graphql.issue.resolver.IssueQueryResolver;
+import WorkflowManager.issue.resolver.IssueQueryResolver;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest;
