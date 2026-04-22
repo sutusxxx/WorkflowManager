@@ -4,23 +4,29 @@ import WorkflowManager.issue.IssueService;
 import WorkflowManager.issue.model.IssueDTO;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectService;
+import WorkflowManager.user.UserService;
+import WorkflowManager.user.model.UserSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ProjectQueryResolver {
     private final ProjectService projectService;
     private final IssueService issueService;
+    private final UserService userService;
 
     @Autowired
-    public ProjectQueryResolver(ProjectService projectService, IssueService issueService) {
+    public ProjectQueryResolver(ProjectService projectService, IssueService issueService, UserService userService) {
         this.projectService = projectService;
         this.issueService = issueService;
+        this.userService = userService;
     }
 
     @QueryMapping
@@ -36,5 +42,10 @@ public class ProjectQueryResolver {
     @SchemaMapping(typeName = "Project", field = "issues")
     public List<IssueDTO> issues(Project project) {
         return issueService.getIssuesByProjectId(project.getId());
+    }
+
+    @BatchMapping(typeName = "Project", field = "createdBy")
+    public Map<Project, UserSummaryDTO> createdBy(List<Project> projects) {
+        return userService.batchLoadUsers(projects, Project::getCreatedBy);
     }
 }

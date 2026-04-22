@@ -7,6 +7,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -25,8 +32,20 @@ public class UserService implements UserDetailsService {
         return userConverter.convertToDTO(user);
     }
 
-    public UserSummaryDTO getUserSummaryById(String id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return userConverter.convertToSummaryDTO(user);
+    public <T> Map<T, UserSummaryDTO> batchLoadUsers(List<T> objects, Function<T, String> idExtractor) {
+        Set<String> userIds = objects.stream()
+                .map(idExtractor)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<String, UserSummaryDTO> usersById = userRepository.findAllById(userIds)
+                .stream()
+                .map(userConverter::convertToSummaryDTO)
+                .collect(Collectors.toMap(UserSummaryDTO::getId, Function.identity()));
+
+        return objects.stream().collect(Collectors.toMap(
+                Function.identity(),
+                object -> usersById.get(idExtractor.apply(object))
+        ));
     }
 }
