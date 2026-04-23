@@ -102,16 +102,16 @@ print("✔  Inserted " + db.users.countDocuments() + " users");
 
 // ---- Statuses -----------------------------------------------
 
-const statusTodo          = { id: "s-todo",        name: "To Do",       category: "TODO",        color: "#6B778C", displayOrder: 1, isDefault: true,  allowedTransitionIds: ["s-inprogress"] };
-const statusInProgress    = { id: "s-inprogress",  name: "In Progress", category: "IN_PROGRESS", color: "#0052CC", displayOrder: 2, isDefault: false, allowedTransitionIds: ["s-review", "s-todo"] };
-const statusReview        = { id: "s-review",      name: "In Review",   category: "IN_PROGRESS", color: "#FF991F", displayOrder: 3, isDefault: false, allowedTransitionIds: ["s-inprogress", "s-done"] };
-const statusDone          = { id: "s-done",        name: "Done",        category: "DONE",        color: "#36B37E", displayOrder: 4, isDefault: false, allowedTransitionIds: [] };
+const statusTodo          = { _id: "s-todo",        name: "To Do",       category: "TODO",        color: "#6B778C", displayOrder: 1, isDefault: true,  allowedTransitionIds: ["s-inprogress"] };
+const statusInProgress    = { _id: "s-inprogress",  name: "In Progress", category: "IN_PROGRESS", color: "#0052CC", displayOrder: 2, isDefault: false, allowedTransitionIds: ["s-review", "s-todo"] };
+const statusReview        = { _id: "s-review",      name: "In Review",   category: "IN_PROGRESS", color: "#FF991F", displayOrder: 3, isDefault: false, allowedTransitionIds: ["s-inprogress", "s-done"] };
+const statusDone          = { _id: "s-done",        name: "Done",        category: "DONE",        color: "#36B37E", displayOrder: 4, isDefault: false, allowedTransitionIds: [] };
 
 // Second project statuses
-const statusBacklog       = { id: "b-backlog",     name: "Backlog",     category: "TODO",        color: "#6B778C", displayOrder: 1, isDefault: true,  allowedTransitionIds: ["b-dev"] };
-const statusDev           = { id: "b-dev",         name: "Development", category: "IN_PROGRESS", color: "#0052CC", displayOrder: 2, isDefault: false, allowedTransitionIds: ["b-qa", "b-backlog"] };
-const statusQA            = { id: "b-qa",          name: "QA",          category: "IN_PROGRESS", color: "#FF991F", displayOrder: 3, isDefault: false, allowedTransitionIds: ["b-dev", "b-released"] };
-const statusReleased      = { id: "b-released",    name: "Released",    category: "DONE",        color: "#36B37E", displayOrder: 4, isDefault: false, allowedTransitionIds: [] };
+const statusBacklog       = { _id: "b-backlog",     name: "Backlog",     category: "TODO",        color: "#6B778C", displayOrder: 1, isDefault: true,  allowedTransitionIds: ["b-dev"] };
+const statusDev           = { _id: "b-dev",         name: "Development", category: "IN_PROGRESS", color: "#0052CC", displayOrder: 2, isDefault: false, allowedTransitionIds: ["b-qa", "b-backlog"] };
+const statusQA            = { _id: "b-qa",          name: "QA",          category: "IN_PROGRESS", color: "#FF991F", displayOrder: 3, isDefault: false, allowedTransitionIds: ["b-dev", "b-released"] };
+const statusReleased      = { _id: "b-released",    name: "Released",    category: "DONE",        color: "#36B37E", displayOrder: 4, isDefault: false, allowedTransitionIds: [] };
 
 // ---- Project documents --------------------------------------
 

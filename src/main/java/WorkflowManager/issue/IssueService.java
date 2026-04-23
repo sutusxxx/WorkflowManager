@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -209,6 +211,27 @@ public class IssueService {
         return issues.stream().collect(Collectors.toMap(
                 i -> i,
                 i -> grouped.getOrDefault(i.getId(), List.of())
+        ));
+    }
+
+    public Map<Issue, Status> batchLoadStatuses(List<Issue> issues) {
+        Set<String> projectIds = issues.stream()
+                .map(Issue::getProjectId)
+                .collect(Collectors.toSet());
+
+        Map<String, List<Status>> statusesByProjectId = projectRepository.findAllById(projectIds)
+                .stream()
+                .collect(Collectors.toMap(Project::getId, Project::getStatuses));
+
+        return issues.stream().collect(Collectors.toMap(
+                Function.identity(),
+                issue -> {
+                    List<Status> projectStatuses = statusesByProjectId.get(issue.getProjectId());
+                    return projectStatuses.stream()
+                            .filter(s -> Objects.equals(s.getId(), issue.getStatusId()))
+                            .findFirst()
+                            .orElseThrow();
+                }
         ));
     }
 
