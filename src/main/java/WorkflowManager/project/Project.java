@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +23,8 @@ public class Project {
     private Integer issueCounter = 0;
     private String description;
     private List<Status> statuses = new ArrayList<>();
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt;
+    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime updatedAt;
     private String createdBy;
     private String modifiedBy;
     private Visibility visibility;
