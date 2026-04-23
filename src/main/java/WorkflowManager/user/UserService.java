@@ -7,10 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,9 +40,8 @@ public class UserService implements UserDetailsService {
                 .map(userConverter::convertToSummaryDTO)
                 .collect(Collectors.toMap(UserSummaryDTO::getId, Function.identity()));
 
-        return objects.stream().collect(Collectors.toMap(
-                Function.identity(),
-                object -> usersById.get(idExtractor.apply(object))
-        ));
+        Map<T, UserSummaryDTO> result = new HashMap<>();
+        objects.forEach(object -> result.put(object, usersById.get(idExtractor.apply(object))));
+        return result;
     }
 }
