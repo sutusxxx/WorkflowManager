@@ -35,12 +35,15 @@ public class UserService implements UserDetailsService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
+        Map<T, UserSummaryDTO> result = new HashMap<>();
+
+        if (userIds.isEmpty()) return result;
+
         Map<String, UserSummaryDTO> usersById = userRepository.findAllById(userIds)
                 .stream()
                 .map(userConverter::convertToSummaryDTO)
                 .collect(Collectors.toMap(UserSummaryDTO::getId, Function.identity()));
 
-        Map<T, UserSummaryDTO> result = new HashMap<>();
         objects.forEach(object -> result.put(object, usersById.get(idExtractor.apply(object))));
         return result;
     }

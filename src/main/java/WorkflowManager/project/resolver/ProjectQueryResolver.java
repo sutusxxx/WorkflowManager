@@ -2,6 +2,7 @@ package WorkflowManager.project.resolver;
 
 import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.IssueService;
+import WorkflowManager.issue.Status;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.ProjectService;
 import WorkflowManager.user.UserService;

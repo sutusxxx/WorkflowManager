@@ -11,10 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -211,6 +208,26 @@ public class IssueService {
         return issues.stream().collect(Collectors.toMap(
                 i -> i,
                 i -> grouped.getOrDefault(i.getId(), List.of())
+        ));
+    }
+
+    public Map<Issue, Issue> batchLoadParents(List<Issue> issues) {
+        Set<String> parentIds = issues.stream()
+                .map(Issue::getParentId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<Issue, Issue> result = new HashMap<>();
+
+        if (parentIds.isEmpty()) return result;
+
+        Map<String, Issue> parentsById = issueRepository.findAllById(parentIds)
+                .stream()
+                .collect(Collectors.toMap(Issue::getId, Function.identity()));
+
+        return issues.stream().collect(Collectors.toMap(
+                Function.identity(),
+                issue -> parentsById.get(issue.getParentId())
         ));
     }
 

@@ -59,4 +59,9 @@ public class IssueQueryResolver {
     public Map<Issue, Status> status(List<Issue> issues) {
         return issueService.batchLoadStatuses(issues);
     }
+
+    @BatchMapping(typeName = "Issue", field = "parent")
+    public Map<Issue, Issue> parent(List<Issue> issues) {
+        return issueService.batchLoadParents(issues);
+    }
 }

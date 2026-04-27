@@ -39,8 +39,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/authenticate", "/auth/register").permitAll()
-                        .requestMatchers("/graphiql", "/graphql").permitAll()
+                        .requestMatchers("/auth/authenticate", "/auth/register", "/auth/logout").permitAll()
+                        // .requestMatchers("/graphiql", "/graphql").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
