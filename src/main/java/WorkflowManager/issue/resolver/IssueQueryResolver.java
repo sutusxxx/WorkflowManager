@@ -3,6 +3,7 @@ package WorkflowManager.issue.resolver;
 import WorkflowManager.issue.Issue;
 import WorkflowManager.issue.IssueService;
 import WorkflowManager.issue.Status;
+import WorkflowManager.project.Project;
 import WorkflowManager.user.UserService;
 import WorkflowManager.user.model.UserSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,10 @@ public class IssueQueryResolver {
     @BatchMapping(typeName = "Issue", field = "parent")
     public Map<Issue, Issue> parent(List<Issue> issues) {
         return issueService.batchLoadParents(issues);
+    }
+
+    @BatchMapping(typeName = "Issue", field = "project")
+    public Map<Issue, Project> project(List<Issue> issues) {
+        return issueService.batchLoadProjects(issues);
     }
 }

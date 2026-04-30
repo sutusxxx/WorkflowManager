@@ -56,11 +56,6 @@ type Issue {
     comments: [Comment!]!
 }
 
-type Status {
-    id: ID!
-    name: String!
-}
-
 type IssueLink {
     id: ID!
     linkType: IssueLinkType!

@@ -28,6 +28,22 @@ type Project {
     visibility: Visibility!
 }
 
+type Status {
+    id: ID!
+    name: String!
+    color: String!
+    category: StatusCategory!
+    displayOrder: Int!
+    allowedTransitionIds: [String!]!
+    isDefault: Boolean!
+}
+
+enum StatusCategory {
+    TODO
+    IN_PROGRESS
+    DONE
+}
+
 enum Visibility {
     PRIVATE
     PUBLIC

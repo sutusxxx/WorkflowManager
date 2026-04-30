@@ -76,6 +76,10 @@ public class IssueService {
             issue.setParentId(parent.getId());
         }
 
+        if (issue.getPriority() == null) {
+            issue.setPriority(Priority.LOW);
+        }
+
         return issueRepository.save(issue);
     }
 
@@ -249,6 +253,20 @@ public class IssueService {
                             .findFirst()
                             .orElseThrow();
                 }
+        ));
+    }
+
+    public Map<Issue, Project> batchLoadProjects(List<Issue> issues) {
+        Set<String> projectIds = issues.stream()
+                .map(Issue::getProjectId)
+                .collect(Collectors.toSet());
+        Map<String, Project> projectsById = projectRepository.findAllById(projectIds)
+                .stream()
+                .collect(Collectors.toMap(Project::getId, Function.identity()));
+
+        return issues.stream().collect(Collectors.toMap(
+                Function.identity(),
+                issue -> projectsById.get(issue.getProjectId())
         ));
     }
 

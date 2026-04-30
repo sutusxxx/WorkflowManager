@@ -37,7 +37,6 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("session_token", accessToken)
                 .httpOnly(true)
                 .path("/")
-                .maxAge(900)
                 .sameSite(SameSiteCookies.LAX.toString())
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
