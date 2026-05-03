@@ -40,7 +40,7 @@ type Issue {
     description: String
     priority: Priority
     storyPoints: Short
-    dueDate: DateTime
+    dueDate: String!
     status: Status!
     project: Project!
     type: IssueType

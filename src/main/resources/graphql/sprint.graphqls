@@ -1,0 +1,15 @@
+extend type Query {
+    activeSprint(projectId: ID!): Sprint
+    sprintsByProjectId(projectId: ID!): [Sprint!]!
+}
+
+type Sprint {
+    id: ID!
+    name: String!
+    goal: String
+    startDate: String
+    endDate: String
+    issues: [Issue!]!
+    active: Boolean!
+}
+

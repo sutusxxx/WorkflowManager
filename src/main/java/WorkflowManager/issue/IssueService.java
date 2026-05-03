@@ -86,10 +86,11 @@ public class IssueService {
     public Issue updateIssue(String id, UpdateIssueInput input, UserDetails user) {
         Issue issue = issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
 
-        if (input.title() != null) issue.setTitle(input.title());
+        if (input.title() != null && !input.title().isEmpty()) issue.setTitle(input.title());
         if (input.description() != null) issue.setDescription(input.description());
         if (input.storyPoints() != null) issue.setStoryPoints(input.storyPoints());
         if (input.dueDate() != null) issue.setDueDate(input.dueDate());
+        if (input.priority() != null) issue.setPriority(input.priority());
 
         return issueRepository.save(issue);
     }

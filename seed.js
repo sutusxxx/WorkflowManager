@@ -1,7 +1,5 @@
 // ============================================================
 //  MongoDB Seed Script
-//  Run with: mongosh <your-db-name> seed.js
-//  Or:       mongosh "mongodb://localhost:27017/<your-db-name>" seed.js
 // ============================================================
 
 // --- Helpers -------------------------------------------------
@@ -16,6 +14,8 @@ function isoDate(offsetDays = 0) {
 // when using the default Jackson JavaTimeModule — but many projects configure it
 // to store as ISODate. This script uses ISODate (the sane default with Spring Data MongoDB).
 // If your app stores dates as arrays, replace isoDate() calls with the array form.
+
+const db = connect("mongodb://localhost:27017/wfdb");
 
 // --- Clean slate ---------------------------------------------
 
