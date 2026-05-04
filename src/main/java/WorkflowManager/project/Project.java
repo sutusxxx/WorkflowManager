@@ -1,10 +1,12 @@
 package WorkflowManager.project;
 import WorkflowManager.issue.Status;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +19,28 @@ public class Project {
     private String id;
 
     @Indexed(unique = true)
+    @NotNull(message = "key is required")
     private String key;
 
+    @NotNull(message = "name is required")
     private String name;
+
     private Integer issueCounter = 0;
     private String description;
     private List<Status> statuses = new ArrayList<>();
-    private OffsetDateTime createdAt = OffsetDateTime.now();
-    private OffsetDateTime updatedAt;
+
+    @NotNull(message = "createdAt required")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @NotNull(message = "updatedAt required")
+    private LocalDateTime updatedAt;
+
+    @NotNull(message = "createdBy required")
     private String createdBy;
+
+    @NotNull(message = "modifiedBy required")
     private String modifiedBy;
+
     private Visibility visibility;
 
     public Optional<Status> findStatusById(String statusId) {

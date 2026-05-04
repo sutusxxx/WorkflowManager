@@ -7,6 +7,8 @@ import WorkflowManager.issue.model.*;
 import WorkflowManager.issue.repository.IssueRepository;
 import WorkflowManager.project.Project;
 import WorkflowManager.project.repository.ProjectRepository;
+import WorkflowManager.user.User;
+import WorkflowManager.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class IssueService {
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     private final IssueConverter issueConverter;
 
@@ -32,11 +35,12 @@ public class IssueService {
 
     public IssueService(
             IssueRepository issueRepository,
-            ProjectRepository projectRepository,
+            ProjectRepository projectRepository, UserRepository userRepository,
             IssueConverter issueConverter
     ) {
         this.issueRepository = issueRepository;
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
         this.issueConverter = issueConverter;
     }
 
@@ -57,6 +61,7 @@ public class IssueService {
     }
 
     public Issue createIssue(CreateIssueInput input, UserDetails user) {
+        User currentUser = userRepository.findByUsername(user.getUsername()).orElseThrow();
         String projectId = input.projectId();
 
         Project project = projectRepository.findById(projectId)
@@ -80,10 +85,16 @@ public class IssueService {
             issue.setPriority(Priority.LOW);
         }
 
+        issue.setCreatedBy(currentUser.getId());
+        issue.setUpdatedAt(LocalDateTime.now());
+        issue.setModifiedBy(currentUser.getId());
+
         return issueRepository.save(issue);
     }
 
     public Issue updateIssue(String id, UpdateIssueInput input, UserDetails user) {
+        User currentUser = userRepository.findByUsername(user.getUsername()).orElseThrow();
+
         Issue issue = issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
 
         if (input.title() != null && !input.title().isEmpty()) issue.setTitle(input.title());
@@ -91,6 +102,9 @@ public class IssueService {
         if (input.storyPoints() != null) issue.setStoryPoints(input.storyPoints());
         if (input.dueDate() != null) issue.setDueDate(input.dueDate());
         if (input.priority() != null) issue.setPriority(input.priority());
+
+        issue.setModifiedBy(currentUser.getId());
+        issue.setUpdatedAt(LocalDateTime.now());
 
         return issueRepository.save(issue);
     }

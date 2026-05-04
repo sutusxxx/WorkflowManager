@@ -8,7 +8,6 @@ public record CreateIssueInput(
         Short storyPoints,
         String parentId,
         String projectId,
-        IssueType issueType,
+        IssueType type,
         String status
-
 ) { }
