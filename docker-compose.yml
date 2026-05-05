@@ -19,10 +19,13 @@ services:
     ports:
       - "8081:8080"
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak_data:/opt/keycloak/data
     depends_on:
       - mongodb
 
 volumes:
   mongo_data:
+  keycloak_data:
