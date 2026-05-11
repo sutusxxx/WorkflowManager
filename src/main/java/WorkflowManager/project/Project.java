@@ -1,8 +1,10 @@
 package WorkflowManager.project;
 import WorkflowManager.issue.Status;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,26 +21,27 @@ public class Project {
     private String id;
 
     @Indexed(unique = true)
-    @NotNull(message = "key is required")
+    @NotEmpty
     private String key;
 
-    @NotNull(message = "name is required")
+    @NotEmpty
     private String name;
 
+    @Min(0)
     private Integer issueCounter = 0;
     private String description;
     private List<Status> statuses = new ArrayList<>();
 
-    @NotNull(message = "createdAt required")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @NotNull(message = "updatedAt required")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @NotNull(message = "createdBy required")
+    @CreatedBy
     private String createdBy;
 
-    @NotNull(message = "modifiedBy required")
+    @LastModifiedBy
     private String modifiedBy;
 
     private Visibility visibility;

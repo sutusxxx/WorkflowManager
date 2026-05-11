@@ -1,7 +1,7 @@
 package WorkflowManager.configuration;
 
+import WorkflowManager.auth.CookieTokenFilter;
 import WorkflowManager.auth.JwtConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -20,15 +21,21 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    private final JwtConverter jwtConverter;
+    private final CookieTokenFilter cookieTokenFilter;
 
-    @Autowired
-    private JwtConverter jwtConverter;
+    public SecurityConfig(JwtConverter jwtConverter, CookieTokenFilter cookieTokenFilter) {
+        this.jwtConverter = jwtConverter;
+        this.cookieTokenFilter = cookieTokenFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize)-> authorize
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(
                         (oauth2)-> oauth2.jwt(
@@ -37,7 +44,8 @@ public class SecurityConfig {
                 .sessionManagement(
                         session-> session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS)
-                );
+                )
+                .addFilterBefore(cookieTokenFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();
     }

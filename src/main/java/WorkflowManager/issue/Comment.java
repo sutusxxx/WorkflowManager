@@ -1,6 +1,5 @@
 package WorkflowManager.issue;
 
-import WorkflowManager.user.User;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +9,6 @@ public class Comment {
     private Long id;
     private String text;
     private LocalDateTime createdAt;
-    private User createdBy;
+    private String createdBy;
     private Issue issue;
 }

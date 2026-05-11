@@ -21,7 +21,7 @@ public class User {
     @Indexed(unique = true)
     private String username;
 
-    private String password;
-    private LocalDateTime registrationDate = LocalDateTime.now();
-    private Set<Permission> permissions = new HashSet<>();
+    private LocalDateTime lastLoggedIn;
+
+    private String keycloakId;
 }

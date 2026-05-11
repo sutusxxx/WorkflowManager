@@ -1,8 +1,9 @@
 package WorkflowManager.issue;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -28,10 +29,10 @@ public class Issue {
     private LocalDateTime dueDate;
     private String statusId;
 
-    @NotNull(message = "projectId is required")
+    @NotEmpty
     private String projectId;
 
-    @NotNull(message = "type is required")
+    @NotNull
     private IssueType type;
 
     @Indexed
@@ -39,17 +40,18 @@ public class Issue {
 
     private List<IssueLink> links = new ArrayList<>();
 
-    @NotNull(message = "createdAt required")
+    @CreatedDate
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @NotNull(message = "updatedAt required")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @NotNull(message = "createdBy required")
+    @CreatedBy
     private String createdBy;
 
-    @NotNull(message = "modifiedBy required")
+    @LastModifiedBy
     private String modifiedBy;
+
     private String assignee;
     private String reporter;
     private Priority priority;
