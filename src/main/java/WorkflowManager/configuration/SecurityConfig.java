@@ -34,15 +34,15 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize)-> authorize
+                .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(
-                        (oauth2)-> oauth2.jwt(
-                                jwt-> jwt.jwtAuthenticationConverter(jwtConverter)
+                        (oauth2) -> oauth2.jwt(
+                                jwt -> jwt.jwtAuthenticationConverter(jwtConverter)
                         ))
                 .sessionManagement(
-                        session-> session.sessionCreationPolicy(
+                        session -> session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(cookieTokenFilter, BearerTokenAuthenticationFilter.class);
