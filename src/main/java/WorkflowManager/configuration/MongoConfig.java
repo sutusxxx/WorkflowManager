@@ -1,5 +1,8 @@
 package WorkflowManager.configuration;
 
+import WorkflowManager.auth.SecurityUtils;
+import WorkflowManager.user.User;
+import WorkflowManager.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -32,21 +35,22 @@ public class MongoConfig {
     }
 
     @Bean
-    public ValidatingMongoEventListener validatingMongoEventListener() {
-        return new ValidatingMongoEventListener(validator().getValidator());
-    }
-
-    @Bean
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
     }
 
     @Bean
-    public AuditorAware<String> auditorAware() {
-        return new AuditorAware<String>() {
-            @Override
-            public Optional<String> getCurrentAuditor() {
-                return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
+    public AuditorAware<String> auditorProvider(SecurityUtils securityUtils,
+                                                UserRepository userRepository) {
+        return () -> {
+            try {
+                String keycloakId = securityUtils.getCurrentUserKeycloakId();
+
+                return userRepository.findByKeycloakId(keycloakId)
+                        .map(User::getId);
+
+            } catch (Exception e) {
+                return Optional.empty(); // not authenticated
             }
         };
     }

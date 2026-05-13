@@ -4,6 +4,7 @@ import WorkflowManager.user.model.UserSummaryDTO;
 import WorkflowManager.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -17,6 +18,14 @@ public class UserService {
     public UserService(UserRepository userRepository, UserConverter userConverter) {
         this.userRepository = userRepository;
         this.userConverter = userConverter;
+    }
+
+    public User syncUser(Map<String, Object> claims) {
+        String keycloakId = (String) claims.get("sub");
+
+        return userRepository.findByKeycloakId(keycloakId)
+                .map(this::updateLastLogin)
+                .orElseGet(() -> createUser(claims));
     }
 
     public <T> Map<T, UserSummaryDTO> batchLoadUsers(List<T> objects, Function<T, String> idExtractor) {
@@ -36,5 +45,20 @@ public class UserService {
 
         objects.forEach(object -> result.put(object, usersById.get(idExtractor.apply(object))));
         return result;
+    }
+
+    private User createUser(Map<String, Object> claims) {
+        User user = new User();
+        user.setKeycloakId((String) claims.get("sub"));
+        user.setUsername((String) claims.get("preferred_username"));
+        user.setEmail((String) claims.get("email"));
+        user.setRegistrationDate(LocalDateTime.now());
+        user.setLastLoggedIn(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
+    private User updateLastLogin(User user) {
+        user.setLastLoggedIn(LocalDateTime.now());
+        return userRepository.save(user);
     }
 }

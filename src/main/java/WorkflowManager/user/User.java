@@ -23,5 +23,8 @@ public class User {
 
     private LocalDateTime lastLoggedIn;
 
+    private LocalDateTime registrationDate;
+
+    @Indexed(unique = true)
     private String keycloakId;
 }
