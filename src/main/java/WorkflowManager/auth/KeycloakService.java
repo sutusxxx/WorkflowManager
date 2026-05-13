@@ -1,5 +1,6 @@
 package WorkflowManager.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class KeycloakService {
     @Value("${keycloak.auth-server-url}")
@@ -99,6 +101,10 @@ public class KeycloakService {
                 tokenUrl, new HttpEntity<>(body, headers), Map.class
         );
         assert tokenResponse.getBody() != null;
+        if (tokenResponse.getBody() == null) {
+            log.error("[Keycloak] Can't get tokens from response {}", tokenResponse);
+            throw new RuntimeException("Keycloak error");
+        }
         String accessToken = (String) tokenResponse.getBody().get("access_token");
         String refreshToken = (String) tokenResponse.getBody().get("refresh_token");
 
