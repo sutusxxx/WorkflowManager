@@ -1,1 +1,6 @@
 rootProject.name = 'WorkflowManager'
+
+include 'security-commons'
+include 'user-service'
+include 'auth-service'
+include 'graphql-service'
