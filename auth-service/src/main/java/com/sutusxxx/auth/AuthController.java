@@ -84,6 +84,24 @@ public class AuthController {
         response.sendRedirect(redirectURL);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = extractCookie(request, "refresh_token");
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No refresh token");
+        }
+
+        try {
+            Map<String, String> tokens = keycloakService.refreshTokens(refreshToken);
+            setCookieTokens(response, tokens);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.warn("Refresh token expired or invalid: {}", e.getMessage());
+            clearCookieTokens(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
+        }
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request,
                                     HttpServletResponse response) {
@@ -96,15 +114,6 @@ public class AuthController {
         log.debug("[AUTH] logging out...");
         clearCookieTokens(response);
         return ResponseEntity.ok().build();
-    }
-
-    private String getRefreshTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() == null) return null;
-        return Arrays.stream(request.getCookies())
-                .filter(c -> "refresh_token".equals(c.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
     }
 
     private String generateState() {
