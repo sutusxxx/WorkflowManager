@@ -4,6 +4,7 @@ import com.sutusxxx.graphql.issue.Issue;
 import com.sutusxxx.graphql.issue.IssueService;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.project.Project;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
@@ -15,6 +16,7 @@ import com.sutusxxx.user.model.UserSummaryDTO;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 public class IssueQueryResolver {
     private final IssueService issueService;
@@ -28,11 +30,13 @@ public class IssueQueryResolver {
 
     @QueryMapping()
     public Issue issueByKey(@Argument String key) {
+        log.debug("[ISSUE_QUERY] Getting issue by key '{}'", key);
         return issueService.getIssueByKey(key);
     }
 
     @BatchMapping(typeName = "Issue", field = "children")
     public Map<Issue, List<Issue>> subIssues(List<Issue> issues) {
+        log.debug("[ISSUE_QUERY] Loading sub-issues");
         return issueService.loadChildren(issues);
     }
 

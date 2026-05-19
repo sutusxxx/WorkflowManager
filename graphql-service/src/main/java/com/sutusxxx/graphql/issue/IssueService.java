@@ -1,13 +1,11 @@
 package com.sutusxxx.graphql.issue;
 
-import com.sutusxxx.graphql.common.exceptions.InvalidHierarchyException;
-import com.sutusxxx.graphql.common.exceptions.IssueNotFoundException;
-import com.sutusxxx.graphql.common.exceptions.ProjectNotFoundException;
 import com.sutusxxx.graphql.issue.model.AddIssueLinkInput;
 import com.sutusxxx.graphql.issue.model.*;
 import com.sutusxxx.graphql.issue.repository.IssueRepository;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +13,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class IssueService {
     private final IssueRepository issueRepository;
@@ -45,11 +44,11 @@ public class IssueService {
     }
 
     public Issue getIssueById(String id) {
-        return issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
+        return issueRepository.findById(id).orElseThrow();
     }
 
     public Issue getIssueByKey(String key) {
-        return issueRepository.findByKey(key).orElseThrow(() -> new IssueNotFoundException(key));
+        return issueRepository.findByKey(key).orElseThrow();
     }
 
     public List<Issue> getIssuesByParentId(String parentId) {
@@ -60,7 +59,7 @@ public class IssueService {
         String projectId = input.projectId();
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(projectId));
+                .orElseThrow();
 
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
@@ -84,7 +83,7 @@ public class IssueService {
     }
 
     public Issue updateIssue(String id, UpdateIssueInput input) {
-        Issue issue = issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
+        Issue issue = issueRepository.findById(id).orElseThrow();
 
         if (input.title() != null && !input.title().isEmpty()) issue.setTitle(input.title());
         if (input.description() != null) issue.setDescription(input.description());
@@ -97,16 +96,20 @@ public class IssueService {
 
     public Issue changeStatus(String issueId, String newStatusId) {
         Issue issue = issueRepository.findById(issueId)
-                .orElseThrow(() -> new IssueNotFoundException(issueId));
+                .orElseThrow();
 
         Project project = projectRepository.findById(issue.getProjectId())
-                .orElseThrow(() -> new ProjectNotFoundException(issue.getProjectId()));
+                .orElseThrow();
 
         Status currentStatus = project.findStatusById(issue.getStatusId())
                 .orElseThrow();
 
+        Status newStatus = project.findStatusById(newStatusId)
+                .orElseThrow();
+
         if (!currentStatus.getAllowedTransitionIds().contains(newStatusId)) {
-            // TODO: error...
+            log.error("[ISSUE_SERVICE] Transition from {} to {} is not allowed",
+                    currentStatus.getName(), newStatus.getName());
         }
 
         issue.setStatusId(newStatusId);
@@ -273,13 +276,13 @@ public class IssueService {
 
     private void validateParent(Issue issue, Issue parent) {
         if (issue.getType() == IssueType.EPIC) {
-            throw new InvalidHierarchyException("Epic cannot have parent");
+            // throw new InvalidHierarchyException("Epic cannot have parent");
         }
 
         Set<IssueType> allowed = ALLOWED_PARENTS.get(issue.getType());
 
         if (!allowed.contains(parent.getType())) {
-            throw new InvalidHierarchyException(issue.getType() + " cannot be a child of " + parent.getType());
+            // throw new InvalidHierarchyException(issue.getType() + " cannot be a child of " + parent.getType());
         }
     }
 }

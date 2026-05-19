@@ -96,7 +96,7 @@ public class AuthController {
             setCookieTokens(response, tokens);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.warn("Refresh token expired or invalid: {}", e.getMessage());
+            log.warn("[AUTH] Refresh token expired or invalid: {}", e.getMessage());
             clearCookieTokens(response);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
         }
@@ -110,8 +110,6 @@ public class AuthController {
         if (refreshToken != null) {
             keycloakService.revokeToken(refreshToken);
         }
-
-        log.debug("[AUTH] logging out...");
         clearCookieTokens(response);
         return ResponseEntity.ok().build();
     }

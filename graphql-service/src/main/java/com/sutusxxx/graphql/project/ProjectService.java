@@ -1,6 +1,5 @@
 package com.sutusxxx.graphql.project;
 
-import com.sutusxxx.graphql.common.exceptions.ProjectNotFoundException;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
@@ -29,7 +28,7 @@ public class ProjectService {
     }
 
     public Project getProjectById(String id) {
-        return projectRepository.findById(id).orElseThrow(() -> new ProjectNotFoundException(id));
+        return projectRepository.findById(id).orElseThrow();
     }
 
 
@@ -40,7 +39,7 @@ public class ProjectService {
     }
 
     public Project updateProject(String id, UpdateProjectInput input) {
-        Project project = projectRepository.findById(id).orElseThrow(() -> new ProjectNotFoundException(id));
+        Project project = projectRepository.findById(id).orElseThrow();
 
         if (input.description() != null && !input.description().equals(project.getDescription())) {
             project.setDescription(input.description());
