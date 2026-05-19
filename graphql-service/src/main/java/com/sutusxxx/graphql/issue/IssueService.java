@@ -1,5 +1,7 @@
 package com.sutusxxx.graphql.issue;
 
+import com.sutusxxx.graphql.exceptions.BadRequestException;
+import com.sutusxxx.graphql.exceptions.NotFoundException;
 import com.sutusxxx.graphql.issue.model.AddIssueLinkInput;
 import com.sutusxxx.graphql.issue.model.*;
 import com.sutusxxx.graphql.issue.repository.IssueRepository;
@@ -44,11 +46,11 @@ public class IssueService {
     }
 
     public Issue getIssueById(String id) {
-        return issueRepository.findById(id).orElseThrow();
+        return issueRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
     public Issue getIssueByKey(String key) {
-        return issueRepository.findByKey(key).orElseThrow();
+        return issueRepository.findByKey(key).orElseThrow(NotFoundException::new);
     }
 
     public List<Issue> getIssuesByParentId(String parentId) {
@@ -59,7 +61,7 @@ public class IssueService {
         String projectId = input.projectId();
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow();
+                .orElseThrow(NotFoundException::new);
 
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
@@ -83,7 +85,7 @@ public class IssueService {
     }
 
     public Issue updateIssue(String id, UpdateIssueInput input) {
-        Issue issue = issueRepository.findById(id).orElseThrow();
+        Issue issue = issueRepository.findById(id).orElseThrow(NotFoundException::new);
 
         if (input.title() != null && !input.title().isEmpty()) issue.setTitle(input.title());
         if (input.description() != null) issue.setDescription(input.description());
@@ -95,11 +97,10 @@ public class IssueService {
     }
 
     public Issue changeStatus(String issueId, String newStatusId) {
-        Issue issue = issueRepository.findById(issueId)
-                .orElseThrow();
+        Issue issue = issueRepository.findById(issueId).orElseThrow(NotFoundException::new);
 
         Project project = projectRepository.findById(issue.getProjectId())
-                .orElseThrow();
+                .orElseThrow(NotFoundException::new);
 
         Status currentStatus = project.findStatusById(issue.getStatusId())
                 .orElseThrow();
@@ -108,8 +109,8 @@ public class IssueService {
                 .orElseThrow();
 
         if (!currentStatus.getAllowedTransitionIds().contains(newStatusId)) {
-            log.error("[ISSUE_SERVICE] Transition from {} to {} is not allowed",
-                    currentStatus.getName(), newStatus.getName());
+            throw new BadRequestException(
+                    "Transition from {} to {} is not allowed", currentStatus.getName(), newStatus.getName());
         }
 
         issue.setStatusId(newStatusId);

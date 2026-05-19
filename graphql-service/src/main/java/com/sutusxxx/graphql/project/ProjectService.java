@@ -1,14 +1,17 @@
 package com.sutusxxx.graphql.project;
 
+import com.sutusxxx.graphql.exceptions.NotFoundException;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
@@ -23,12 +26,11 @@ public class ProjectService {
     }
 
     public List<Project> getAllProjects() {
-        List<Project> projects = projectRepository.findAll();
-        return projects;
+        return projectRepository.findAll();
     }
 
     public Project getProjectById(String id) {
-        return projectRepository.findById(id).orElseThrow();
+        return projectRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
 
@@ -52,7 +54,7 @@ public class ProjectService {
 
     public Status addStatus(String projectId, CreateStatusInput input) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow();
+                .orElseThrow(NotFoundException::new);
 
         boolean nameExists = project.getStatuses().stream()
                 .anyMatch(s -> s.getName().equalsIgnoreCase(input.name()));
@@ -70,13 +72,13 @@ public class ProjectService {
         status.setDefault(input.isDefault());
 
         project.getStatuses().add(status);
-        projectRepository.save(project);  // saves the whole document
+        projectRepository.save(project);
         return status;
     }
 
     public void addTransition(String projectId, String fromStatusId, String toStatusId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(NotFoundException::new);
 
         Status from = project.findStatusById(fromStatusId)
                 .orElseThrow(() -> new RuntimeException("'From' status not found"));
