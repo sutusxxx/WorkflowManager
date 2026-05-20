@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
@@ -12,6 +13,6 @@ import java.time.LocalDateTime;
 public class IssueLink {
     private String targetIssueId;
     private IssueLinkType linkType;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private OffsetDateTime createdAt = OffsetDateTime.now();
     private String createdBy;
 }

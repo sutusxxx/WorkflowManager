@@ -7,7 +7,7 @@ import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class Issue {
 
     private String description;
     private Short storyPoints;
-    private LocalDateTime dueDate;
+    private OffsetDateTime dueDate;
     private String statusId;
 
     @NotEmpty
@@ -41,10 +41,10 @@ public class Issue {
     private List<IssueLink> links = new ArrayList<>();
 
     @CreatedDate
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     @CreatedBy
     private String createdBy;

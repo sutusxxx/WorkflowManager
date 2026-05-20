@@ -10,7 +10,7 @@ import com.sutusxxx.graphql.project.repository.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -114,7 +114,6 @@ public class IssueService {
         }
 
         issue.setStatusId(newStatusId);
-        issue.setUpdatedAt(LocalDateTime.now());
         return issueRepository.save(issue);
     }
 
@@ -128,21 +127,21 @@ public class IssueService {
         }
 
         Issue source = issueRepository.findById(input.sourceIssueId())
-                .orElseThrow(() -> new RuntimeException("Source issue not found"));
+                .orElseThrow(NotFoundException::new);
 
         Issue target = issueRepository.findById(input.targetIssueId())
-                .orElseThrow(() -> new RuntimeException("Target issue not found"));
+                .orElseThrow(NotFoundException::new);
 
         // ── Guard: duplicate link ────────────────────────────────
         if (source.hasLinkTo(target.getId(), input.linkType())) {
-            throw new RuntimeException("Link already exists");
+            throw new BadRequestException("Link already exists");
         }
 
         // ── Add link to source ───────────────────────────────────
         IssueLink forwardLink = new IssueLink(
                 target.getId(),
                 input.linkType(),
-                LocalDateTime.now(),
+                OffsetDateTime.now(),
                 input.createdBy()
         );
         source.getLinks().add(forwardLink);
@@ -154,7 +153,7 @@ public class IssueService {
                 IssueLink inverseLink = new IssueLink(
                         source.getId(),
                         inverseType,
-                        LocalDateTime.now(),
+                        OffsetDateTime.now(),
                         input.createdBy()
                 );
                 target.getLinks().add(inverseLink);
@@ -168,7 +167,7 @@ public class IssueService {
             IssueLink symmetricLink = new IssueLink(
                     source.getId(),
                     IssueLinkType.RELATES_TO,
-                    LocalDateTime.now(),
+                    OffsetDateTime.now(),
                     input.createdBy()
             );
             target.getLinks().add(symmetricLink);
@@ -180,10 +179,10 @@ public class IssueService {
 
     public Issue removeLink(RemoveIssueLinkInput input) {
         Issue source = issueRepository.findById(input.sourceIssueId())
-                .orElseThrow(() -> new RuntimeException("Source issue not found"));
+                .orElseThrow(NotFoundException::new);
 
         Issue target = issueRepository.findById(input.targetIssueId())
-                .orElseThrow(() -> new RuntimeException("Target issue not found"));
+                .orElseThrow(NotFoundException::new);
 
         // ── Remove from source ───────────────────────────────────
         source.removeLink(target.getId(), input.linkType());
@@ -256,7 +255,7 @@ public class IssueService {
                     return projectStatuses.stream()
                             .filter(s -> Objects.equals(s.getId(), issue.getStatusId()))
                             .findFirst()
-                            .orElseThrow();
+                            .orElseThrow(NotFoundException::new);
                 }
         ));
     }
@@ -277,13 +276,13 @@ public class IssueService {
 
     private void validateParent(Issue issue, Issue parent) {
         if (issue.getType() == IssueType.EPIC) {
-            // throw new InvalidHierarchyException("Epic cannot have parent");
+            throw new BadRequestException("Epic cannot have parent");
         }
 
         Set<IssueType> allowed = ALLOWED_PARENTS.get(issue.getType());
 
         if (!allowed.contains(parent.getType())) {
-            // throw new InvalidHierarchyException(issue.getType() + " cannot be a child of " + parent.getType());
+            throw new BadRequestException(issue.getType() + " cannot be a child of " + parent.getType());
         }
     }
 }
