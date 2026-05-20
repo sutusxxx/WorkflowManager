@@ -4,7 +4,8 @@ import com.sutusxxx.user.model.UserSummaryDTO;
 import com.sutusxxx.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -52,13 +53,13 @@ public class UserService {
         user.setKeycloakId((String) claims.get("sub"));
         user.setUsername((String) claims.get("preferred_username"));
         user.setEmail((String) claims.get("email"));
-        user.setRegistrationDate(OffsetDateTime.now());
-        user.setLastLoggedIn(OffsetDateTime.now());
+        user.setRegistrationDate(Instant.now());
+        user.setLastLoggedIn(Instant.now());
         return userRepository.save(user);
     }
 
     private User updateLastLogin(User user) {
-        user.setLastLoggedIn(OffsetDateTime.now());
+        user.setLastLoggedIn(Instant.now());
         return userRepository.save(user);
     }
 }

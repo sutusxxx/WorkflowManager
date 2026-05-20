@@ -21,8 +21,8 @@ type Project {
     description: String
     statuses: [Status!]!
     issues: [Issue!]!
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    createdAt: String!
+    updatedAt: String!
     createdBy: User!
     modifiedBy: User!
     visibility: Visibility!

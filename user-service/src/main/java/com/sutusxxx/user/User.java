@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Document(collection = "users")
@@ -19,9 +19,9 @@ public class User {
     @Indexed(unique = true)
     private String username;
 
-    private OffsetDateTime lastLoggedIn;
+    private Instant lastLoggedIn;
 
-    private OffsetDateTime registrationDate;
+    private Instant registrationDate;
 
     @Indexed(unique = true)
     private String keycloakId;
