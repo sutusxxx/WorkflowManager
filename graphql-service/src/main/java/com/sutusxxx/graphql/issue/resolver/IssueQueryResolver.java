@@ -3,6 +3,7 @@ package com.sutusxxx.graphql.issue.resolver;
 import com.sutusxxx.graphql.issue.Issue;
 import com.sutusxxx.graphql.issue.IssueService;
 import com.sutusxxx.graphql.issue.Status;
+import com.sutusxxx.graphql.issue.model.IssueLinkDTO;
 import com.sutusxxx.graphql.project.Project;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,12 @@ public class IssueQueryResolver {
     public Map<Issue, List<Issue>> subIssues(List<Issue> issues) {
         log.debug("[ISSUE_QUERY] Loading sub-issues");
         return issueService.loadChildren(issues);
+    }
+
+    @BatchMapping(typeName = "Issue", field = "links")
+    public Map<Issue, List<IssueLinkDTO>> links(List<Issue> issues) {
+        log.debug("[ISSUE_QUERY] Loading links");
+        return issueService.loadLinks(issues);
     }
 
     @BatchMapping(typeName = "Issue", field = "createdBy")

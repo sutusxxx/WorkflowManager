@@ -8,6 +8,14 @@ extend type Mutation {
     updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
     deleteIssue(id: ID!): Boolean!
     changeStatus(issueId: ID!, input: TransitionIssueInput!): Issue!
+    linkIssue(input: LinkIssueInput!): Issue!
+    removeLink(input: LinkIssueInput!): Issue!
+}
+
+input LinkIssueInput {
+    sourceIssueId: ID!
+    targetIssueId: ID!
+    linkType: IssueLinkType!
 }
 
 input TransitionIssueInput {
@@ -31,6 +39,8 @@ input UpdateIssueInput {
     storyPoints: Short
     priority: Priority
     dueDate: String
+    reporterId: ID
+    assignedId: ID
 }
 
 type Issue {
@@ -57,7 +67,6 @@ type Issue {
 }
 
 type IssueLink {
-    id: ID!
     linkType: IssueLinkType!
     source: Issue!
     target: Issue!

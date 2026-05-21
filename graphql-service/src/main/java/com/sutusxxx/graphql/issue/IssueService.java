@@ -9,6 +9,7 @@ import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -117,8 +118,40 @@ public class IssueService {
         return issueRepository.save(issue);
     }
 
-    public void deleteIssue(String id) {
+    @Transactional
+    public Boolean deleteIssue(String id) {
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+
+        Set<String> targetIds = issue.getLinks().stream()
+                .map(IssueLink::getTargetIssueId)
+                .collect(Collectors.toSet());
+
+        if (!targetIds.isEmpty()) {
+            Map<String, Issue> targets = issueRepository.findAllById(targetIds)
+                    .stream()
+                    .collect(Collectors.toMap(Issue::getId, i -> i));
+
+            for (IssueLink link : issue.getLinks()) {
+                Issue target = targets.get(link.getTargetIssueId());
+                if (target == null) continue;
+
+                link.getLinkType().inverse().ifPresent(inverseType ->
+                        target.removeLink(issue.getId(), inverseType));
+
+                if (link.getLinkType().isSymmetric()) {
+                    target.removeLink(issue.getId(), IssueLinkType.RELATES_TO);
+                }
+            }
+
+            issueRepository.saveAll(targets.values());
+        }
+
+        List<Issue> subIssues = issueRepository.findByParentId(id);
+        issueRepository.deleteAll(subIssues);
+
         issueRepository.deleteById(id);
+        return true;
     }
 
     public Issue addLink(AddIssueLinkInput input) {
@@ -132,43 +165,36 @@ public class IssueService {
         Issue target = issueRepository.findById(input.targetIssueId())
                 .orElseThrow(NotFoundException::new);
 
-        // ── Guard: duplicate link ────────────────────────────────
         if (source.hasLinkTo(target.getId(), input.linkType())) {
             throw new BadRequestException("Link already exists");
         }
 
-        // ── Add link to source ───────────────────────────────────
         IssueLink forwardLink = new IssueLink(
                 target.getId(),
                 input.linkType(),
-                OffsetDateTime.now(),
-                input.createdBy()
+                OffsetDateTime.now()
         );
         source.getLinks().add(forwardLink);
         issueRepository.save(source);
 
-        // ── Auto-create inverse link on target ───────────────────
         input.linkType().inverse().ifPresent(inverseType -> {
             if (!target.hasLinkTo(source.getId(), inverseType)) {
                 IssueLink inverseLink = new IssueLink(
                         source.getId(),
                         inverseType,
-                        OffsetDateTime.now(),
-                        input.createdBy()
+                        OffsetDateTime.now()
                 );
                 target.getLinks().add(inverseLink);
                 issueRepository.save(target);
             }
         });
 
-        // For RELATES_TO (symmetric): also add on the target side
         if (input.linkType().isSymmetric()
                 && !target.hasLinkTo(source.getId(), IssueLinkType.RELATES_TO)) {
             IssueLink symmetricLink = new IssueLink(
                     source.getId(),
                     IssueLinkType.RELATES_TO,
-                    OffsetDateTime.now(),
-                    input.createdBy()
+                    OffsetDateTime.now()
             );
             target.getLinks().add(symmetricLink);
             issueRepository.save(target);
@@ -184,17 +210,14 @@ public class IssueService {
         Issue target = issueRepository.findById(input.targetIssueId())
                 .orElseThrow(NotFoundException::new);
 
-        // ── Remove from source ───────────────────────────────────
         source.removeLink(target.getId(), input.linkType());
         issueRepository.save(source);
 
-        // ── Remove inverse from target ───────────────────────────
         input.linkType().inverse().ifPresent(inverseType -> {
             target.removeLink(source.getId(), inverseType);
             issueRepository.save(target);
         });
 
-        // For RELATES_TO: remove both sides
         if (input.linkType().isSymmetric()) {
             target.removeLink(source.getId(), IssueLinkType.RELATES_TO);
             issueRepository.save(target);
@@ -209,13 +232,37 @@ public class IssueService {
                 .collect(Collectors.toSet());
 
         Map<String, List<Issue>> grouped = issueRepository
-                .findByParentIdIn(parentIds)       // single DB call
+                .findByParentIdIn(parentIds)
                 .stream()
                 .collect(Collectors.groupingBy(Issue::getParentId));
 
         return issues.stream().collect(Collectors.toMap(
-                i -> i,
+                Function.identity(),
                 i -> grouped.getOrDefault(i.getId(), List.of())
+        ));
+    }
+
+    public Map<Issue, List<IssueLinkDTO>> loadLinks(List<Issue> issues) {
+        Set<String> targetIds = issues.stream()
+                .map(Issue::getLinks)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(IssueLink::getTargetIssueId)
+                .collect(Collectors.toSet());
+
+        Map<String, Issue> targetsById = issueRepository.findAllById(targetIds)
+                .stream()
+                .collect(Collectors.toMap(Issue::getId, Function.identity()));
+
+        return issues.stream().collect(Collectors.toMap(
+                Function.identity(),
+                issue -> issue.getLinks().stream().map(link -> {
+                    IssueLinkDTO dto = new IssueLinkDTO();
+                    dto.setSource(issue);
+                    dto.setTarget(targetsById.get(link.getTargetIssueId()));
+                    dto.setLinkType(link.getLinkType());
+                    return dto;
+                }).filter(link -> link.getTarget() != null).toList()
         ));
     }
 

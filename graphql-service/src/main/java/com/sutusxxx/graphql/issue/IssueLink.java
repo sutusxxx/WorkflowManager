@@ -14,5 +14,4 @@ public class IssueLink {
     private String targetIssueId;
     private IssueLinkType linkType;
     private OffsetDateTime createdAt = OffsetDateTime.now();
-    private String createdBy;
 }

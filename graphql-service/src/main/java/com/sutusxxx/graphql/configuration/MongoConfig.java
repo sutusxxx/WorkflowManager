@@ -13,10 +13,8 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +22,16 @@ import java.util.Optional;
 @Configuration
 @EnableMongoAuditing
 public class MongoConfig {
+
+    @Bean
+    public MongoCustomConversions customConversions() {
+        List<Converter<?, ?>> converters = List.of(
+                new DateToOffsetDateTimeConverter(),
+                new OffsetDateTimeToDateConverter()
+        );
+        return new MongoCustomConversions(converters);
+    }
+
     @Bean
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
@@ -43,5 +51,21 @@ public class MongoConfig {
                 return Optional.empty(); // not authenticated
             }
         };
+    }
+
+    @ReadingConverter
+    static class DateToOffsetDateTimeConverter implements Converter<Date, OffsetDateTime> {
+        @Override
+        public OffsetDateTime convert(Date source) {
+            return source.toInstant().atOffset(ZoneOffset.UTC);
+        }
+    }
+
+    @WritingConverter
+    static class OffsetDateTimeToDateConverter implements Converter<OffsetDateTime, Date> {
+        @Override
+        public Date convert(OffsetDateTime source) {
+            return Date.from(source.toInstant());
+        }
     }
 }
