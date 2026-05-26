@@ -38,6 +38,11 @@ public class Issue {
     @Indexed
     private String parentId;
 
+    @Indexed
+    private String sprintId;
+
+    private String nextIssueId;
+
     private List<IssueLink> links = new ArrayList<>();
 
     @CreatedDate
@@ -65,5 +70,9 @@ public class Issue {
     public void removeLink(String targetIssueId, IssueLinkType type) {
         links.removeIf(l -> l.getTargetIssueId().equals(targetIssueId)
                 && l.getLinkType() == type);
+    }
+
+    public boolean isInBacklog() {
+        return sprintId == null;
     }
 }

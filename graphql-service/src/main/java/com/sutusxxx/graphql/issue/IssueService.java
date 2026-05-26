@@ -46,6 +46,49 @@ public class IssueService {
         return issueRepository.findByProjectId(projectId);
     }
 
+    public List<Issue> getIssuesBySprintId(String sprintId) {
+        List<Issue> issues = issueRepository.findBySprintId(sprintId);
+
+        if (issues.isEmpty()) return Collections.emptyList();
+        if (issues.size() == 1) return issues;
+
+        Map<String, Issue> byNextId = new HashMap<>();
+        for (Issue issue : issues) {
+            String key = issue.getNextIssueId(); // null key = tail node
+            if (byNextId.containsKey(key)) {
+                throw new IllegalStateException("Broken chain: two issues share nextIssueId=" + key);
+            }
+            byNextId.put(key, issue);
+        }
+
+        Issue tail = byNextId.get(null);
+        if (tail == null) {
+            throw new IllegalStateException("Cycle detected — no tail found in sprint: " + sprintId);
+        }
+
+        List<Issue> result = new ArrayList<>(issues.size());
+        Set<String> visited = new HashSet<>();
+        Issue current = tail;
+
+        while (current != null) {
+            if (!visited.add(current.getId())) {
+                throw new IllegalStateException("Cycle detected at issue: " + current.getId());
+            }
+            result.add(current);
+            current = byNextId.get(current.getId());
+        }
+
+        if (result.size() != issues.size()) {
+            throw new IllegalStateException(
+                    "Disconnected issues in sprint " + sprintId +
+                            " — expected " + issues.size() + ", walked " + result.size()
+            );
+        }
+
+        Collections.reverse(result);
+        return result;
+    }
+
     public Issue getIssueById(String id) {
         return issueRepository.findById(id).orElseThrow(NotFoundException::new);
     }

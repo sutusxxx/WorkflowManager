@@ -1,6 +1,32 @@
 extend type Query {
     activeSprint(projectId: ID!): Sprint
-    sprintsByProjectId(projectId: ID!): [Sprint!]!
+}
+
+extend type Mutation {
+    createSprint(projectId: ID!, input: CreateSprintInput): Sprint!
+    updateSprint(id: ID!, input: UpdateSprintInput): Sprint!
+    activate(id: ID!): Sprint!
+    moveIssue(sprintId: ID!, input: MoveIssueInput): Sprint!
+    removeIssue(issueId: ID!): Sprint!
+}
+
+input MoveIssueInput {
+    issueId: ID!
+    nextIssueId: ID
+}
+
+input CreateSprintInput {
+    name: String!
+    goal: String
+    startDate: String
+    endDate: String
+}
+
+input UpdateSprintInput {
+    name: String
+    goal: String
+    startDate: String
+    endDate: String
 }
 
 type Sprint {
@@ -9,7 +35,11 @@ type Sprint {
     goal: String
     startDate: String
     endDate: String
+    project: Project!
     issues: [Issue!]!
     active: Boolean!
+    createdAt: String!
+    createdBy: User!
+    updatedAt: String!
+    modifiedBy: User!
 }
-

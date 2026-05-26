@@ -1,12 +1,11 @@
 package com.sutusxxx.graphql.sprint;
 
-import com.sutusxxx.graphql.issue.Issue;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.Instant;
 
 @Data
 @Document(collection = "sprints")
@@ -14,10 +13,30 @@ public class Sprint {
     @Id
     private String id;
 
+    @NotEmpty
     private String name;
+
+    @NotEmpty
+    private String projectId;
+
     private String goal;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private List<Issue> issues;
-    private Boolean active;
+
+    private Instant startDate;
+    private Instant endDate;
+
+    private Boolean active = false;
+
+    @CreatedDate
+    private Instant createdAt;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedDate
+    private Instant updatedAt;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    private Instant completedAt;
 }

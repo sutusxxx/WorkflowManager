@@ -55,6 +55,8 @@ type Issue {
     project: Project!
     type: IssueType
     parent: Issue
+    sprint: Sprint
+    nextIssueId: ID
     children: [Issue!]!
     links: [IssueLink!]!
     createdAt: String!
