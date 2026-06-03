@@ -129,14 +129,6 @@ public class IssueService {
         return result;
     }
 
-    public Issue getIssueById(String id) {
-        return issueRepository.findById(id).orElseThrow(NotFoundException::new);
-    }
-
-    public Issue getIssueByKey(String key) {
-        return issueRepository.findByKey(key).orElseThrow(NotFoundException::new);
-    }
-
     public Page<Issue> getIssuesByProjectId(String projectId, Integer page, Integer pageSize) {
         Query query = new Query();
         query.addCriteria(Criteria.where("projectId").is(projectId));
@@ -150,6 +142,10 @@ public class IssueService {
         List<Issue> items = mongoTemplate.find(query, Issue.class);
 
         return new Page<>(items, total, page, pageSize);
+    }
+
+    public Issue getIssueByKey(String key) {
+        return issueRepository.findByKey(key).orElseThrow(NotFoundException::new);
     }
 
     @Transactional
