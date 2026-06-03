@@ -37,7 +37,7 @@ public class IssueMutationResolver {
     }
 
     @MutationMapping
-    public Boolean deleteIssue(@Argument String id) {
+    public String deleteIssue(@Argument String id) {
         return issueService.deleteIssue(id);
     }
 

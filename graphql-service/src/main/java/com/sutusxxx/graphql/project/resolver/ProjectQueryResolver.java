@@ -1,18 +1,14 @@
 package com.sutusxxx.graphql.project.resolver;
 
-import com.sutusxxx.graphql.issue.Issue;
-import com.sutusxxx.graphql.issue.IssueService;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.ProjectService;
-import com.sutusxxx.graphql.sprint.Sprint;
-import com.sutusxxx.graphql.sprint.SprintService;
 import com.sutusxxx.user.UserService;
 import com.sutusxxx.user.model.UserSummaryDTO;
+import graphql.relay.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -21,40 +17,24 @@ import java.util.Map;
 @Controller
 public class ProjectQueryResolver {
     private final ProjectService projectService;
-    private final IssueService issueService;
     private final UserService userService;
-    private final SprintService sprintService;
 
     @Autowired
     public ProjectQueryResolver(
             ProjectService projectService,
-            IssueService issueService,
-            UserService userService,
-            SprintService sprintService) {
+            UserService userService) {
         this.projectService = projectService;
-        this.issueService = issueService;
         this.userService = userService;
-        this.sprintService = sprintService;
     }
 
     @QueryMapping
-    public List<Project> projects() {
-        return projectService.getAllProjects();
+    public Connection<Project> projects(@Argument Integer first, @Argument String after) {
+        return projectService.getProjects(first, after);
     }
 
     @QueryMapping
-    public Project projectById(@Argument String id) {
+    public Project project(@Argument String id) {
         return projectService.getProjectById(id);
-    }
-
-    @SchemaMapping(typeName = "Project", field = "issues")
-    public List<Issue> issues(Project project) {
-        return issueService.getIssuesByProjectId(project.getId());
-    }
-
-    @SchemaMapping(typeName = "Project", field = "sprints")
-    public List<Sprint> sprints(Project project) {
-        return sprintService.getSprintsByProjectId(project.getId());
     }
 
     @BatchMapping(typeName = "Project", field = "createdBy")

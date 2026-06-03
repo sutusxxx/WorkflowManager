@@ -9,5 +9,6 @@ public record CreateIssueInput(
         String parentId,
         String projectId,
         IssueType type,
-        String status
+        String status,
+        String sprintId
 ) { }

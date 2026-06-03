@@ -1,5 +1,5 @@
 extend type Query {
-    activeSprint(projectId: ID!): Sprint
+    sprintBoard(projectId: ID!): Sprint
 }
 
 extend type Mutation {

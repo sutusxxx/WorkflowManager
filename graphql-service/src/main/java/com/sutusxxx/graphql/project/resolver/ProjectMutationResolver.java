@@ -3,6 +3,7 @@ package com.sutusxxx.graphql.project.resolver;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.ProjectService;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
+import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -20,5 +21,10 @@ public class ProjectMutationResolver {
     @MutationMapping
     public Project createProject(@Argument CreateProjectInput input) {
         return projectService.createProject(input);
+    }
+
+    @MutationMapping
+    public Project updateProject(@Argument String id, @Argument UpdateProjectInput input) {
+        return projectService.updateProject(id, input);
     }
 }

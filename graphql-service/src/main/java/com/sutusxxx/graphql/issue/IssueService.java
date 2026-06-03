@@ -1,13 +1,20 @@
 package com.sutusxxx.graphql.issue;
 
+import com.sutusxxx.graphql.pagination.Cursor;
 import com.sutusxxx.graphql.exceptions.BadRequestException;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
 import com.sutusxxx.graphql.issue.model.AddIssueLinkInput;
 import com.sutusxxx.graphql.issue.model.*;
 import com.sutusxxx.graphql.issue.repository.IssueRepository;
+import com.sutusxxx.graphql.pagination.Page;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
+import graphql.relay.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +31,8 @@ public class IssueService {
 
     private final IssueConverter issueConverter;
 
+    private final MongoTemplate mongoTemplate;
+
     private static final Map<IssueType, Set<IssueType>> ALLOWED_PARENTS = Map.of(
             IssueType.STORY, Set.of(IssueType.EPIC),
             IssueType.BUGFIX, Set.of(IssueType.EPIC),
@@ -35,15 +44,46 @@ public class IssueService {
     public IssueService(
             IssueRepository issueRepository,
             ProjectRepository projectRepository,
-            IssueConverter issueConverter
+            IssueConverter issueConverter, MongoTemplate mongoTemplate
     ) {
         this.issueRepository = issueRepository;
         this.projectRepository = projectRepository;
         this.issueConverter = issueConverter;
+        this.mongoTemplate = mongoTemplate;
     }
 
-    public List<Issue> getIssuesByProjectId(String projectId) {
-        return issueRepository.findByProjectId(projectId);
+    public Connection<Issue> getBacklogIssuesByProjectId(String projectId, Integer first, String after) {
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("projectId").is(projectId));
+        query.addCriteria(Criteria.where("sprintId").isNull());
+
+        if (after != null) {
+            Cursor cursor = Cursor.decode(after);
+            query.addCriteria(Criteria.where("createdAt").gt(cursor.id()));
+        }
+
+        query.limit(first + 1);
+        query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        List<Issue> results = mongoTemplate.find(query, Issue.class);
+
+        boolean hasNextPage = results.size() > first;
+        List<Issue> pageItems = hasNextPage ? results.subList(0, first) : results;
+
+        List<Edge<Issue>> edges = pageItems.stream()
+                .map(p -> (Edge<Issue>) new DefaultEdge<>(p, new DefaultConnectionCursor(
+                        new Cursor(p.getKey()).encode()
+                )))
+                .toList();
+
+        PageInfo pageInfo = new DefaultPageInfo(
+                edges.isEmpty() ? null : edges.get(0).getCursor(),
+                edges.isEmpty() ? null : edges.get(edges.size() - 1).getCursor(),
+                after != null,
+                hasNextPage
+        );
+        return new DefaultConnection<>(edges, pageInfo);
     }
 
     public List<Issue> getIssuesBySprintId(String sprintId) {
@@ -97,10 +137,22 @@ public class IssueService {
         return issueRepository.findByKey(key).orElseThrow(NotFoundException::new);
     }
 
-    public List<Issue> getIssuesByParentId(String parentId) {
-        return issueRepository.findByParentId(parentId);
+    public Page<Issue> getIssuesByProjectId(String projectId, Integer page, Integer pageSize) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("projectId").is(projectId));
+        query.with(Sort.by((Sort.Direction.DESC), "createdAt"));
+
+        long total = mongoTemplate.count(query, Issue.class);
+
+        query.skip((long) page * pageSize);
+        query.limit(pageSize);
+
+        List<Issue> items = mongoTemplate.find(query, Issue.class);
+
+        return new Page<>(items, total, page, pageSize);
     }
 
+    @Transactional
     public Issue createIssue(CreateIssueInput input) {
         String projectId = input.projectId();
 
@@ -110,13 +162,16 @@ public class IssueService {
         int nextIssueNumber = project.getIssueCounter() + 1;
         project.setIssueCounter(nextIssueNumber);
 
+        projectRepository.save(project);
+
         Issue issue = issueConverter.convertFromInput(input);
         issue.setStatusId(project.getDefaultStatus().getId());
         issue.setProjectId(project.getId());
         issue.setKey(project.getKey() + "-" + nextIssueNumber);
+        issue.setSprintId(input.sprintId());
 
         if (input.parentId() != null) {
-            Issue parent = issueRepository.findById(input.parentId()).orElseThrow();
+            Issue parent = issueRepository.findById(input.parentId()).orElseThrow(NotFoundException::new);
             validateParent(issue, parent);
             issue.setParentId(parent.getId());
         }
@@ -125,7 +180,13 @@ public class IssueService {
             issue.setPriority(Priority.LOW);
         }
 
-        return issueRepository.save(issue);
+        Issue savedIssue = issueRepository.save(issue);
+
+        if (savedIssue.getSprintId() != null) {
+            appendToTail(savedIssue);
+        }
+
+        return savedIssue;
     }
 
     public Issue updateIssue(String id, UpdateIssueInput input) {
@@ -162,7 +223,7 @@ public class IssueService {
     }
 
     @Transactional
-    public Boolean deleteIssue(String id) {
+    public String deleteIssue(String id) {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
 
@@ -190,11 +251,16 @@ public class IssueService {
             issueRepository.saveAll(targets.values());
         }
 
+        detachFromChain(issue);
+
         List<Issue> subIssues = issueRepository.findByParentId(id);
+
+        subIssues.forEach(this::detachFromChain);
+
         issueRepository.deleteAll(subIssues);
 
         issueRepository.deleteById(id);
-        return true;
+        return id;
     }
 
     public Issue addLink(AddIssueLinkInput input) {
@@ -373,6 +439,31 @@ public class IssueService {
 
         if (!allowed.contains(parent.getType())) {
             throw new BadRequestException(issue.getType() + " cannot be a child of " + parent.getType());
+        }
+    }
+
+    private void appendToTail(Issue issue) {
+        issueRepository.findFirstBySprintIdAndNextIssueIdIsNull(issue.getSprintId())
+                .filter(tail -> !tail.getId().equals(issue.getId()))
+                .ifPresent(tail -> {
+                    tail.setNextIssueId(issue.getId());
+                    issueRepository.save(tail);
+                });
+    }
+
+    private void detachFromChain(Issue issue) {
+        if (issue.getSprintId() != null) {
+            issueRepository.findFirstBySprintIdAndNextIssueId(issue.getSprintId(), issue.getId())
+                    .ifPresent(prev -> {
+                        prev.setNextIssueId(issue.getNextIssueId());
+                        issueRepository.save(prev);
+                    });
+        } else {
+            issueRepository.findFirstByProjectIdAndSprintIdIsNullAndNextIssueId(issue.getProjectId(), issue.getId())
+                    .ifPresent(prev -> {
+                        prev.setNextIssueId(issue.getNextIssueId());
+                        issueRepository.save(prev);
+                    });
         }
     }
 }

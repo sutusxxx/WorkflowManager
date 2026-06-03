@@ -16,11 +16,17 @@ public interface IssueRepository extends MongoRepository<Issue, String> {
 
     @Query("{ 'sprintId': ?0, 'type': { $ne: 'SUBTASK' } }")
     List<Issue> findBySprintId(String sprintId);
+
     List<Issue> findByParentId(String parentId);
     List<Issue> findByParentIdIn(Collection<String> parentIds);
+
     List<Issue> findByProjectIdAndStatusId(String projectId, String statusId);
     List<Issue> findByProjectIdAndAssignee(String projectId, String assignee);
+
     boolean existsByStatusId(String statusId);
 
+    Optional<Issue> findFirstBySprintIdAndNextIssueIdIsNull(String sprintId);
+    Optional<Issue> findFirstByProjectIdAndSprintIdIsNullAndNextIssueIdIsNull(String projectId);
+    Optional<Issue> findFirstByProjectIdAndSprintIdIsNullAndNextIssueId(String projectId, String nextIssueId);
     Optional<Issue> findFirstBySprintIdAndNextIssueId(String sprintId, String nextIssueId);
 }

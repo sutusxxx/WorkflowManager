@@ -1,12 +1,14 @@
 extend type Query {
     issueByKey(key: String!): Issue!
-    issueById(id: ID!): Issue!
+    issue(id: ID!): Issue!
+    issues(projectId: ID!, page: Int, pageSize: Int): IssuePage!
+    backlog(projectId: ID!, first: Int, after: String): IssueConnection!
 }
 
 extend type Mutation {
     createIssue(input: CreateIssueInput!): Issue!
     updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
-    deleteIssue(id: ID!): Boolean!
+    deleteIssue(id: ID!): ID!
     changeStatus(issueId: ID!, input: TransitionIssueInput!): Issue!
     linkIssue(input: LinkIssueInput!): Issue!
     removeLink(input: LinkIssueInput!): Issue!
@@ -31,6 +33,7 @@ input CreateIssueInput {
     parentId: ID
     projectId: ID!
     type: IssueType!
+    sprintId: ID
 }
 
 input UpdateIssueInput {
@@ -41,6 +44,24 @@ input UpdateIssueInput {
     dueDate: String
     reporterId: ID
     assignedId: ID
+}
+
+type IssueEdge {
+    cursor: String!
+    node: Issue!
+}
+
+type IssueConnection {
+    pageInfo: PageInfo!
+    edges: [IssueEdge!]!
+    totalCount: Int!
+}
+
+type IssuePage {
+    items: [Issue!]!
+    total: Int!
+    page: Int!
+    pageSize: Int!
 }
 
 type Issue {

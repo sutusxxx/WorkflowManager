@@ -4,7 +4,9 @@ import com.sutusxxx.graphql.issue.Issue;
 import com.sutusxxx.graphql.issue.IssueService;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.IssueLinkDTO;
+import com.sutusxxx.graphql.pagination.Page;
 import com.sutusxxx.graphql.project.Project;
+import graphql.relay.Connection;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -29,10 +31,20 @@ public class IssueQueryResolver {
         this.userService = userService;
     }
 
-    @QueryMapping()
+    @QueryMapping
     public Issue issueByKey(@Argument String key) {
         log.debug("[ISSUE_QUERY] Getting issue by key '{}'", key);
         return issueService.getIssueByKey(key);
+    }
+
+    @QueryMapping
+    public Page<Issue> issues(@Argument String projectId, @Argument Integer page, @Argument Integer pageSize) {
+        return issueService.getIssuesByProjectId(projectId, page, pageSize);
+    }
+
+    @QueryMapping
+    public Connection<Issue> backlog(@Argument String projectId, @Argument Integer first, @Argument String after) {
+        return issueService.getBacklogIssuesByProjectId(projectId, first, after);
     }
 
     @BatchMapping(typeName = "Issue", field = "children")

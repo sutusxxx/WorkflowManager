@@ -1,12 +1,19 @@
 package com.sutusxxx.graphql.project;
 
+import com.sutusxxx.graphql.pagination.Cursor;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
+import graphql.relay.*;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,21 +25,50 @@ public class ProjectService {
 
     private final ProjectConverter projectConverter;
 
+    private final MongoTemplate mongoTemplate;
+
     public ProjectService(
             ProjectRepository projectRepository,
-            ProjectConverter projectConverter) {
+            ProjectConverter projectConverter, MongoTemplate mongoTemplate) {
         this.projectRepository = projectRepository;
         this.projectConverter = projectConverter;
+        this.mongoTemplate = mongoTemplate;
     }
 
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    public Connection<Project> getProjects(Integer first, String after) {
+        Query query = new Query();
+
+        if (after != null) {
+            Cursor cursor = Cursor.decode(after);
+            query.addCriteria(Criteria.where("_id").gt(new ObjectId(cursor.id())));
+        }
+
+        query.limit(first + 1);
+        query.with(Sort.by(Sort.Direction.ASC, "_id"));
+
+        List<Project> results = mongoTemplate.find(query, Project.class);
+
+        boolean hasNextPage = results.size() > first;
+        List<Project> pageItems = hasNextPage ? results.subList(0, first) : results;
+
+        List<Edge<Project>> edges = pageItems.stream()
+                .map(p -> (Edge<Project>) new DefaultEdge<>(p, new DefaultConnectionCursor(
+                        new Cursor(p.getId()).encode()
+                )))
+                .toList();
+
+        PageInfo pageInfo = new DefaultPageInfo(
+                edges.isEmpty() ? null : edges.get(0).getCursor(),
+                edges.isEmpty() ? null : edges.get(edges.size() - 1).getCursor(),
+                after != null,
+                hasNextPage
+        );
+        return new DefaultConnection<>(edges, pageInfo);
     }
 
     public Project getProjectById(String id) {
         return projectRepository.findById(id).orElseThrow(NotFoundException::new);
     }
-
 
     public Project createProject(CreateProjectInput input) {
         Project project = projectConverter.convertFromInput(input);
