@@ -100,19 +100,23 @@ public class ProjectService {
             project.getStatuses().forEach(s -> s.setDefault(false));
         }
 
-        Status status = new Status();
-        status.setName(input.name());
-        status.setCategory(input.category());
-        status.setColor(input.color());
-        status.setDisplayOrder(input.displayOrder());
-        status.setDefault(input.isDefault());
+        Status newStatus = new Status();
+        newStatus.setName(input.name());
+        newStatus.setCategory(input.category());
+        newStatus.setColor(input.color());
+        newStatus.setDisplayOrder(input.displayOrder());
+        newStatus.setDefault(input.isDefault());
 
-        project.getStatuses().add(status);
+        project.getStatuses().stream()
+                .filter(status -> status.getDisplayOrder() >= newStatus.getDisplayOrder())
+                .forEach(status -> status.setDisplayOrder(status.getDisplayOrder() + 1));
+
+        project.getStatuses().add(newStatus);
         projectRepository.save(project);
-        return status;
+        return newStatus;
     }
 
-    public void addTransition(String projectId, String fromStatusId, String toStatusId) {
+    public Project addTransition(String projectId, String fromStatusId, String toStatusId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(NotFoundException::new);
 
@@ -126,5 +130,7 @@ public class ProjectService {
             from.getAllowedTransitionIds().add(toStatusId);
             projectRepository.save(project);
         }
+
+        return project;
     }
 }

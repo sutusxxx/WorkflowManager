@@ -6,8 +6,8 @@ extend type Mutation {
     createSprint(projectId: ID!, input: CreateSprintInput): Sprint!
     updateSprint(id: ID!, input: UpdateSprintInput): Sprint!
     activate(id: ID!): Sprint!
-    moveIssue(sprintId: ID!, input: MoveIssueInput): Sprint!
-    removeIssue(issueId: ID!): Sprint!
+    moveToSprint(sprintId: ID!, input: MoveIssueInput): Sprint!
+    removeFromSprint(issueId: ID!): Sprint!
 }
 
 input MoveIssueInput {

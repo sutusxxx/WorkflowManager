@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -34,10 +33,6 @@ public class SprintService {
 
     public Sprint getActiveSprintByProjectId(String projectId) {
         return sprintRepository.findActiveByProjectId(projectId).orElseThrow(NotFoundException::new);
-    }
-
-    public List<Sprint> getSprintsByProjectId(String projectId) {
-        return sprintRepository.findByProjectId(projectId);
     }
 
     public Sprint createSprint(String projectId, CreateSprintInput input) {

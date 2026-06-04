@@ -6,6 +6,21 @@ extend type Query {
 extend type Mutation {
     createProject(input: CreateProjectInput!): Project!
     updateProject(id: ID!, input: UpdateProjectInput!): Project!
+    createStatus(projectId: ID!, input: CreateStatusInput!): Status!
+    addTransition(projectId: ID!, input: AddTransitionInput!): Project!
+}
+
+input CreateStatusInput {
+    name: String!
+    category: StatusCategory!
+    color: String
+    displayOrder: Int!
+    isDefault: Boolean!
+}
+
+input AddTransitionInput {
+    fromStatusId: ID!
+    toStatusId: ID!
 }
 
 input UpdateProjectInput {

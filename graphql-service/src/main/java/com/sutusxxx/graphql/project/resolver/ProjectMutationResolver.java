@@ -1,7 +1,10 @@
 package com.sutusxxx.graphql.project.resolver;
 
+import com.sutusxxx.graphql.issue.Status;
+import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.ProjectService;
+import com.sutusxxx.graphql.project.model.AddTransitionInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +29,15 @@ public class ProjectMutationResolver {
     @MutationMapping
     public Project updateProject(@Argument String id, @Argument UpdateProjectInput input) {
         return projectService.updateProject(id, input);
+    }
+
+    @MutationMapping
+    public Status createStatus(@Argument String projectId, @Argument CreateStatusInput input) {
+        return projectService.addStatus(projectId, input);
+    }
+
+    @MutationMapping
+    public Project addTransition(@Argument String projectId, @Argument AddTransitionInput input) {
+        return projectService.addTransition(projectId, input.fromStatusId(), input.toStatusId());
     }
 }

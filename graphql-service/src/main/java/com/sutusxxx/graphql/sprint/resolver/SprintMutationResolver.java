@@ -35,12 +35,12 @@ public class SprintMutationResolver {
     }
 
     @MutationMapping
-    public Sprint moveIssue(@Argument String sprintId, @Argument MoveIssueInput input) {
+    public Sprint moveToSprint(@Argument String sprintId, @Argument MoveIssueInput input) {
         return sprintService.moveIssue(sprintId, input);
     }
 
     @MutationMapping
-    public Sprint removeIssue(@Argument String issueId) {
+    public Sprint removeFromSprint(@Argument String issueId) {
         return sprintService.removeIssue(issueId);
     }
 }
