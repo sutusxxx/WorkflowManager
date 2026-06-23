@@ -60,11 +60,11 @@ public class IssueService {
 
         if (after != null) {
             Cursor cursor = Cursor.decode(after);
-            query.addCriteria(Criteria.where("createdAt").gt(cursor.id()));
+            query.addCriteria(Criteria.where("_id").gt(cursor.id()));
         }
 
         query.limit(first + 1);
-        query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+        query.with(Sort.by(Sort.Direction.ASC, "_id"));
 
         List<Issue> results = mongoTemplate.find(query, Issue.class);
 
@@ -73,7 +73,7 @@ public class IssueService {
 
         List<Edge<Issue>> edges = pageItems.stream()
                 .map(p -> (Edge<Issue>) new DefaultEdge<>(p, new DefaultConnectionCursor(
-                        new Cursor(p.getKey()).encode()
+                        new Cursor(p.getId()).encode()
                 )))
                 .toList();
 

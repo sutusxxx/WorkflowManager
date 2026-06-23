@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface SprintRepository extends MongoRepository<Sprint, String> {
     List<Sprint> findByProjectId(String projectId);
 
-    @Query("{ 'projectId': ?0, 'active': true }")
+    @Query("{ 'projectId': ?0, 'state': 'ACTIVE' }")
     Optional<Sprint> findActiveByProjectId(String projectId);
 }

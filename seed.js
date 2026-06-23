@@ -45,6 +45,14 @@ const userManage    = { id: "p-user-manage",    name: "USER_MANAGE" };
 
 db.users.insertMany([
     {
+        _id:              "_system",
+        email:            "admin@test.com",
+        username:         "system",
+        password:         BCRYPT_PASSWORD,
+        registrationDate: isoDate(-120),
+        permissions:      [projectCreate, projectDelete, issueCreate, issueDelete, userManage]
+    },
+    {
         _id:              "user-alice",
         email:            "alice@example.com",
         username:         "alice",

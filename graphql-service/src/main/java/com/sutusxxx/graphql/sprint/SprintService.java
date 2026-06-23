@@ -4,6 +4,7 @@ import com.sutusxxx.graphql.exceptions.BadRequestException;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
 import com.sutusxxx.graphql.issue.Issue;
 import com.sutusxxx.graphql.issue.repository.IssueRepository;
+import com.sutusxxx.graphql.pagination.Page;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
 import com.sutusxxx.graphql.sprint.model.CreateSprintInput;
 import com.sutusxxx.graphql.sprint.model.MoveIssueInput;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -35,6 +39,28 @@ public class SprintService {
         return sprintRepository.findActiveByProjectId(projectId).orElseThrow(NotFoundException::new);
     }
 
+    public Page<Sprint> getSprintsByProjectId(String projectId, Integer page, Integer pageSize) {
+        List<Sprint> sprints = sprintRepository.findByProjectId(projectId);
+
+        Map<SprintState, Integer> order = Map.of(
+                SprintState.ACTIVE, 0,
+                SprintState.OPEN, 1,
+                SprintState.CLOSED, 2
+        );
+
+        sprints.sort(Comparator.comparingInt(s -> order.get(s.getState())));
+
+        return new Page<>(
+                sprints.stream()
+                        .skip((long) page * pageSize)
+                        .limit(pageSize)
+                        .toList(),
+                sprints.size(),
+                page,
+                pageSize
+        );
+    }
+
     public Sprint createSprint(String projectId, CreateSprintInput input) {
         projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
 
@@ -46,13 +72,13 @@ public class SprintService {
         sprint.setStartDate(input.startDate());
         sprint.setEndDate(input.endDate());
         sprint.setGoal(input.goal());
-
+        sprint.setState(SprintState.OPEN);
         return sprintRepository.save(sprint);
     }
 
     public Sprint activate(String sprintId) {
         Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(NotFoundException::new);
-        if (sprint.getActive()) {
+        if (sprint.getState() == SprintState.ACTIVE) {
             throw new BadRequestException("Sprint already active");
         }
 
@@ -62,7 +88,21 @@ public class SprintService {
 
         if (sprint.getStartDate() == null) sprint.setStartDate(Instant.now());
 
-        sprint.setActive(true);
+        sprint.setState(SprintState.ACTIVE);
+        return sprintRepository.save(sprint);
+    }
+
+    public Sprint close(String sprintId) {
+        Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(NotFoundException::new);
+        if (sprint.getState() == SprintState.CLOSED) {
+            throw new BadRequestException("Sprint already active");
+        }
+
+        if (sprint.getState() == SprintState.OPEN) {
+            throw new BadRequestException("Only active sprint can be closed");
+        }
+
+        sprint.setState(SprintState.CLOSED);
         return sprintRepository.save(sprint);
     }
 

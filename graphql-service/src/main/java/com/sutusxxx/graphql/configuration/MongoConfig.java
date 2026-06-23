@@ -48,7 +48,7 @@ public class MongoConfig {
                         .map(User::getId);
 
             } catch (Exception e) {
-                return Optional.empty(); // not authenticated
+                return Optional.of("_system"); // default not authenticated user
             }
         };
     }

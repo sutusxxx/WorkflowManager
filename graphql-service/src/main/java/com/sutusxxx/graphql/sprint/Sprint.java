@@ -24,7 +24,7 @@ public class Sprint {
     private Instant startDate;
     private Instant endDate;
 
-    private Boolean active = false;
+    private SprintState state;
 
     @CreatedDate
     private Instant createdAt;

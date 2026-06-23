@@ -40,7 +40,7 @@ public class ProjectService {
 
         if (after != null) {
             Cursor cursor = Cursor.decode(after);
-            query.addCriteria(Criteria.where("_id").gt(new ObjectId(cursor.id())));
+            query.addCriteria(Criteria.where("_id").gt(cursor.id()));
         }
 
         query.limit(first + 1);

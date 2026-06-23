@@ -1,12 +1,13 @@
 extend type Query {
     sprintBoard(projectId: ID!): Sprint
+    sprints(projectId: ID!, page: Int, pageSize: Int): SprintPage!
 }
 
 extend type Mutation {
     createSprint(projectId: ID!, input: CreateSprintInput): Sprint!
     updateSprint(id: ID!, input: UpdateSprintInput): Sprint!
     activate(id: ID!): Sprint!
-    moveToSprint(sprintId: ID!, input: MoveIssueInput): Sprint!
+    moveToSprint(sprintId: ID!, input: MoveIssueInput!): Sprint!
     removeFromSprint(issueId: ID!): Sprint!
 }
 
@@ -29,6 +30,13 @@ input UpdateSprintInput {
     endDate: String
 }
 
+type SprintPage {
+    items: [Sprint!]!
+    total: Int!
+    page: Int!
+    pageSize: Int!
+}
+
 type Sprint {
     id: ID!
     name: String!
@@ -37,9 +45,15 @@ type Sprint {
     endDate: String
     project: Project!
     issues: [Issue!]!
-    active: Boolean!
+    state: SprintState!
     createdAt: String!
     createdBy: User!
     updatedAt: String!
     modifiedBy: User!
+}
+
+enum SprintState {
+    ACTIVE
+    OPEN
+    CLOSED
 }
