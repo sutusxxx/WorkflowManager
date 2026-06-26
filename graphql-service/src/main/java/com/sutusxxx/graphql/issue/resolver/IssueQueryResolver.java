@@ -18,6 +18,8 @@ import com.sutusxxx.user.model.UserSummaryDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Slf4j
 @Controller
@@ -25,10 +27,13 @@ public class IssueQueryResolver {
     private final IssueService issueService;
     private final UserService userService;
 
+    private final Executor batchExecutor;
+
     @Autowired
-    public IssueQueryResolver(IssueService issueService, UserService userService) {
+    public IssueQueryResolver(IssueService issueService, UserService userService, Executor batchExecutor) {
         this.issueService = issueService;
         this.userService = userService;
+        this.batchExecutor = batchExecutor;
     }
 
     @QueryMapping
@@ -48,49 +53,76 @@ public class IssueQueryResolver {
     }
 
     @BatchMapping(typeName = "Issue", field = "children")
-    public Map<Issue, List<Issue>> subIssues(List<Issue> issues) {
+    public CompletableFuture<Map<Issue, List<Issue>>> subIssues(List<Issue> issues) {
         log.debug("[ISSUE_QUERY] Loading sub-issues");
-        return issueService.loadChildren(issues);
+        return CompletableFuture.supplyAsync(
+                () -> issueService.loadChildren(issues),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "links")
-    public Map<Issue, List<IssueLinkDTO>> links(List<Issue> issues) {
+    public CompletableFuture<Map<Issue, List<IssueLinkDTO>>> links(List<Issue> issues) {
         log.debug("[ISSUE_QUERY] Loading links");
-        return issueService.loadLinks(issues);
+        return CompletableFuture.supplyAsync(
+                () -> issueService.loadLinks(issues),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "createdBy")
-    public Map<Issue, UserSummaryDTO> createdBy(List<Issue> issues) {
-        return userService.batchLoadUsers(issues, Issue::getCreatedBy);
+    public CompletableFuture<Map<Issue, UserSummaryDTO>> createdBy(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(issues, Issue::getCreatedBy),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "modifiedBy")
-    public Map<Issue, UserSummaryDTO> modifiedBy(List<Issue> issues) {
-        return userService.batchLoadUsers(issues, Issue::getModifiedBy);
+    public CompletableFuture<Map<Issue, UserSummaryDTO>> modifiedBy(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(issues, Issue::getModifiedBy),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "assigned")
-    public Map<Issue, UserSummaryDTO> assigned(List<Issue> issues) {
-        return userService.batchLoadUsers(issues, Issue::getAssignee);
+    public CompletableFuture<Map<Issue, UserSummaryDTO>> assigned(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(issues, Issue::getAssignee),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "reporter")
-    public Map<Issue, UserSummaryDTO> reporter(List<Issue> issues) {
-        return userService.batchLoadUsers(issues, Issue::getReporter);
+    public CompletableFuture<Map<Issue, UserSummaryDTO>> reporter(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(issues, Issue::getReporter),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "status")
-    public Map<Issue, Status> status(List<Issue> issues) {
-        return issueService.batchLoadStatuses(issues);
+    public CompletableFuture<Map<Issue, Status>> status(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> issueService.batchLoadStatuses(issues),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "parent")
-    public Map<Issue, Issue> parent(List<Issue> issues) {
-        return issueService.batchLoadParents(issues);
+    public CompletableFuture<Map<Issue, Issue>> parent(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> issueService.batchLoadParents(issues),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Issue", field = "project")
-    public Map<Issue, Project> project(List<Issue> issues) {
-        return issueService.batchLoadProjects(issues);
+    public CompletableFuture<Map<Issue, Project>> project(List<Issue> issues) {
+        return CompletableFuture.supplyAsync(
+                () -> issueService.batchLoadProjects(issues),
+                batchExecutor
+        );
     }
 }

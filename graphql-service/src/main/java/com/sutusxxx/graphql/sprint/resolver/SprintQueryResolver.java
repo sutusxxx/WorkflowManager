@@ -18,6 +18,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Slf4j
 @Controller
@@ -27,11 +29,14 @@ public class SprintQueryResolver {
     private final ProjectService projectService;
     private final UserService userService;
 
-    public SprintQueryResolver(SprintService sprintService, IssueService issueService, ProjectService projectService, UserService userService) {
+    private final Executor batchExecutor;
+
+    public SprintQueryResolver(SprintService sprintService, IssueService issueService, ProjectService projectService, UserService userService, Executor batchExecutor) {
         this.sprintService = sprintService;
         this.issueService = issueService;
         this.projectService = projectService;
         this.userService = userService;
+        this.batchExecutor = batchExecutor;
     }
 
     @QueryMapping
@@ -55,12 +60,18 @@ public class SprintQueryResolver {
     }
 
     @BatchMapping(typeName = "Sprint", field = "createdBy")
-    public Map<Sprint, UserSummaryDTO> createdBy(List<Sprint> sprints) {
-        return userService.batchLoadUsers(sprints, Sprint::getCreatedBy);
+    public CompletableFuture<Map<Sprint, UserSummaryDTO>> createdBy(List<Sprint> sprints) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(sprints, Sprint::getCreatedBy),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Sprint", field = "modifiedBy")
-    public Map<Sprint, UserSummaryDTO> modifiedBy(List<Sprint> sprints) {
-        return userService.batchLoadUsers(sprints, Sprint::getModifiedBy);
+    public CompletableFuture<Map<Sprint, UserSummaryDTO>> modifiedBy(List<Sprint> sprints) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(sprints, Sprint::getModifiedBy),
+                batchExecutor
+        );
     }
 }

@@ -13,18 +13,24 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Controller
 public class ProjectQueryResolver {
     private final ProjectService projectService;
     private final UserService userService;
 
+    private final Executor batchExecutor;
+
     @Autowired
     public ProjectQueryResolver(
             ProjectService projectService,
-            UserService userService) {
+            UserService userService,
+            Executor batchExecutor) {
         this.projectService = projectService;
         this.userService = userService;
+        this.batchExecutor = batchExecutor;
     }
 
     @QueryMapping
@@ -38,12 +44,18 @@ public class ProjectQueryResolver {
     }
 
     @BatchMapping(typeName = "Project", field = "createdBy")
-    public Map<Project, UserSummaryDTO> createdBy(List<Project> projects) {
-        return userService.batchLoadUsers(projects, Project::getCreatedBy);
+    public CompletableFuture<Map<Project, UserSummaryDTO>> createdBy(List<Project> projects) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(projects, Project::getCreatedBy),
+                batchExecutor
+        );
     }
 
     @BatchMapping(typeName = "Project", field = "modifiedBy")
-    public Map<Project, UserSummaryDTO> modifiedBy(List<Project> projects) {
-        return userService.batchLoadUsers(projects, Project::getModifiedBy);
+    public CompletableFuture<Map<Project, UserSummaryDTO>> modifiedBy(List<Project> projects) {
+        return CompletableFuture.supplyAsync(
+                () -> userService.batchLoadUsers(projects, Project::getModifiedBy),
+                batchExecutor
+        );
     }
 }
