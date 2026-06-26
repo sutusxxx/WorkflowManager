@@ -1,5 +1,7 @@
 package com.sutusxxx.graphql.issue;
 
+import com.sutusxxx.graphql.audit.AuditService;
+import com.sutusxxx.graphql.audit.model.AuditEvent;
 import com.sutusxxx.graphql.pagination.Cursor;
 import com.sutusxxx.graphql.exceptions.BadRequestException;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
@@ -33,6 +35,8 @@ public class IssueService {
 
     private final MongoTemplate mongoTemplate;
 
+    private final AuditService audit;
+
     private static final Map<IssueType, Set<IssueType>> ALLOWED_PARENTS = Map.of(
             IssueType.STORY, Set.of(IssueType.EPIC),
             IssueType.BUGFIX, Set.of(IssueType.EPIC),
@@ -44,12 +48,13 @@ public class IssueService {
     public IssueService(
             IssueRepository issueRepository,
             ProjectRepository projectRepository,
-            IssueConverter issueConverter, MongoTemplate mongoTemplate
+            IssueConverter issueConverter, MongoTemplate mongoTemplate, AuditService audit
     ) {
         this.issueRepository = issueRepository;
         this.projectRepository = projectRepository;
         this.issueConverter = issueConverter;
         this.mongoTemplate = mongoTemplate;
+        this.audit = audit;
     }
 
     public Connection<Issue> getBacklogIssuesByProjectId(String projectId, Integer first, String after) {
@@ -197,7 +202,14 @@ public class IssueService {
         return issueRepository.save(issue);
     }
 
+    @Transactional
     public Issue changeStatus(String issueId, String newStatusId) {
+        audit.log(new AuditEvent(
+                "STATUS_CHANGE",
+                "Issue",
+                issueId
+        ));
+
         Issue issue = issueRepository.findById(issueId).orElseThrow(NotFoundException::new);
 
         Project project = projectRepository.findById(issue.getProjectId())
