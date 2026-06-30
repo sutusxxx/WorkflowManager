@@ -36,7 +36,7 @@ public class SprintService {
     }
 
     public Sprint getActiveSprintByProjectId(String projectId) {
-        return sprintRepository.findActiveByProjectId(projectId).orElseThrow(NotFoundException::new);
+        return sprintRepository.findActiveByProjectId(projectId).orElse(null);
     }
 
     public Page<Sprint> getSprintsByProjectId(String projectId, Integer page, Integer pageSize) {

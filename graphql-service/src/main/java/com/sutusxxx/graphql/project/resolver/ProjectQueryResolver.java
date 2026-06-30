@@ -1,7 +1,9 @@
 package com.sutusxxx.graphql.project.resolver;
 
+import com.sutusxxx.graphql.annotation.CurrentUser;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.ProjectService;
+import com.sutusxxx.user.User;
 import com.sutusxxx.user.UserService;
 import com.sutusxxx.user.model.UserSummaryDTO;
 import graphql.relay.Connection;
@@ -40,13 +42,13 @@ public class ProjectQueryResolver {
         return projectService.getProjects(first, after);
     }
 
-    @QueryMapping List<Project> recentProjects(@AuthenticationPrincipal Jwt jwt, @Argument Integer limit) {
-        return projectService.getRecentProjects(jwt.getSubject(), limit);
+    @QueryMapping List<Project> recentProjects(@Argument Integer limit, @CurrentUser User currentUser) {
+        return projectService.getRecentProjects(currentUser, limit);
     }
 
     @QueryMapping
-    public Project project(@AuthenticationPrincipal Jwt jwt, @Argument String id) {
-        projectService.trackView(jwt.getSubject(), id);
+    public Project project(@Argument String id, @CurrentUser User currentUser) {
+        projectService.trackView(currentUser, id);
         return projectService.getProjectById(id);
     }
 

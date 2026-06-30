@@ -1,8 +1,10 @@
 package com.sutusxxx.graphql.configuration;
 
+import com.sutusxxx.graphql.annotation.CurrentUserArgumentResolver;
 import graphql.scalars.ExtendedScalars;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -25,5 +27,14 @@ public class GraphQlConfig {
             setThreadNamePrefix("graphql-batch-");
             initialize();
         }};
+    }
+
+    @Bean
+    public AnnotatedControllerConfigurer annotatedControllerConfigurer(
+            CurrentUserArgumentResolver resolver) {
+
+        AnnotatedControllerConfigurer configurer = new AnnotatedControllerConfigurer();
+        configurer.addCustomArgumentResolver(resolver);
+        return configurer;
     }
 }

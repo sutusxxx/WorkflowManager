@@ -42,7 +42,8 @@ public class ProjectService {
             RecentlyViewedRepository recentlyViewedRepository,
             UserRepository userRepository,
             ProjectConverter projectConverter,
-            MongoTemplate mongoTemplate) {
+            MongoTemplate mongoTemplate
+    ) {
         this.projectRepository = projectRepository;
         this.recentlyViewedRepository = recentlyViewedRepository;
         this.userRepository = userRepository;
@@ -50,10 +51,8 @@ public class ProjectService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public List<Project> getRecentProjects(String keycloakUserId, Integer limit) {
-        String userId = userRepository.findByKeycloakId(keycloakUserId).map(User::getId).orElse("_system");
-
-        List<String> recentProjectIds = getRecentProjectIds(userId, limit);
+    public List<Project> getRecentProjects(User currentUser, Integer limit) {
+        List<String> recentProjectIds = getRecentProjectIds(currentUser.getId(), limit);
 
         return (!recentProjectIds.isEmpty())
                 ? loadPreservingOrder(recentProjectIds)
@@ -96,13 +95,11 @@ public class ProjectService {
     }
 
     @Transactional
-    public Boolean trackView(String keycloakUserId, String projectId) {
-        String userId = userRepository.findByKeycloakId(keycloakUserId).map(User::getId).orElse("_system");
-
-        RecentlyViewed recent = recentlyViewedRepository.findByUserIdAndProjectId(userId, projectId)
+    public Boolean trackView(User currentUser, String projectId) {
+        RecentlyViewed recent = recentlyViewedRepository.findByUserIdAndProjectId(currentUser.getId(), projectId)
                 .orElseGet(() -> {
                     RecentlyViewed recentNew = new RecentlyViewed();
-                    recentNew.setUserId(userId);
+                    recentNew.setUserId(currentUser.getId());
                     recentNew.setProjectId(projectId);
                     return recentNew;
                 });

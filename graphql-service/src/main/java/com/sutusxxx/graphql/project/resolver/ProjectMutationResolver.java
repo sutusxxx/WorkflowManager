@@ -1,5 +1,6 @@
 package com.sutusxxx.graphql.project.resolver;
 
+import com.sutusxxx.graphql.annotation.CurrentUser;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.Project;
@@ -7,6 +8,7 @@ import com.sutusxxx.graphql.project.ProjectService;
 import com.sutusxxx.graphql.project.model.AddTransitionInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
+import com.sutusxxx.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -44,7 +46,7 @@ public class ProjectMutationResolver {
     }
 
     @MutationMapping
-    public Boolean viewProject(@AuthenticationPrincipal Jwt jwt, @Argument String projectId) {
-        return projectService.trackView(jwt.getSubject(), projectId);
+    public Boolean viewProject(@Argument String projectId, @CurrentUser User currentUser) {
+        return projectService.trackView(currentUser, projectId);
     }
 }
