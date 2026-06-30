@@ -10,6 +10,8 @@ import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -39,5 +41,10 @@ public class ProjectMutationResolver {
     @MutationMapping
     public Project addTransition(@Argument String projectId, @Argument AddTransitionInput input) {
         return projectService.addTransition(projectId, input.fromStatusId(), input.toStatusId());
+    }
+
+    @MutationMapping
+    public Boolean viewProject(@AuthenticationPrincipal Jwt jwt, @Argument String projectId) {
+        return projectService.trackView(jwt.getSubject(), projectId);
     }
 }

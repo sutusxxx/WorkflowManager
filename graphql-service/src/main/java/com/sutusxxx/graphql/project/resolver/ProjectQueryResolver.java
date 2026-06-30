@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -38,8 +40,13 @@ public class ProjectQueryResolver {
         return projectService.getProjects(first, after);
     }
 
+    @QueryMapping List<Project> recentProjects(@AuthenticationPrincipal Jwt jwt, @Argument Integer limit) {
+        return projectService.getRecentProjects(jwt.getSubject(), limit);
+    }
+
     @QueryMapping
-    public Project project(@Argument String id) {
+    public Project project(@AuthenticationPrincipal Jwt jwt, @Argument String id) {
+        projectService.trackView(jwt.getSubject(), id);
         return projectService.getProjectById(id);
     }
 

@@ -7,21 +7,31 @@ import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
+import com.sutusxxx.graphql.project.repository.RecentlyViewedRepository;
+import com.sutusxxx.user.User;
+import com.sutusxxx.user.repository.UserRepository;
 import graphql.relay.*;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    private final RecentlyViewedRepository recentlyViewedRepository;
+    private final UserRepository userRepository;
 
     private final ProjectConverter projectConverter;
 
@@ -29,10 +39,25 @@ public class ProjectService {
 
     public ProjectService(
             ProjectRepository projectRepository,
-            ProjectConverter projectConverter, MongoTemplate mongoTemplate) {
+            RecentlyViewedRepository recentlyViewedRepository,
+            UserRepository userRepository,
+            ProjectConverter projectConverter,
+            MongoTemplate mongoTemplate) {
         this.projectRepository = projectRepository;
+        this.recentlyViewedRepository = recentlyViewedRepository;
+        this.userRepository = userRepository;
         this.projectConverter = projectConverter;
         this.mongoTemplate = mongoTemplate;
+    }
+
+    public List<Project> getRecentProjects(String keycloakUserId, Integer limit) {
+        String userId = userRepository.findByKeycloakId(keycloakUserId).map(User::getId).orElse("_system");
+
+        List<String> recentProjectIds = getRecentProjectIds(userId, limit);
+
+        return (!recentProjectIds.isEmpty())
+                ? loadPreservingOrder(recentProjectIds)
+                : List.of();
     }
 
     public Connection<Project> getProjects(Integer first, String after) {
@@ -48,7 +73,7 @@ public class ProjectService {
 
         List<Project> results = mongoTemplate.find(query, Project.class);
 
-        boolean hasNextPage = results.size() > first;
+        boolean hasNextPage = results.size() > first    ;
         List<Project> pageItems = hasNextPage ? results.subList(0, first) : results;
 
         List<Edge<Project>> edges = pageItems.stream()
@@ -68,6 +93,42 @@ public class ProjectService {
 
     public Project getProjectById(String id) {
         return projectRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    @Transactional
+    public Boolean trackView(String keycloakUserId, String projectId) {
+        String userId = userRepository.findByKeycloakId(keycloakUserId).map(User::getId).orElse("_system");
+
+        RecentlyViewed recent = recentlyViewedRepository.findByUserIdAndProjectId(userId, projectId)
+                .orElseGet(() -> {
+                    RecentlyViewed recentNew = new RecentlyViewed();
+                    recentNew.setUserId(userId);
+                    recentNew.setProjectId(projectId);
+                    return recentNew;
+                });
+        recent.setLastViewed(Instant.now());
+        recentlyViewedRepository.save(recent);
+        return true;
+    }
+
+    public List<String> getRecentProjectIds(String userId, int limit) {
+        return recentlyViewedRepository
+                    .findByUserIdOrderByLastViewedDesc(userId, PageRequest.of(0, limit))
+                .stream()
+                .map(RecentlyViewed::getProjectId)
+                .toList();
+    }
+
+    public List<Project> loadPreservingOrder(List<String> projectIds) {
+        if (projectIds.isEmpty()) return List.of();
+
+        Map<String, Project> byId = projectRepository.findAllById(projectIds).stream()
+                .collect(Collectors.toMap(Project::getId, p -> p));
+
+        return projectIds.stream()
+                .map(byId::get)
+                .filter(Objects::nonNull) // project may have been deleted since last view
+                .toList();
     }
 
     public Project createProject(CreateProjectInput input) {

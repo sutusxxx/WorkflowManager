@@ -1,5 +1,6 @@
 extend type Query {
     projects(first: Int, after: String): ProjectConnection!
+    recentProjects(limit: Int): [Project!]!
     project(id: ID!): Project
 }
 
@@ -8,6 +9,7 @@ extend type Mutation {
     updateProject(id: ID!, input: UpdateProjectInput!): Project!
     createStatus(projectId: ID!, input: CreateStatusInput!): Status!
     addTransition(projectId: ID!, input: AddTransitionInput!): Project!
+    viewProject(projectId: ID!): Boolean!
 }
 
 input CreateStatusInput {
