@@ -1,8 +1,10 @@
 package com.sutusxxx.graphql.issue.resolver;
 
+import com.sutusxxx.graphql.annotation.CurrentUser;
 import com.sutusxxx.graphql.issue.Issue;
 import com.sutusxxx.graphql.issue.IssueService;
 import com.sutusxxx.graphql.issue.model.*;
+import com.sutusxxx.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,32 +24,32 @@ public class IssueMutationResolver {
     }
 
     @MutationMapping
-    public Issue createIssue(@Argument CreateIssueInput input) {
-        return issueService.createIssue(input);
+    public Issue createIssue(@Argument CreateIssueInput input, @CurrentUser User currentUser) {
+        return issueService.createIssue(currentUser, input);
     }
 
     @MutationMapping
-    public Issue updateIssue(@Argument String id, @Argument UpdateIssueInput input) {
-        return issueService.updateIssue(id, input);
+    public Issue updateIssue(@Argument String id, @Argument UpdateIssueInput input, @CurrentUser User currentUser) {
+        return issueService.updateIssue(currentUser, id, input);
     }
 
     @MutationMapping
-    public Issue changeStatus(@Argument String issueId, @Argument TransitionIssueInput input) {
-        return issueService.changeStatus(issueId, input.newStatusId());
+    public Issue changeStatus(@Argument String issueId, @Argument TransitionIssueInput input, @CurrentUser User currentUser) {
+        return issueService.changeStatus(currentUser, issueId, input.newStatusId());
     }
 
     @MutationMapping
-    public String deleteIssue(@Argument String id) {
-        return issueService.deleteIssue(id);
+    public String deleteIssue(@Argument String id, @CurrentUser User currentUser) {
+        return issueService.deleteIssue(currentUser, id);
     }
 
     @MutationMapping
-    public Issue linkIssue(@Argument AddIssueLinkInput input) {
-        return issueService.addLink(input);
+    public Issue linkIssue(@Argument AddIssueLinkInput input, @CurrentUser User currentUser) {
+        return issueService.addLink(currentUser, input);
     }
 
     @MutationMapping
-    public Issue removeLink(@Argument RemoveIssueLinkInput input) {
-        return issueService.removeLink(input);
+    public Issue removeLink(@Argument RemoveIssueLinkInput input, @CurrentUser User currentUser) {
+        return issueService.removeLink(currentUser, input);
     }
 }

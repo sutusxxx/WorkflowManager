@@ -3,6 +3,7 @@ package com.sutusxxx.graphql.annotation;
 import com.sutusxxx.user.User;
 import com.sutusxxx.user.repository.UserRepository;
 import graphql.schema.DataFetchingEnvironment;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.MethodParameter;
 import org.springframework.graphql.data.method.HandlerMethodArgumentResolver;
@@ -25,7 +26,9 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public @Nullable Object resolveArgument(MethodParameter parameter, DataFetchingEnvironment environment) throws Exception {
+    public @Nullable Object resolveArgument(
+            @NonNull MethodParameter parameter,
+            @NonNull DataFetchingEnvironment environment) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         return userRepository.findByUsername(auth.getName()).orElseThrow();

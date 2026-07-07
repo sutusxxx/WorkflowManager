@@ -5,6 +5,7 @@ import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.ProjectService;
+import com.sutusxxx.graphql.project.model.AddMemberInput;
 import com.sutusxxx.graphql.project.model.AddTransitionInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
@@ -26,18 +27,18 @@ public class ProjectMutationResolver {
     }
 
     @MutationMapping
-    public Project createProject(@Argument CreateProjectInput input) {
-        return projectService.createProject(input);
+    public Project createProject(@Argument CreateProjectInput input, @CurrentUser User currentUser) {
+        return projectService.createProject(currentUser, input);
     }
 
     @MutationMapping
-    public Project updateProject(@Argument String id, @Argument UpdateProjectInput input) {
-        return projectService.updateProject(id, input);
+    public Project updateProject(@Argument String id, @Argument UpdateProjectInput input, @CurrentUser User currentUser) {
+        return projectService.updateProject(currentUser, id, input);
     }
 
     @MutationMapping
-    public Status createStatus(@Argument String projectId, @Argument CreateStatusInput input) {
-        return projectService.addStatus(projectId, input);
+    public Status createStatus(@Argument String projectId, @Argument CreateStatusInput input, @CurrentUser User currentUser) {
+        return projectService.addStatus(currentUser, projectId, input);
     }
 
     @MutationMapping
@@ -48,5 +49,10 @@ public class ProjectMutationResolver {
     @MutationMapping
     public Boolean viewProject(@Argument String projectId, @CurrentUser User currentUser) {
         return projectService.trackView(currentUser, projectId);
+    }
+
+    @MutationMapping
+    public Project addMember(@Argument AddMemberInput input, @CurrentUser User currentUser) {
+        return projectService.assignProjectMember(currentUser, input);
     }
 }

@@ -1,9 +1,13 @@
 package com.sutusxxx.graphql.project;
 
+import com.sutusxxx.graphql.exceptions.BadRequestException;
+import com.sutusxxx.graphql.exceptions.PermissionDeniedException;
 import com.sutusxxx.graphql.pagination.Cursor;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
 import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
+import com.sutusxxx.graphql.permission.PermissionService;
+import com.sutusxxx.graphql.project.model.AddMemberInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +38,8 @@ public class ProjectService {
     private final RecentlyViewedRepository recentlyViewedRepository;
     private final UserRepository userRepository;
 
+    private final PermissionService permissionService;
+
     private final ProjectConverter projectConverter;
 
     private final MongoTemplate mongoTemplate;
@@ -41,12 +48,14 @@ public class ProjectService {
             ProjectRepository projectRepository,
             RecentlyViewedRepository recentlyViewedRepository,
             UserRepository userRepository,
+            PermissionService permissionService,
             ProjectConverter projectConverter,
             MongoTemplate mongoTemplate
     ) {
         this.projectRepository = projectRepository;
         this.recentlyViewedRepository = recentlyViewedRepository;
         this.userRepository = userRepository;
+        this.permissionService = permissionService;
         this.projectConverter = projectConverter;
         this.mongoTemplate = mongoTemplate;
     }
@@ -108,6 +117,26 @@ public class ProjectService {
         return true;
     }
 
+    @Transactional
+    public Project assignProjectMember(User user, AddMemberInput input) {
+        if (!permissionService.hasPermission(user, input.projectId(), ProjectPermission.MANAGE_MEMBERS)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
+        Project project = projectRepository.findById(input.projectId()).orElseThrow(NotFoundException::new);
+
+        if (project.hasMember(input.userId())) {
+            throw new BadRequestException("User already assigned to the project");
+        }
+
+        User userToAssign = userRepository.findById(input.userId()).orElseThrow(NotFoundException::new);
+
+        List<ProjectMember> members = project.getMembers();
+        members.add(addMember(userToAssign.getId(), input.role()));
+        project.setMembers(members);
+        return projectRepository.save(project);
+    }
+
     public List<String> getRecentProjectIds(String userId, int limit) {
         return recentlyViewedRepository
                     .findByUserIdOrderByLastViewedDesc(userId, PageRequest.of(0, limit))
@@ -128,13 +157,20 @@ public class ProjectService {
                 .toList();
     }
 
-    public Project createProject(CreateProjectInput input) {
+    public Project createProject(User user, CreateProjectInput input) {
         Project project = projectConverter.convertFromInput(input);
         project.setVisibility(input.isPrivate() ? Visibility.PRIVATE : Visibility.PUBLIC);
+        List<ProjectMember> members = new ArrayList<>();
+        members.add(addMember(user.getId(), ProjectRole.ADMIN));
+        project.setMembers(members);
         return projectRepository.save(project);
     }
 
-    public Project updateProject(String id, UpdateProjectInput input) {
+    public Project updateProject(User user, String id, UpdateProjectInput input) {
+        if (!permissionService.hasPermission(user, id, ProjectPermission.EDIT_PROJECT)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
         Project project = projectRepository.findById(id).orElseThrow();
 
         if (input.description() != null && !input.description().equals(project.getDescription())) {
@@ -146,7 +182,11 @@ public class ProjectService {
         return project;
     }
 
-    public Status addStatus(String projectId, CreateStatusInput input) {
+    public Status addStatus(User user, String projectId, CreateStatusInput input) {
+        if (!permissionService.hasPermission(user, projectId, ProjectPermission.MANAGE_STATUSES)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(NotFoundException::new);
 
@@ -190,5 +230,12 @@ public class ProjectService {
         }
 
         return project;
+    }
+
+    private ProjectMember addMember(String userId, ProjectRole role) {
+        ProjectMember member = new ProjectMember();
+        member.setRole(role);
+        member.setUserId(userId);
+        return member;
     }
 }

@@ -10,8 +10,14 @@ extend type Mutation {
     createStatus(projectId: ID!, input: CreateStatusInput!): Status!
     addTransition(projectId: ID!, input: AddTransitionInput!): Project!
     viewProject(projectId: ID!): Boolean!
+    addMember(input: AddMemberInput!): Project!
 }
 
+input AddMemberInput {
+    projectId: ID!
+    userId: ID!
+    role: ProjectRole!
+}
 input CreateStatusInput {
     name: String!
     category: StatusCategory!
@@ -80,4 +86,10 @@ enum StatusCategory {
 enum Visibility {
     PRIVATE
     PUBLIC
+}
+
+enum ProjectRole {
+    ADMIN,
+    MEMBER,
+    VIEWER
 }

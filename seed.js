@@ -33,14 +33,6 @@ db.issues.drop();
 
 const BCRYPT_PASSWORD = "$2a$10$hX06PoLxl6CW7R5x/83J4OH9GPKX/sU2lbymR05ZLQcjgi8zF4ICO";
 
-// ---- Permissions ---------------------------------------------
-
-const projectCreate = { id: "p-project-c",      name: "PROJECT_CREATE" };
-const projectDelete = { id: "p-project-d",      name: "PROJECT_DELETE" };
-const issueCreate   = { id: "p-issue-c",        name: "ISSUE_CREATE" };
-const issueDelete   = { id: "p-issue-d",        name: "ISSUE_DELETE" };
-const userManage    = { id: "p-user-manage",    name: "USER_MANAGE" };
-
 // ---- Users ---------------------------------------------------
 
 db.users.insertMany([
@@ -48,57 +40,43 @@ db.users.insertMany([
         _id:              "_system",
         email:            "admin@test.com",
         username:         "system",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-120),
-        permissions:      [projectCreate, projectDelete, issueCreate, issueDelete, userManage]
     },
     {
         _id:              "user-alice",
         email:            "alice@example.com",
         username:         "alice",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-120),
-        permissions:      [projectCreate, projectDelete, issueCreate, issueDelete, userManage]
     },
     {
         _id:              "user-bob",
         email:            "bob@example.com",
         username:         "bob",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-90),
-        permissions:      [issueCreate, issueDelete, projectCreate]
     },
     {
         _id:              "user-carol",
         email:            "carol@example.com",
         username:         "carol",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-60),
-        permissions:      [projectCreate, projectDelete, issueCreate, issueDelete, userManage]
     },
     {
         _id:              "user-dave",
         email:            "dave@example.com",
         username:         "dave",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-45),
-        permissions:      [issueCreate]
     },
     {
         _id:              "user-eve",
         email:            "eve@example.com",
         username:         "eve",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-30),
-        permissions:      [issueCreate]
     },
     {
         _id:              "user-frank",
         email:            "frank@example.com",
         username:         "frank",
-        password:         BCRYPT_PASSWORD,
         registrationDate: isoDate(-20),
-        permissions:      [issueCreate, issueDelete, projectCreate]
     }
 ]);
 

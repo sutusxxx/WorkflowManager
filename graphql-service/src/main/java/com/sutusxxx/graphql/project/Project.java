@@ -1,5 +1,6 @@
 package com.sutusxxx.graphql.project;
 import com.sutusxxx.graphql.issue.Status;
+import graphql.GraphQLException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -28,6 +29,8 @@ public class Project {
     @Min(0)
     private Integer issueCounter = 0;
     private String description;
+
+    private List<ProjectMember> members = new ArrayList<>();
     private List<Status> statuses = new ArrayList<>();
 
     @CreatedDate
@@ -43,6 +46,24 @@ public class Project {
     private String modifiedBy;
 
     private Visibility visibility;
+
+    public Optional<ProjectMember> getMember(String userId) {
+        return members.stream()
+                .filter(member -> member.getUserId().equals(userId))
+                .findFirst();
+    }
+
+    public boolean hasMember(String userId) {
+        return getMember(userId).isPresent()
+                || createdBy.equals(userId);
+    }
+
+    public ProjectRole getRoleOf(String userId) {
+        if (createdBy.equals(userId)) return ProjectRole.ADMIN;
+        return getMember(userId)
+                .map(ProjectMember::getRole)
+                .orElseThrow(() -> new GraphQLException("User is not a member of this project"));
+    }
 
     public Optional<Status> findStatusById(String statusId) {
         return statuses.stream().filter(status -> status.getId().equals(statusId)).findFirst();

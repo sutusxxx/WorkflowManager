@@ -22,7 +22,6 @@ public class UserService {
 
     public User syncUser(Map<String, Object> claims) {
         String keycloakId = (String) claims.get("sub");
-
         return userRepository.findByKeycloakId(keycloakId)
                 .map(this::updateLastLogin)
                 .orElseGet(() -> createUser(claims));

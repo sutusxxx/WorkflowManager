@@ -2,6 +2,7 @@ package com.sutusxxx.graphql.issue;
 
 import com.sutusxxx.graphql.audit.AuditService;
 import com.sutusxxx.graphql.audit.model.AuditEvent;
+import com.sutusxxx.graphql.exceptions.PermissionDeniedException;
 import com.sutusxxx.graphql.pagination.Cursor;
 import com.sutusxxx.graphql.exceptions.BadRequestException;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
@@ -9,8 +10,12 @@ import com.sutusxxx.graphql.issue.model.AddIssueLinkInput;
 import com.sutusxxx.graphql.issue.model.*;
 import com.sutusxxx.graphql.issue.repository.IssueRepository;
 import com.sutusxxx.graphql.pagination.Page;
+import com.sutusxxx.graphql.permission.PermissionService;
 import com.sutusxxx.graphql.project.Project;
+import com.sutusxxx.graphql.project.ProjectPermission;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
+import com.sutusxxx.user.User;
+import graphql.GraphQLException;
 import graphql.relay.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -31,6 +36,8 @@ public class IssueService {
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
 
+    private final PermissionService permissionService;
+
     private final IssueConverter issueConverter;
 
     private final MongoTemplate mongoTemplate;
@@ -47,11 +54,12 @@ public class IssueService {
 
     public IssueService(
             IssueRepository issueRepository,
-            ProjectRepository projectRepository,
+            ProjectRepository projectRepository, PermissionService permissionService,
             IssueConverter issueConverter, MongoTemplate mongoTemplate, AuditService audit
     ) {
         this.issueRepository = issueRepository;
         this.projectRepository = projectRepository;
+        this.permissionService = permissionService;
         this.issueConverter = issueConverter;
         this.mongoTemplate = mongoTemplate;
         this.audit = audit;
@@ -154,8 +162,12 @@ public class IssueService {
     }
 
     @Transactional
-    public Issue createIssue(CreateIssueInput input) {
+    public Issue createIssue(User user, CreateIssueInput input) {
         String projectId = input.projectId();
+
+        if (!permissionService.hasPermission(user, projectId, ProjectPermission.CREATE_ISSUE)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(NotFoundException::new);
@@ -190,8 +202,12 @@ public class IssueService {
         return savedIssue;
     }
 
-    public Issue updateIssue(String id, UpdateIssueInput input) {
+    public Issue updateIssue(User user, String id, UpdateIssueInput input) {
         Issue issue = issueRepository.findById(id).orElseThrow(NotFoundException::new);
+
+        if (!permissionService.hasPermission(user, issue.getProjectId(), ProjectPermission.EDIT_ISSUE)) {
+            throw new PermissionDeniedException("Action not allowed!"); 
+        }
 
         if (input.title() != null && !input.title().isEmpty()) issue.setTitle(input.title());
         if (input.description() != null) issue.setDescription(input.description());
@@ -203,7 +219,7 @@ public class IssueService {
     }
 
     @Transactional
-    public Issue changeStatus(String issueId, String newStatusId) {
+    public Issue changeStatus(User user, String issueId, String newStatusId) {
         audit.log(new AuditEvent(
                 "STATUS_CHANGE",
                 "Issue",
@@ -211,6 +227,10 @@ public class IssueService {
         ));
 
         Issue issue = issueRepository.findById(issueId).orElseThrow(NotFoundException::new);
+
+        if (!permissionService.hasPermission(user, issue.getProjectId(), ProjectPermission.TRANSITION_ISSUE)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
 
         Project project = projectRepository.findById(issue.getProjectId())
                 .orElseThrow(NotFoundException::new);
@@ -231,9 +251,13 @@ public class IssueService {
     }
 
     @Transactional
-    public String deleteIssue(String id) {
+    public String deleteIssue(User user, String id) {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
+
+        if (permissionService.hasPermission(user, issue.getProjectId(), ProjectPermission.DELETE_ISSUE)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
 
         Set<String> targetIds = issue.getLinks().stream()
                 .map(IssueLink::getTargetIssueId)
@@ -271,9 +295,9 @@ public class IssueService {
         return id;
     }
 
-    public Issue addLink(AddIssueLinkInput input) {
+    public Issue addLink(User user, AddIssueLinkInput input) {
         if (input.sourceIssueId().equals(input.targetIssueId())) {
-            throw new RuntimeException("An issue cannot link to itself");
+            throw new GraphQLException("An issue cannot link to itself");
         }
 
         Issue source = issueRepository.findById(input.sourceIssueId())
@@ -281,6 +305,14 @@ public class IssueService {
 
         Issue target = issueRepository.findById(input.targetIssueId())
                 .orElseThrow(NotFoundException::new);
+
+        if (!source.getProjectId().equals(target.getProjectId())) {
+            throw new GraphQLException("Cannot link issue");
+        }
+
+        if (permissionService.hasPermission(user, source.getProjectId(), ProjectPermission.EDIT_ISSUE)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
 
         if (source.hasLinkTo(target.getId(), input.linkType())) {
             throw new BadRequestException("Link already exists");
@@ -320,12 +352,16 @@ public class IssueService {
         return source;
     }
 
-    public Issue removeLink(RemoveIssueLinkInput input) {
+    public Issue removeLink(User user, RemoveIssueLinkInput input) {
         Issue source = issueRepository.findById(input.sourceIssueId())
                 .orElseThrow(NotFoundException::new);
 
         Issue target = issueRepository.findById(input.targetIssueId())
                 .orElseThrow(NotFoundException::new);
+
+        if (permissionService.hasPermission(user, source.getProjectId(), ProjectPermission.EDIT_ISSUE)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
 
         source.removeLink(target.getId(), input.linkType());
         issueRepository.save(source);
