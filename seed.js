@@ -26,12 +26,6 @@ db.issues.drop();
 // =============================================================
 //  USERS
 // =============================================================
-//  Passwords below are BCrypt hashes of "password" — replace
-//  with your own hashed values before using in production.
-//  BCrypt of "password":
-//  $2a$10$hX06PoLxl6CW7R5x/83J4OH9GPKX/sU2lbymR05ZLQcjgi8zF4ICO
-
-const BCRYPT_PASSWORD = "$2a$10$hX06PoLxl6CW7R5x/83J4OH9GPKX/sU2lbymR05ZLQcjgi8zF4ICO";
 
 // ---- Users ---------------------------------------------------
 
@@ -99,6 +93,13 @@ const statusDev           = { _id: "b-dev",         name: "Development", categor
 const statusQA            = { _id: "b-qa",          name: "QA",          category: "IN_PROGRESS", color: "#FF991F", displayOrder: 3, isDefault: false, allowedTransitionIds: ["b-dev", "b-released"] };
 const statusReleased      = { _id: "b-released",    name: "Released",    category: "DONE",        color: "#36B37E", displayOrder: 4, isDefault: false, allowedTransitionIds: [] };
 
+
+// Project members
+
+const memberA      = { userId: "user-alice", role: "ADMIN",  joinedAt: isoDate(-40) };
+const memberB      = { userId: "user-bob",   role: "MEMBER", joinedAt: isoDate(-30) };
+const memberC      = { userId: "user-carol", role: "VIEWER", joinedAt: isoDate(-30) };
+
 // ---- Project documents --------------------------------------
 
 const projectAlpha = {
@@ -107,8 +108,9 @@ const projectAlpha = {
     name:         "Project Alpha",
     issueCounter: 12,
     description:  "Main product development project.",
+    members:      [memberA, memberB, memberC],
     statuses:     [statusTodo, statusInProgress, statusReview, statusDone],
-    createdAt:    isoDate(-90),
+    createdAt:    isoDate(-60),
     updatedAt:    isoDate(-1),
     createdBy:    "user-alice",
     modifiedBy:   "user-bob",
@@ -121,6 +123,7 @@ const projectBeta = {
     name:         "Project Beta",
     issueCounter: 7,
     description:  "Internal tooling and infrastructure improvements.",
+    members:      [memberA, memberB],
     statuses:     [statusBacklog, statusDev, statusQA, statusReleased],
     createdAt:    isoDate(-45),
     updatedAt:    isoDate(-3),

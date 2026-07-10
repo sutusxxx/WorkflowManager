@@ -5,10 +5,7 @@ import com.sutusxxx.graphql.issue.Status;
 import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.project.Project;
 import com.sutusxxx.graphql.project.ProjectService;
-import com.sutusxxx.graphql.project.model.AddMemberInput;
-import com.sutusxxx.graphql.project.model.AddTransitionInput;
-import com.sutusxxx.graphql.project.model.CreateProjectInput;
-import com.sutusxxx.graphql.project.model.UpdateProjectInput;
+import com.sutusxxx.graphql.project.model.*;
 import com.sutusxxx.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -54,5 +51,10 @@ public class ProjectMutationResolver {
     @MutationMapping
     public Project addMember(@Argument AddMemberInput input, @CurrentUser User currentUser) {
         return projectService.assignProjectMember(currentUser, input);
+    }
+
+    @MutationMapping
+    public Project removeMember(@Argument RemoveMemberInput input, @CurrentUser User currentUser) {
+        return projectService.removeProjectMember(currentUser, input);
     }
 }

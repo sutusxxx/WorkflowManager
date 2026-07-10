@@ -42,9 +42,9 @@ public class MongoConfig {
                                                 UserRepository userRepository) {
         return () -> {
             try {
-                String keycloakId = securityUtils.getCurrentUserKeycloakId();
+                String username = securityUtils.getCurrentUsername();
 
-                return userRepository.findByKeycloakId(keycloakId)
+                return userRepository.findByUsername(username)
                         .map(User::getId);
 
             } catch (Exception e) {

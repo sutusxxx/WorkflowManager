@@ -11,6 +11,12 @@ extend type Mutation {
     addTransition(projectId: ID!, input: AddTransitionInput!): Project!
     viewProject(projectId: ID!): Boolean!
     addMember(input: AddMemberInput!): Project!
+    removeMember(input: RemoveMemberInput!): Project!
+}
+
+input RemoveMemberInput {
+    userId: ID!
+    projectId: ID!
 }
 
 input AddMemberInput {

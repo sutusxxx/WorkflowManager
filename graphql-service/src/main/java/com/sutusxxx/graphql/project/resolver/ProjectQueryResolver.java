@@ -38,8 +38,8 @@ public class ProjectQueryResolver {
     }
 
     @QueryMapping
-    public Connection<Project> projects(@Argument Integer first, @Argument String after) {
-        return projectService.getProjects(first, after);
+    public Connection<Project> projects(@Argument Integer first, @Argument String after, @CurrentUser User currentUser) {
+        return projectService.getProjects(currentUser, first, after);
     }
 
     @QueryMapping List<Project> recentProjects(@Argument Integer limit, @CurrentUser User currentUser) {

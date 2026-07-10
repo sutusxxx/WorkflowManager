@@ -21,8 +21,8 @@ public class UserService {
     }
 
     public User syncUser(Map<String, Object> claims) {
-        String keycloakId = (String) claims.get("sub");
-        return userRepository.findByKeycloakId(keycloakId)
+        String username = (String) claims.get("preferred_username");
+        return userRepository.findByUsername(username)
                 .map(this::updateLastLogin)
                 .orElseGet(() -> createUser(claims));
     }
@@ -48,7 +48,6 @@ public class UserService {
 
     private User createUser(Map<String, Object> claims) {
         User user = new User();
-        user.setKeycloakId((String) claims.get("sub"));
         user.setUsername((String) claims.get("preferred_username"));
         user.setEmail((String) claims.get("email"));
         user.setRegistrationDate(Instant.now());

@@ -49,13 +49,13 @@ public class SprintQueryResolver {
     }
 
     @QueryMapping
-    public Sprint sprintBoard(@Argument String projectId) {
-        return sprintService.getActiveSprintByProjectId(projectId);
+    public Sprint sprintBoard(@Argument String projectId, @CurrentUser User currentUser) {
+        return sprintService.getActiveSprintByProjectId(currentUser, projectId);
     }
 
     @QueryMapping
-    public Page<Sprint> sprints(@Argument String projectId, @Argument Integer page, @Argument Integer pageSize) {
-        return sprintService.getSprintsByProjectId(projectId, page, pageSize);
+    public Page<Sprint> sprints(@Argument String projectId, @Argument Integer page, @Argument Integer pageSize, @CurrentUser User currentUser) {
+        return sprintService.getSprintsByProjectId(currentUser, projectId, page, pageSize);
     }
 
     @SchemaMapping(typeName = "Sprint", field = "issues")

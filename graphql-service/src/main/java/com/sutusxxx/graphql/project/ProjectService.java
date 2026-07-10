@@ -9,6 +9,7 @@ import com.sutusxxx.graphql.issue.model.CreateStatusInput;
 import com.sutusxxx.graphql.permission.PermissionService;
 import com.sutusxxx.graphql.project.model.AddMemberInput;
 import com.sutusxxx.graphql.project.model.CreateProjectInput;
+import com.sutusxxx.graphql.project.model.RemoveMemberInput;
 import com.sutusxxx.graphql.project.model.UpdateProjectInput;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
 import com.sutusxxx.graphql.project.repository.RecentlyViewedRepository;
@@ -63,18 +64,28 @@ public class ProjectService {
     public List<Project> getRecentProjects(User currentUser, Integer limit) {
         List<String> recentProjectIds = getRecentProjectIds(currentUser.getId(), limit);
 
-        return (!recentProjectIds.isEmpty())
+        List<String> filtered = recentProjectIds.stream()
+                .filter(projectId ->
+                        permissionService.hasPermission(currentUser, projectId, ProjectPermission.VIEW_PROJECT))
+                .toList();
+
+        return (!filtered.isEmpty())
                 ? loadPreservingOrder(recentProjectIds)
                 : List.of();
     }
 
-    public Connection<Project> getProjects(Integer first, String after) {
+    public Connection<Project> getProjects(User user, Integer first, String after) {
         Query query = new Query();
 
         if (after != null) {
             Cursor cursor = Cursor.decode(after);
             query.addCriteria(Criteria.where("_id").gt(cursor.id()));
         }
+
+        query.addCriteria(new Criteria().orOperator(
+                Criteria.where("members.userId").is(user.getId()),
+                Criteria.where("createdBy").is(user.getId())
+        ));
 
         query.limit(first + 1);
         query.with(Sort.by(Sort.Direction.ASC, "_id"));
@@ -133,7 +144,23 @@ public class ProjectService {
 
         List<ProjectMember> members = project.getMembers();
         members.add(addMember(userToAssign.getId(), input.role()));
-        project.setMembers(members);
+        return projectRepository.save(project);
+    }
+
+    @Transactional
+    public Project removeProjectMember(User user, RemoveMemberInput input) {
+        if (!permissionService.hasPermission(user, input.projectId(), ProjectPermission.MANAGE_MEMBERS)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
+        Project project = projectRepository.findById(input.projectId()).orElseThrow(NotFoundException::new);
+
+        if (!project.hasMember(input.userId())) {
+            return project;
+        }
+
+        List<ProjectMember> members = project.getMembers();
+        members.removeIf(member -> member.getUserId().equals(input.userId()));
         return projectRepository.save(project);
     }
 
@@ -160,9 +187,6 @@ public class ProjectService {
     public Project createProject(User user, CreateProjectInput input) {
         Project project = projectConverter.convertFromInput(input);
         project.setVisibility(input.isPrivate() ? Visibility.PRIVATE : Visibility.PUBLIC);
-        List<ProjectMember> members = new ArrayList<>();
-        members.add(addMember(user.getId(), ProjectRole.ADMIN));
-        project.setMembers(members);
         return projectRepository.save(project);
     }
 

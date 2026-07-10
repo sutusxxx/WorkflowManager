@@ -2,14 +2,18 @@ package com.sutusxxx.graphql.sprint;
 
 import com.sutusxxx.graphql.exceptions.BadRequestException;
 import com.sutusxxx.graphql.exceptions.NotFoundException;
+import com.sutusxxx.graphql.exceptions.PermissionDeniedException;
 import com.sutusxxx.graphql.issue.Issue;
 import com.sutusxxx.graphql.issue.repository.IssueRepository;
 import com.sutusxxx.graphql.pagination.Page;
+import com.sutusxxx.graphql.permission.PermissionService;
+import com.sutusxxx.graphql.project.ProjectPermission;
 import com.sutusxxx.graphql.project.repository.ProjectRepository;
 import com.sutusxxx.graphql.sprint.model.CreateSprintInput;
 import com.sutusxxx.graphql.sprint.model.MoveIssueInput;
 import com.sutusxxx.graphql.sprint.model.UpdateSprintInput;
 import com.sutusxxx.graphql.sprint.repository.SprintRepository;
+import com.sutusxxx.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,20 +30,31 @@ public class SprintService {
     private final SprintRepository sprintRepository;
     private final ProjectRepository projectRepository;
 
+    private final PermissionService permissionService;
+
     public SprintService(
             IssueRepository issueRepository,
             SprintRepository sprintRepository,
-            ProjectRepository projectRepository) {
+            ProjectRepository projectRepository,
+            PermissionService permissionService) {
         this.issueRepository = issueRepository;
         this.sprintRepository = sprintRepository;
         this.projectRepository = projectRepository;
+        this.permissionService = permissionService;
     }
 
-    public Sprint getActiveSprintByProjectId(String projectId) {
+    public Sprint getActiveSprintByProjectId(User user, String projectId) {
+        if (!permissionService.hasPermission(user, projectId, ProjectPermission.VIEW_SPRINT)) {
+            throw new PermissionDeniedException("Access denied");
+        }
         return sprintRepository.findActiveByProjectId(projectId).orElse(null);
     }
 
-    public Page<Sprint> getSprintsByProjectId(String projectId, Integer page, Integer pageSize) {
+    public Page<Sprint> getSprintsByProjectId(User user, String projectId, Integer page, Integer pageSize) {
+        if (!permissionService.hasPermission(user, projectId, ProjectPermission.VIEW_SPRINT)) {
+            throw new PermissionDeniedException("Access denied");
+        }
+
         List<Sprint> sprints = sprintRepository.findByProjectId(projectId);
 
         Map<SprintState, Integer> order = Map.of(
@@ -61,7 +76,11 @@ public class SprintService {
         );
     }
 
-    public Sprint createSprint(String projectId, CreateSprintInput input) {
+    public Sprint createSprint(User user, String projectId, CreateSprintInput input) {
+        if (!permissionService.hasPermission(user, projectId, ProjectPermission.CREATE_SPRINT)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
         projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
 
         validateStartAndEndDate(input.startDate(), input.endDate());
@@ -76,8 +95,13 @@ public class SprintService {
         return sprintRepository.save(sprint);
     }
 
-    public Sprint activate(String sprintId) {
+    public Sprint activate(User user, String sprintId) {
         Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(NotFoundException::new);
+
+        if (!permissionService.hasPermission(user, sprint.getProjectId(), ProjectPermission.VIEW_SPRINT)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
         if (sprint.getState() == SprintState.ACTIVE) {
             throw new BadRequestException("Sprint already active");
         }
@@ -92,8 +116,13 @@ public class SprintService {
         return sprintRepository.save(sprint);
     }
 
-    public Sprint close(String sprintId) {
+    public Sprint close(User user, String sprintId) {
         Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(NotFoundException::new);
+
+        if (!permissionService.hasPermission(user, sprint.getProjectId(), ProjectPermission.COMPLETE_SPRINT)) {
+            throw new PermissionDeniedException("Action not allowed!");
+        }
+
         if (sprint.getState() == SprintState.CLOSED) {
             throw new BadRequestException("Sprint already active");
         }
@@ -106,10 +135,15 @@ public class SprintService {
         return sprintRepository.save(sprint);
     }
 
-    public Sprint updateSprint(String sprintId, UpdateSprintInput input) {
+    public Sprint updateSprint(User user, String sprintId, UpdateSprintInput input) {
+        Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(NotFoundException::new);
+
+        if (!permissionService.hasPermission(user, sprint.getProjectId(), ProjectPermission.CREATE_SPRINT)) {
+            throw new PermissionDeniedException("Action not allowed");
+        }
+
         validateStartAndEndDate(input.startDate(), input.endDate());
 
-        Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(NotFoundException::new);
         sprint.setName(input.name());
         sprint.setGoal(input.goal());
         sprint.setStartDate(input.startDate());

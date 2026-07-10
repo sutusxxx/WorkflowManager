@@ -8,12 +8,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SecurityUtils {
-
-    // Get the raw keycloak ID (sub claim)
-    public String getCurrentUserKeycloakId() {
-        return getJwt().getSubject();
-    }
-
     // Get the username (preferred_username claim)
     public String getCurrentUsername() {
         return getJwt().getClaim("preferred_username");

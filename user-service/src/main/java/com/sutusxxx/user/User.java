@@ -22,7 +22,4 @@ public class User {
     private Instant lastLoggedIn;
 
     private Instant registrationDate;
-
-    @Indexed(unique = true)
-    private String keycloakId;
 }

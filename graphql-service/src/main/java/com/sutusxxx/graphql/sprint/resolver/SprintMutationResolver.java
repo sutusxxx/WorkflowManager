@@ -1,10 +1,12 @@
 package com.sutusxxx.graphql.sprint.resolver;
 
+import com.sutusxxx.graphql.annotation.CurrentUser;
 import com.sutusxxx.graphql.sprint.Sprint;
 import com.sutusxxx.graphql.sprint.SprintService;
 import com.sutusxxx.graphql.sprint.model.CreateSprintInput;
 import com.sutusxxx.graphql.sprint.model.MoveIssueInput;
 import com.sutusxxx.graphql.sprint.model.UpdateSprintInput;
+import com.sutusxxx.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -20,18 +22,18 @@ public class SprintMutationResolver {
     }
 
     @MutationMapping
-    public Sprint createSprint(@Argument String projectId, @Argument CreateSprintInput input) {
-        return sprintService.createSprint(projectId, input);
+    public Sprint createSprint(@Argument String projectId, @Argument CreateSprintInput input, @CurrentUser User currentUser) {
+        return sprintService.createSprint(currentUser, projectId, input);
     }
 
     @MutationMapping
-    public Sprint updateSprint(@Argument String id, @Argument UpdateSprintInput input) {
-        return sprintService.updateSprint(id, input);
+    public Sprint updateSprint(@Argument String id, @Argument UpdateSprintInput input, @CurrentUser User currentUser) {
+        return sprintService.updateSprint(currentUser, id, input);
     }
 
     @MutationMapping
-    public Sprint activate(@Argument String id) {
-        return sprintService.activate(id);
+    public Sprint activate(@Argument String id, @CurrentUser User currentUser) {
+        return sprintService.activate(currentUser, id);
     }
 
     @MutationMapping
