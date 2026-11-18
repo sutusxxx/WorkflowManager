@@ -38,7 +38,6 @@ public class IssueQueryResolver {
 
     @QueryMapping
     public Issue issueByKey(@Argument String key) {
-        log.debug("[ISSUE_QUERY] Getting issue by key '{}'", key);
         return issueService.getIssueByKey(key);
     }
 
@@ -54,7 +53,6 @@ public class IssueQueryResolver {
 
     @BatchMapping(typeName = "Issue", field = "children")
     public CompletableFuture<Map<Issue, List<Issue>>> subIssues(List<Issue> issues) {
-        log.debug("[ISSUE_QUERY] Loading sub-issues");
         return CompletableFuture.supplyAsync(
                 () -> issueService.loadChildren(issues),
                 batchExecutor
@@ -63,7 +61,6 @@ public class IssueQueryResolver {
 
     @BatchMapping(typeName = "Issue", field = "links")
     public CompletableFuture<Map<Issue, List<IssueLinkDTO>>> links(List<Issue> issues) {
-        log.debug("[ISSUE_QUERY] Loading links");
         return CompletableFuture.supplyAsync(
                 () -> issueService.loadLinks(issues),
                 batchExecutor

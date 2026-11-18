@@ -47,7 +47,6 @@ public class AuthController {
         request.getSession().setAttribute("code_verifier", codeVerifier);
         request.getSession().setAttribute("redirect_to", redirectTo);
 
-        log.debug("[AUTH] redirecting to authorization URL with state '{}' and codeChallenge '{}'", state, codeChallenge);
         response.sendRedirect(keycloakService.buildAuthorizationUrl(state, codeChallenge));
     }
 
@@ -67,10 +66,8 @@ public class AuthController {
 
         request.getSession().invalidate();
 
-        log.debug("[AUTH] exchanging code '{}' with codeVerifier '{}'", code, codeVerifier);
         Map<String, String> tokens = keycloakService.exchangeCode(code, codeVerifier);
 
-        log.debug("[AUTH] synchronise user...");
         userService.syncUser(decodeJwtClaims(tokens.get("access_token")));
 
         setCookieTokens(response, tokens);
@@ -80,7 +77,6 @@ public class AuthController {
         request.getSession().removeAttribute("redirect_to");
 
         String redirectURL = "http://localhost:5173" + redirectTo;
-        log.debug("[AUTH] redirecting to {}", redirectURL);
         response.sendRedirect(redirectURL);
     }
 
@@ -96,7 +92,7 @@ public class AuthController {
             setCookieTokens(response, tokens);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.warn("[AUTH] Refresh token expired or invalid: {}", e.getMessage());
+            log.error("[AUTH] Refresh token expired or invalid: {}", e.getMessage());
             clearCookieTokens(response);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
         }

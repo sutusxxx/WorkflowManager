@@ -52,7 +52,6 @@ public class KeycloakService {
         body.add("redirect_uri", redirectUri);
         body.add("code_verifier", codeVerifier);
 
-        log.info("[KEYCLOAK] Getting tokens from the token endpoint...");
         String[] tokens = callTokenEndpoint(body);
         Map<String, String> result = new HashMap<>();
 
@@ -68,7 +67,6 @@ public class KeycloakService {
         body.add("client_secret", clientSecret);
         body.add("refresh_token", refreshToken);
 
-        log.info("[KEYCLOAK] Refreshing tokens...");
         String[] tokens = callTokenEndpoint(body);
         Map<String, String> result = new HashMap<>();
         result.put("access_token", tokens[0]);
@@ -88,10 +86,9 @@ public class KeycloakService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         try {
-            log.info("[KEYCLOAK] Calling logout endpoint: {}", logoutUrl);
             restTemplate.postForEntity(logoutUrl, new HttpEntity<>(body, headers), Void.class);
         } catch (Exception e) {
-            log.warn("[KEYCLOAK] Error while logging out: {}", e.getMessage());
+            log.error("[KEYCLOAK] Error while logging out: {}", e.getMessage());
             // Don't fail logout if Keycloak call fails — still clear cookies
         }
     }
@@ -101,7 +98,6 @@ public class KeycloakService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        log.info("[KEYCLOAK] Calling token endpoint: {}", tokenUrl);
         ResponseEntity<Map> tokenResponse = restTemplate.postForEntity(
                 tokenUrl, new HttpEntity<>(body, headers), Map.class
         );
